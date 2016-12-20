@@ -7,7 +7,7 @@
 namespace utl {
 
 template <typename It, typename UnaryOperation>
-inline auto transform_to_set(It b, It e, UnaryOperation&& op)
+inline auto to_set(It b, It e, UnaryOperation&& op)
     -> std::vector<decltype(op(*b))> {
   using set = std::set<decltype(op(*b))>;
   set s(std::distance(s, e));
@@ -16,7 +16,7 @@ inline auto transform_to_set(It b, It e, UnaryOperation&& op)
 }
 
 template <typename Container, typename UnaryOperation>
-inline auto transform_to_set(Container const& c, UnaryOperation&& op)
+inline auto to_set(Container const& c, UnaryOperation&& op)
     -> std::set<decltype(op(*std::begin(c)))> {
   using set = std::set<decltype(op(*std::begin(c)))>;
   set s;
