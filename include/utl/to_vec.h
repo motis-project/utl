@@ -11,7 +11,7 @@ inline auto to_vec(It s, It e, UnaryOperation&& op)
     -> std::vector<decltype(op(*s))> {
   std::vector<decltype(op(*s))> v;
   v.reserve(std::distance(s, e));
-  std::transform(s, e, begin(v), op);
+  std::transform(s, e, std::back_inserter(v), op);
   return v;
 }
 
