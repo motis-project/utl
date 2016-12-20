@@ -2,10 +2,10 @@
 
 #include <algorithm>
 #include <atomic>
-#include <thread>
 #include <iostream>
+#include <thread>
 
-namespace common {
+namespace utl {
 
 template <typename T, typename Fun>
 inline void parallel_for(std::string const& desc, std::vector<T> const& jobs,
@@ -33,4 +33,4 @@ inline void parallel_for(std::string const& desc, std::vector<T> const& jobs,
   std::for_each(begin(threads), end(threads), [](auto& t) { t.join(); });
 }
 
-}  // namespace common
+}  // namespace utl
