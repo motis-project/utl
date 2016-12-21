@@ -5,6 +5,8 @@
 #include <iostream>
 #include <thread>
 
+#include "utl/logging.h"
+
 namespace utl {
 
 template <typename T, typename Fun>
@@ -22,7 +24,7 @@ inline void parallel_for(std::string const& desc, std::vector<T> const& jobs,
         }
 
         if (idx % mod == 0) {
-          std::cout << desc << " " << idx << "/" << jobs.size() << "\n";
+          uLOG() << desc << " " << idx << "/" << jobs.size();
         }
 
         func(jobs[idx]);
