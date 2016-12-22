@@ -14,7 +14,7 @@ struct log {
   log() {
     std::time_t t = std::time(nullptr);
     std::tm tm = *std::gmtime(&t);
-    std::clog << "[" << std::put_time(&tm, "%FZ%TZ") << "] ";
+    std::clog << "[" << std::put_time(&tm, "%FT%TZ") << "] ";
   }
   ~log() { std::clog << std::endl; }
 
