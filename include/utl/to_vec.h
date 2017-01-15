@@ -24,4 +24,13 @@ inline auto to_vec(Container const& c, UnaryOperation&& op)
   return v;
 }
 
+template <typename Container>
+inline auto to_vec(Container const& c)
+    -> std::vector<decltype(*std::begin(c))> {
+  std::vector<decltype(*std::begin(c))> v;
+  v.reserve(std::distance(std::begin(c), std::end(c)));
+  std::copy(std::begin(c), std::end(c), std::back_inserter(v));
+  return v;
+}
+
 }  // namespace utl
