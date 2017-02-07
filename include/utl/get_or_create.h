@@ -4,8 +4,9 @@
 
 namespace utl {
 
-template <typename K, typename V, typename CreateFun>
-V& get_or_create(std::map<K, V>& m, K const& key, CreateFun&& f) {
+template <typename Map, typename K, typename CreateFun>
+auto get_or_create(Map& m, K const& key, CreateFun&& f) ->
+    typename Map::mapped_type& {
   auto const it = m.find(key);
   return it != end(m) ? it->second : m[key] = f();
 }
