@@ -35,10 +35,6 @@ struct zip_iterator;
 template <typename... Iterators>
 struct zip_iterator<std::tuple<Iterators...>> {
   using SelfType = zip_iterator<std::tuple<Iterators...>>;
-  using IteratorSeq = std::make_index_sequence<sizeof...(Iterators)>;
-
-  using Values =
-      std::tuple<typename std::iterator_traits<Iterators>::value_type...>;
 
   using References =
       std::tuple<typename std::iterator_traits<Iterators>::reference...>;
