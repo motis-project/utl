@@ -68,8 +68,11 @@ struct zip_iterator<std::tuple<Iterators...>> {
 
 template <typename... Containers>
 struct zip_range {
-  using Iterator = zip_iterator<
-      std::tuple<typename std::remove_reference_t<Containers>::iterator...>>;
+  using Iterator = zip_iterator<std::tuple<std::conditional_t<
+      std::is_const<std::remove_reference_t<Containers>>::value,
+      typename std::remove_reference_t<Containers>::const_iterator,
+      typename std::remove_reference_t<Containers>::iterator>...>>;
+
   using ConstIterator = zip_iterator<std::tuple<
       typename std::remove_reference_t<Containers>::const_iterator...>>;
 

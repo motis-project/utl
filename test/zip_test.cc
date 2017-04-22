@@ -1,9 +1,9 @@
 #include "catch.hpp"
 
-#include <string>
-#include <vector>
 #include <map>
 #include <set>
+#include <string>
+#include <vector>
 
 #include "utl/to_set.h"
 #include "utl/zip.h"
@@ -63,6 +63,21 @@ TEST_CASE("zip") {
     CHECK(result[0] == 1);
     CHECK(result[1] == 8);
     CHECK(result[2] == 27);
+  }
+
+  SECTION("const") {
+    std::vector<int> lhs{1, 2, 3};
+    const std::vector<int> rhs{4, 5, 6};
+
+    std::vector<int> result;
+    for (auto const & [ a, b ] : utl::zip(lhs, rhs)) {
+      result.push_back(a + b);
+    }
+
+    REQUIRE(result.size() == 3);
+    CHECK(result[0] == 5);
+    CHECK(result[1] == 7);
+    CHECK(result[2] == 9);
   }
 
   SECTION("mutable") {
@@ -125,9 +140,8 @@ TEST_CASE("zip") {
     std::map<int, bool> map{{4, true}, {1, false}, {3, true}};
     std::set<std::string> set{"c", "b", "a"};
 
-
     std::vector<std::tuple<int, int, bool, std::string>> result;
-    for(auto const& [i, pair, str] : utl::zip(lst, map, set)) {
+    for (auto const & [ i, pair, str ] : utl::zip(lst, map, set)) {
       result.emplace_back(i, pair.first, pair.second, str);
     }
 
