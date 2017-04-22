@@ -73,7 +73,7 @@ struct zip_range {
   using ConstIterator = zip_iterator<std::tuple<
       typename std::remove_reference_t<Containers>::const_iterator...>>;
 
-  zip_range(std::tuple<Containers...> tup) : tup_(tup) {}
+  explicit zip_range(std::tuple<Containers...> tup) : tup_(tup) {}
 
   ConstIterator begin() const {
     return ConstIterator{map_tup(tup_, [](auto&& c) { return std::begin(c); })};
