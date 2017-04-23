@@ -65,19 +65,23 @@ TEST_CASE("zip") {
     CHECK(result[2] == 27);
   }
 
-  SECTION("const") {
+  SECTION("const_input") {
     std::vector<int> lhs{1, 2, 3};
     const std::vector<int> rhs{4, 5, 6};
 
-    std::vector<int> result;
     for (auto const & [ a, b ] : utl::zip(lhs, rhs)) {
-      result.push_back(a + b);
+      static_assert(
+          !std::is_const<std::remove_reference_t<decltype(a)>>::value);
+      static_assert(std::is_const<std::remove_reference_t<decltype(b)>>::value);
     }
+  }
 
-    REQUIRE(result.size() == 3);
-    CHECK(result[0] == 5);
-    CHECK(result[1] == 7);
-    CHECK(result[2] == 9);
+  SECTION("force_const_iterator") {
+    std::vector<int> vec{1, 2, 3};
+
+    for (auto const & [e] : utl::czip(vec)) {
+      static_assert(std::is_const<std::remove_reference_t<decltype(e)>>::value);
+    }
   }
 
   SECTION("mutable") {

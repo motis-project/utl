@@ -66,7 +66,7 @@ struct zip_iterator<std::tuple<Iterators...>> {
   std::tuple<Iterators...> its_;
 };
 
-template <typename... Containers>
+template <bool ForceConst, typename... Containers>
 struct zip_range {
   using Iterator = zip_iterator<std::tuple<std::conditional_t<
       std::is_const<std::remove_reference_t<Containers>>::value,
@@ -82,7 +82,8 @@ struct zip_range {
     return ConstIterator{map_tup(tup_, [](auto&& c) { return std::begin(c); })};
   }
 
-  Iterator begin() {
+  template <bool Enabled = !ForceConst>
+  auto begin() -> typename std::enable_if_t<Enabled, Iterator> {
     return Iterator{map_tup(tup_, [](auto&& c) { return std::begin(c); })};
   }
 
@@ -90,17 +91,16 @@ struct zip_range {
     return ConstIterator{map_tup(tup_, [](auto&& c) { return std::end(c); })};
   }
 
-  Iterator end() {
+  template <bool Enabled = !ForceConst>
+  auto end() -> typename std::enable_if_t<Enabled, Iterator> {
     return Iterator{map_tup(tup_, [](auto&& c) { return std::end(c); })};
   }
 
   std::tuple<Containers...> tup_;
 };
 
-}  // namespace detail
-
 template <typename... Containers>
-auto zip(Containers&... containers) -> detail::zip_range<Containers&...> {
+inline void check_dimensions(Containers&... containers) {
   static_assert(sizeof...(Containers) > 0, "cannot zip nothing ;)");
   std::array<size_t, sizeof...(Containers)> sizes{{containers.size()...}};
   for (auto const& size : sizes) {
@@ -108,9 +108,23 @@ auto zip(Containers&... containers) -> detail::zip_range<Containers&...> {
       throw std::runtime_error("utl::zip container size mismatch");
     }
   }
+}
 
-  return detail::zip_range<Containers&...>{
+}  // namespace detail
+
+template <typename... Containers>
+detail::zip_range<false, Containers&...> zip(Containers&... containers) {
+  detail::check_dimensions(containers...);
+  return detail::zip_range<false, Containers&...>{
       std::forward_as_tuple(containers...)};
 };
 
-}  // namespace motis
+template <typename... Containers>
+detail::zip_range<true, Containers&...> czip(Containers&... containers) {
+  detail::check_dimensions(containers...);
+
+  return detail::zip_range<true, Containers&...>{
+      std::forward_as_tuple(containers...)};
+};
+
+}  // namespace utl
