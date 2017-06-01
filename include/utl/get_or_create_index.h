@@ -8,7 +8,8 @@ size_t get_or_create_index(Map& m, K const& key) {
   if (it != end(m)) {
     return it->second;
   } else {
-    return m[key] = m.size();
+    auto size = m.size();
+    return m[key] = size;
   }
 }
 
