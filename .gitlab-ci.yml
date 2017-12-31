@@ -61,24 +61,25 @@ msvc-debug:
     - jom utl-test
     - utl-test
 
-clang-format:
-  tags:
-    - artful
-  script:
-    - mkdir build-clang-format
-    - cd build-clang-format
-    - cmake ..
-    - make lmdb-format-check
-
-clang-tidy:
-  tags:
-    - artful
-  script:
-    - export CXX=clang++
-    - export CC=clang
-    - export CXXFLAGS="-stdlib=libc++"
-    - mkdir build-clang-tidy
-    - cd build-clang-tidy
-    - cmake ..
-    - make -j12 lmdb-lint
+# TODO(felix) enable
+# clang-format:
+#   tags:
+#     - artful
+#   script:
+#     - mkdir build-clang-format
+#     - cd build-clang-format
+#     - cmake ..
+#     - make utl-format-check
+#
+# clang-tidy:
+#   tags:
+#     - artful
+#   script:
+#     - export CXX=clang++
+#     - export CC=clang
+#     - export CXXFLAGS="-stdlib=libc++"
+#     - mkdir build-clang-tidy
+#     - cd build-clang-tidy
+#     - cmake ..
+#     - make -j12 utl-lint
 
