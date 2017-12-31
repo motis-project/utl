@@ -33,7 +33,7 @@ gcc-7-valgrind:
     - cd gcc-7-valgrind
     - cmake -DCMAKE_BUILD_TYPE=Debug ..
     - make -j12 utl-test
-    - valgrind --leak-check=full --show-reachable=yes --gen-suppressions=all --suppressions=../valgrind.supp ./utl-test
+    - valgrind --leak-check=full --show-reachable=yes --gen-suppressions=all ./utl-test
 
 msvc-release:
   tags:
