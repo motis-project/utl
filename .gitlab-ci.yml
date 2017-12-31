@@ -1,0 +1,84 @@
+gcc-7-release:
+  tags:
+    - artful
+  script:
+    - export CXX=g++-7
+    - export CC=gcc-7
+    - mkdir -p build-gcc-7-release
+    - cd build-gcc-7-release
+    - cmake -DCMAKE_BUILD_TYPE=Release ..
+    - make -j12 utl-test
+    - ./utl-test
+
+clang-5-debug-asan:
+  tags:
+    - artful
+  script:
+    - export CXX=clang++
+    - export CC=clang
+    - export CXXFLAGS="-stdlib=libc++ -fsanitize=address -fno-omit-frame-pointer"
+    - mkdir -p build-clang-5-debug-asan
+    - cd build-clang-5-debug-asan
+    - cmake -DCMAKE_BUILD_TYPE=Debug ..
+    - make -j12 utl-test
+    - ./utl-test
+
+gcc-7-valgrind:
+  tags:
+    - artful
+  script:
+    - export CXX=g++-7
+    - export CC=gcc-7
+    - mkdir -p gcc-7-valgrind
+    - cd gcc-7-valgrind
+    - cmake -DCMAKE_BUILD_TYPE=Debug ..
+    - make -j12 utl-test
+    - valgrind --leak-check=full --show-reachable=yes --gen-suppressions=all --suppressions=../valgrind.supp ./utl-test
+
+msvc-release:
+  tags:
+    - windows
+  script:
+    - set WD=%cd%
+    - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
+    - cd %WD%
+    - mkdir build-msvc-release
+    - cd build-msvc-release
+    - cmake -G "NMake Makefiles JOM" -DCMAKE_BUILD_TYPE=Release ..
+    - jom utl-test
+    - utl-test
+
+msvc-debug:
+  tags:
+    - windows
+  script:
+    - set WD=%cd%
+    - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
+    - cd %WD%
+    - mkdir build-msvc-debug
+    - cd build-msvc-debug
+    - cmake -G "NMake Makefiles JOM" -DCMAKE_BUILD_TYPE=Debug ..
+    - jom utl-test
+    - utl-test
+
+clang-format:
+  tags:
+    - artful
+  script:
+    - mkdir build-clang-format
+    - cd build-clang-format
+    - cmake ..
+    - make lmdb-format-check
+
+clang-tidy:
+  tags:
+    - artful
+  script:
+    - export CXX=clang++
+    - export CC=clang
+    - export CXXFLAGS="-stdlib=libc++"
+    - mkdir build-clang-tidy
+    - cd build-clang-tidy
+    - cmake ..
+    - make -j12 lmdb-lint
+
