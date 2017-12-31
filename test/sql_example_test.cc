@@ -1,40 +1,16 @@
 #include "catch.hpp"
 
-#include <iostream>
-
-#include "utl/struct/for_each_member.h"
-
-#include "string_literal.h"
-
-template <char const* str>
-struct name {
-  static constexpr auto const name_ = str;
-};
-struct primary {};
-struct not_null {};
-
-template <typename T, typename... Tags>
-struct sql_field : Tags... {
-  sql_field() = default;
-  sql_field(T t) : t(t) {}
-  operator T() { return t; }
-  T& val() { return t; }
-  T t;
-};
-
-struct a {
-  sql_field<int, name<STRING_LITERAL("id")>, primary, not_null> user_id = 0;
-  sql_field<std::string, name<STRING_LITERAL("firstName")>, not_null>
-      first_name;
-  sql_field<std::string, name<STRING_LITERAL("lastName")>, not_null> last_name;
-};
-
-template <typename T>
-constexpr auto get_name(T) {
-  return T::name_;
-}
+#include "sql/create_table.h"
 
 TEST_CASE("create_table") {
-  a row;
-  utl::for_each_field(row, [](auto&& col) { std::cout << col.val() << "\n"; });
+  struct row {
+    sql_col<int, name("id"), primary, not_null> user_id = 0;
+    sql_col<std::string, name("firstName"), not_null> first_name;
+    sql_col<std::string, name("lastName"), not_null> last_name;
+  } r;
+  CHECK(create_table_statement(r) == R"(CREATE TABLE (
+  id INT PRIMARY NOT NULL,
+  firstName TEXT NOT NULL,
+  lastName TEXT NOT NULL
+);)");
 }
