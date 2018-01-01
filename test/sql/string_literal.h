@@ -1,7 +1,10 @@
-// source: stackoverflow.com/a/36273815
+template <char... Chars>
+struct const_str {
+  static constexpr char const s[sizeof...(Chars) + 1] = {Chars..., 0};
+};
 
-#define MAX_STRING_LITERAL_LENGTH 11
-#define STRING_LITERAL(str) string_literal<char_pack<STRING_LITERAL_11(str)>>::s
+template <char... Chars>
+constexpr char const const_str<Chars...>::s[sizeof...(Chars) + 1];
 
 #define STRING_LITERAL_11(str) STRING_LITERAL_10(str), ((TERMINATED_10(str))?(str[10]):('\0'))
 #define STRING_LITERAL_10(str) STRING_LITERAL_9(str), ((TERMINATED_9(str))?(str[9]):('\0'))
@@ -14,7 +17,7 @@
 #define STRING_LITERAL_3(str) STRING_LITERAL_2(str), ((TERMINATED_2(str))?(str[2]):('\0'))
 #define STRING_LITERAL_2(str) STRING_LITERAL_1(str), ((TERMINATED_1(str))?(str[1]):('\0'))
 #define STRING_LITERAL_1(str) str[0]
-
+#define STRING_LITERAL(str) const_str<STRING_LITERAL_11(str)>::s
 
 #define TERMINATED_10(str) TERMINATED_9(str) && str[9]
 #define TERMINATED_9(str) TERMINATED_8(str) && str[8]
@@ -26,30 +29,3 @@
 #define TERMINATED_3(str) TERMINATED_2(str) && str[2]
 #define TERMINATED_2(str) TERMINATED_1(str) && str[1]
 #define TERMINATED_1(str) str[0]
-
-template <char... Cs>
-struct char_pack {
-    static constexpr char const arr[sizeof...(Cs) + 1] = {Cs..., 0};
-    static constexpr std::size_t non_zero_count = (((Cs != 0)?1:0) + ...);
-    static_assert(non_zero_count < MAX_STRING_LITERAL_LENGTH, "You need to create more macros");
-};
-
-template <char... Cs>
-constexpr char const char_pack<Cs...>::arr[sizeof...(Cs) + 1];
-
-template <char... Cs>
-constexpr std::size_t char_pack<Cs...>::non_zero_count;
-
-template <class CP, class = void, class = std::make_index_sequence<CP::non_zero_count>>
-struct string_literal;
-
-template <char... Cs, std::size_t... Is>
-struct string_literal<char_pack<Cs...>, std::enable_if_t<(Cs && ...)>, std::index_sequence<Is...>> {
-    static constexpr char const s[sizeof...(Cs) + 1] = {Cs..., '\0'};
-};
-
-template <char... Cs, std::size_t... Is>
-constexpr char const string_literal<char_pack<Cs...>, std::enable_if_t<(Cs && ...)>, std::index_sequence<Is...>>::s[sizeof...(Cs) + 1];
-
-template <char... Cs, std::size_t... Is>
-struct string_literal<char_pack<Cs...>, std::enable_if_t<!(Cs && ...)>, std::index_sequence<Is...>>: string_literal<char_pack<char_pack<Cs...>::arr[Is]...>> { };
