@@ -1,18 +1,16 @@
 #pragma once
 
+#include <chrono>
 #include <cstdio>
 #include <ctime>
 #include <stdexcept>
-#include <chrono>
 
 #ifndef log_err
-#define log_err(M, ...) \
-  fprintf(stderr, "[ERR] " M "\n", ##__VA_ARGS__);
+#define log_err(M, ...) fprintf(stderr, "[ERR] " M "\n", ##__VA_ARGS__);
 #endif
 
 #ifndef log_info
-#define log_info(M, ...) \
-  fprintf(stderr, "[NFO] " M "\n", ##__VA_ARGS__);
+#define log_info(M, ...) fprintf(stderr, "[NFO] " M "\n", ##__VA_ARGS__);
 #endif
 
 #define LOGGING
@@ -27,8 +25,7 @@
                   std::chrono::steady_clock::now() - start)          \
                   .count();                                          \
     log_info("%s took %lldms", name, ms);                            \
-  \
-}
+  }
 #endif
 #else
 

@@ -78,8 +78,6 @@ void read(std::vector<std::tuple<Args...>>& v,
   }
 }
 
-namespace detail {
-
 typedef uint8_t column_idx_t;
 constexpr column_idx_t NO_COLUMN_IDX = std::numeric_limits<column_idx_t>::max();
 constexpr column_idx_t MAX_COLUMNS = 32;
@@ -166,23 +164,21 @@ std::vector<std::array<cstr, std::tuple_size<Tuple>::value>> read_rows(
                     column_map.rend()));
 }
 
-}  // namespace detail
-
 template <typename Tuple>
 using column_mapping = std::array<cstr, std::tuple_size<Tuple>::value>;
 
 template <typename Tuple, char Separator = ','>
 void read(cstr s, std::vector<Tuple>& entries,
           column_mapping<Tuple> defined_columns) {
-  auto column_map = detail::read_header<Tuple, Separator>(s, defined_columns);
-  auto rows = detail::read_rows<Tuple, Separator>(s, column_map);
+  auto column_map = read_header<Tuple, Separator>(s, defined_columns);
+  auto rows = read_rows<Tuple, Separator>(s, column_map);
   read(entries, rows);
 }
 
 template <typename Tuple, char Separator = ','>
 std::vector<Tuple> read(cstr s, column_mapping<Tuple> defined_columns) {
-  auto column_map = detail::read_header<Tuple, Separator>(s, defined_columns);
-  auto rows = detail::read_rows<Tuple, Separator>(s, column_map);
+  auto column_map = read_header<Tuple, Separator>(s, defined_columns);
+  auto rows = read_rows<Tuple, Separator>(s, column_map);
   std::vector<Tuple> entries;
   read(entries, rows);
   return entries;
@@ -193,8 +189,8 @@ void read_file(const char* path, std::vector<Tuple>& entries,
                column_mapping<Tuple> defined_columns) {
   auto buf = file(path, "ro").content();
   cstr s(buf.data(), buf.size());
-  auto column_map = detail::read_header<Tuple, Separator>(s, defined_columns);
-  auto rows = detail::read_rows<Tuple, Separator>(s, column_map);
+  auto column_map = read_header<Tuple, Separator>(s, defined_columns);
+  auto rows = read_rows<Tuple, Separator>(s, column_map);
   read(entries, rows);
 }
 

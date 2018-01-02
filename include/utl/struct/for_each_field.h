@@ -19,4 +19,10 @@ inline void for_each_field(T& t, Fn&& fn) {
   }
 }
 
+template <typename T, typename Fn>
+inline void for_each_field(Fn&& fn) {
+  T t{};
+  for_each_field<T>(t, std::forward<Fn>(fn));
+}
+
 }  // namespace utl

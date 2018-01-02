@@ -1,6 +1,6 @@
 #include "catch.hpp"
 
-#include "utl/struct/for_each_member.h"
+#include "utl/struct/for_each_field.h"
 
 struct a {
   int i = 1;

@@ -1,8 +1,7 @@
 #include <string>
 
-#include "utl/struct/for_each_member.h"
-
-#include "string_literal.h"
+#include "utl/const_str.h"
+#include "utl/struct/for_each_field.h"
 
 template <char const* str>
 struct col_name {

@@ -15,7 +15,6 @@ void equal_ranges(Container& c, F&& func) {
   }
 }
 
-
 template <typename Container, typename Cmp, typename F>
 void equal_ranges(Container& c, Cmp&& cmp, F&& func) {
   std::sort(begin(c), end(c), cmp);

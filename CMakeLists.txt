@@ -14,3 +14,34 @@ if (MSVC)
 else()
   set_target_properties(utl-test PROPERTIES COMPILE_FLAGS "-std=c++1z -Wall -Wextra")
 endif()
+
+add_custom_target(utl-format-check
+    find
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/test
+      -type f
+      -not -name "catch.hpp"
+      -a
+      \(
+      -name "*.cc"
+      -o -name "*.h"
+      \)
+      -print0
+    | xargs -0 clang-format-5.0 -i
+  COMMAND
+    git status --porcelain | xargs -I {} -0 test -z \"{}\"
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  COMMENT "Checking source code formatting"
+  VERBATIM
+)
+
+add_custom_target(utl-lint
+  /usr/bin/python
+    ${CMAKE_CURRENT_SOURCE_DIR}/tools/run-clang-tidy.py
+      -exit-on-error
+      -header-filter "^${CMAKE_CURRENT_SOURCE_DIR}/include"
+      "^${CMAKE_CURRENT_SOURCE_DIR}/test/"
+  COMMENT "Running clang-tidy"
+  VERBATIM
+)
+add_dependencies(utl-lint utl-test)

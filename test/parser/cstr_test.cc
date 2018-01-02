@@ -67,7 +67,7 @@ TEST_CASE("empty_line") {
 
 TEST_CASE("empty_string") {
   int i = 0;
-  for_each_line(empty_string, [&](cstr) { ++i;  });
+  for_each_line(empty_string, [&](cstr) { ++i; });
   REQUIRE(i == 0);
 }
 

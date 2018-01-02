@@ -1,6 +1,6 @@
-#include "catch.hpp"
+#include "../catch.hpp"
 
-#include "sql/create_table.h"
+#include "create_table.h"
 
 TEST_CASE("create_table") {
   struct row {
