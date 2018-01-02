@@ -8,7 +8,7 @@ struct avg {
   avg() {}
 
   template <typename Range>
-  friend int operator|(Range&& r, avg&& f) {
+  friend double operator|(Range&& r, avg&& f) {
     auto it = r.begin();
     while (r.valid(it)) {
       f.sum_ += r.read(it);

@@ -37,5 +37,5 @@ TEST_CASE("csv") {
       | remove_if([](auto&& row) { return row.open < 39.01; })  //
       | transform([](auto&& row) { return row.volume; })  //
       | avg();
-  CHECK(avg_volume == 65844);
+  CHECK(avg_volume == 65844.4);
 }
