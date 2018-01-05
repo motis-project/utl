@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+#include "utl/parser/cstr.h"
+
 namespace utl {
 
 struct mmap_reader {
@@ -109,7 +111,7 @@ struct mmap_reader {
 
   explicit mmap_reader(char const* filename) : m_(filename), it_(m_.ptr()) {}
 
-  std::pair<char*, size_t> read(size_t const num_bytes) {
+  cstr read(size_t const num_bytes) {
     auto const start = it_;
     auto const last = m_.ptr() + m_.size();
     auto const rest_size = static_cast<size_t>(last - start);
@@ -118,11 +120,19 @@ struct mmap_reader {
     return {start, bytes_read};
   }
 
-  std::pair<char*, size_t> read_line() {
+  cstr read_line() {
     auto const start = it_;
     auto const last = m_.ptr() + m_.size();
+    if (it_ == last) {
+      return {nullptr, 0};
+    }
     auto const num = last - it_;
     auto const nl = static_cast<char*>(memchr(it_, '\n', num));
+    if (nl == nullptr) {
+      auto const tmp = it_;
+      it_ = last;
+      return {tmp, static_cast<size_t>(num)};
+    }
     auto const length = nl != nullptr ? nl - start : last - it_;
     it_ = nl;
     ++it_;

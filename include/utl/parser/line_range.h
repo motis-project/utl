@@ -4,7 +4,7 @@ namespace utl {
 
 template <typename Reader>
 struct line_range {
-  line_range(Reader&& r) : r_(r) {}
+  line_range(Reader&& r) : r_(std::forward<Reader>(r)) {}
 
   auto begin() { return r_.read_line(); }
 

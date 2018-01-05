@@ -21,13 +21,13 @@ constexpr auto const input = R"(date,time,open,high,low,close,volume
 01/02/1998,09:38,39,39.02,39,39.02,29713)";
 
 struct quote {
-  csv_col<float, name("open")> open;
-  csv_col<float, name("high")> high;
-  csv_col<float, name("low")> low;
-  csv_col<float, name("close")> close;
-  csv_col<int, name("volume")> volume;
-  csv_col<cstr, name("date")> date;
-  csv_col<cstr, name("time")> time;
+  csv_col<float, UTL_NAME("open")> open;
+  csv_col<float, UTL_NAME("high")> high;
+  csv_col<float, UTL_NAME("low")> low;
+  csv_col<float, UTL_NAME("close")> close;
+  csv_col<int, UTL_NAME("volume")> volume;
+  csv_col<cstr, UTL_NAME("date")> date;
+  csv_col<cstr, UTL_NAME("time")> time;
 };
 
 TEST_CASE("csv") {

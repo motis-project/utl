@@ -87,11 +87,12 @@ inline void parse_arg(cstr& s, bool& b) {
     return;
   }
 
-  if (*s.str == 't') {
+  auto const c = std::tolower(*s.str);
+  if (c == 't') {
     b = true;
     for (int i = 0; i < 4 && s; ++i, ++s)
       ;
-  } else if (*s.str == 'f') {
+  } else if (c == 'f') {
     for (int i = 0; i < 5 && s; ++i, ++s)
       ;
   }

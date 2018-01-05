@@ -3,7 +3,7 @@
 #include <string>
 
 #define PRINTABLE_ENUM(name, ...)                                    \
-  enum class name { __VA_ARGS__, __COUNT };                          \
+  enum class name { __VA_ARGS__ };                                   \
   inline std::string as_string(name const v) {                       \
     std::string s = #__VA_ARGS__;                                    \
     auto c = begin(s);                                               \

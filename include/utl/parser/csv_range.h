@@ -14,7 +14,7 @@ template <char const* str>
 struct csv_col_name {
   static constexpr auto const name_ = str;
 };
-#define name(str) csv_col_name<STRING_LITERAL(str)>
+#define UTL_NAME(str) csv_col_name<STRING_LITERAL(str)>
 
 template <typename T, typename... Tags>
 struct csv_col : Tags... {
@@ -81,7 +81,7 @@ struct csv_range : public LineRange {
     T t{};
     for_each_field(t, [&, i = 0 ](auto& f) mutable {
       if (row[i]) {
-        f.val() = parse<std::remove_reference_t<decltype(f.val())>>(row[i]);
+        parse_arg(row[i], f.val());
       }
       ++i;
     });
