@@ -8,6 +8,12 @@
 namespace utl {
 
 template <char const* str>
+struct cmd_line_flag_desc {
+  static constexpr auto const desc_ = str;
+};
+#define UTL_DESC(str) cmd_line_flag_desc<STRING_LITERAL(str)>
+
+template <char const* str>
 struct cmd_line_flag_short {
   static constexpr auto const short_ = str;
 };
@@ -49,7 +55,7 @@ struct cmd_line_flag : public Tags... {
 };
 
 template <typename T>
-T parse(int argc, char const** argv) {
+inline T parse(int argc, char const** argv) {
   auto parse_flag = [](auto& val, cstr next_arg) {
     using FieldType = std::remove_cv_t<std::remove_reference_t<decltype(val)>>;
     if constexpr (std::is_same_v<FieldType, bool>) {
@@ -80,6 +86,34 @@ T parse(int argc, char const** argv) {
     }
   });
   return t;
+}
+
+template <typename T>
+inline std::string description() {
+  std::stringstream ss;
+  T t{};
+  auto first = true;
+  utl::for_each_field(t, [&](auto& f) {
+    using Type = std::remove_cv_t<std::remove_reference_t<decltype(f)>>;
+
+    if (first) {
+      first = false;
+    } else {
+      ss << "\n";
+    }
+
+    ss << "  ";
+    if constexpr (has_long_flag<Type>(0)) {
+      ss << std::setw(16) << f.long_ << " ";
+    }
+    if constexpr (has_short_flag<Type>(0)) {
+      ss << f.short_;
+    } else {
+      ss << "  ";
+    }
+    ss << "    " << f.desc_;
+  });
+  return ss.str();
 }
 
 }  // namespace utl
