@@ -98,6 +98,10 @@ inline void parse_arg(cstr& s, bool& b) {
   }
 }
 
+inline void parse_arg(cstr& s, std::string& arg) { arg.assign(s.str, s.len); }
+
+inline void parse_arg(cstr& s, cstr& arg) { arg.assign(s.str, s.len); }
+
 template <typename T>
 inline T parse(cstr s) {
   T value;

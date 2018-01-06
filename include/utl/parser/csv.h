@@ -49,10 +49,6 @@ inline void parse_column(cstr& s, T& arg) {
   arg.assign(begin.str, (s.str - begin.str) + adjust_for_quote + adjust_for_cr);
 }
 
-inline void parse_arg(cstr& s, std::string& arg) { arg.assign(s.str, s.len); }
-
-inline void parse_arg(cstr& s, cstr& arg) { arg.assign(s.str, s.len); }
-
 template <int Index, typename... Args>
 typename std::enable_if<Index == sizeof...(Args)>::type read(
     std::tuple<Args...>&, std::array<cstr, sizeof...(Args)>&) {}
