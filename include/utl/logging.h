@@ -4,29 +4,67 @@
 #include LOGGING_HEADER
 #else
 
+#include <chrono>
+#include <cstring>
 #include <ctime>
-#include <iomanip>
 #include <iostream>
+#include <mutex>
+#include <string>
+
+#ifdef _MSC_VER
+#define gmt(a, b) gmtime_s(b, a)
+#else
+#define gmt(a, b) gmtime_r(a, b)
+#endif
+
+#define FILE_NAME \
+  (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
+
+#define uLOG(lvl)                                          \
+  utl::log() << "[" << utl::str[lvl] << "]"                \
+             << "[" << utl::time() << "]"                  \
+             << "[" << FILE_NAME << ":" << __LINE__ << "]" \
+             << " "
 
 namespace utl {
 
 struct log {
-  log() {
-    std::time_t t = std::time(nullptr);
-    std::tm tm = *std::gmtime(&t);
-    std::clog << "[" << std::put_time(&tm, "%FT%TZ") << "] ";
-  }
-  ~log() { std::clog << std::endl; }
+  log() = default;
+
+  log(log const&) = delete;
+  log& operator=(log const&) = delete;
+
+  log(log&&) = default;
+  log& operator=(log&&) = default;
 
   template <typename T>
-  log& operator<<(T const& el) {
-    std::clog << el;
-    return *this;
+  friend log&& operator<<(log&& l, T&& t) {
+    std::cout << std::forward<T&&>(t);
+    return std::move(l);
   }
+
+  ~log() { std::cout << std::endl; }
 };
 
-}  // namespace utl
+enum log_level { emrg, alrt, crit, err, warn, notice, info, debug };
 
-#define uLOG() utl::log()
+static const char* const str[]{"emrg", "alrt", "crit", "erro",
+                               "warn", "note", "info", "debg"};
+
+inline std::string time(time_t const t) {
+  char buf[sizeof "2011-10-08t07:07:09z-0430"];
+  struct tm result {};
+  gmt(&t, &result);
+  strftime(buf, sizeof buf, "%FT%TZ%z", &result);
+  return buf;
+}
+
+inline std::string time() {
+  time_t now;
+  std::time(&now);
+  return time(now);
+}
+
+}  // namespace utl
 
 #endif

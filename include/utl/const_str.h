@@ -10,6 +10,22 @@ struct const_str {
 template <char... Chars>
 constexpr char const const_str<Chars...>::s[sizeof...(Chars) + 1];
 
+#define STRING_LITERAL_24(str) \
+  STRING_LITERAL_23(str), ((TERMINATED_23(str)) ? (str[23]) : ('\0'))
+#define STRING_LITERAL_23(str) \
+  STRING_LITERAL_22(str), ((TERMINATED_22(str)) ? (str[22]) : ('\0'))
+#define STRING_LITERAL_22(str) \
+  STRING_LITERAL_21(str), ((TERMINATED_21(str)) ? (str[21]) : ('\0'))
+#define STRING_LITERAL_21(str) \
+  STRING_LITERAL_20(str), ((TERMINATED_20(str)) ? (str[20]) : ('\0'))
+#define STRING_LITERAL_20(str) \
+  STRING_LITERAL_19(str), ((TERMINATED_19(str)) ? (str[19]) : ('\0'))
+#define STRING_LITERAL_19(str) \
+  STRING_LITERAL_18(str), ((TERMINATED_18(str)) ? (str[18]) : ('\0'))
+#define STRING_LITERAL_18(str) \
+  STRING_LITERAL_17(str), ((TERMINATED_17(str)) ? (str[17]) : ('\0'))
+#define STRING_LITERAL_17(str) \
+  STRING_LITERAL_16(str), ((TERMINATED_16(str)) ? (str[16]) : ('\0'))
 #define STRING_LITERAL_16(str) \
   STRING_LITERAL_15(str), ((TERMINATED_15(str)) ? (str[15]) : ('\0'))
 #define STRING_LITERAL_15(str) \
@@ -41,8 +57,16 @@ constexpr char const const_str<Chars...>::s[sizeof...(Chars) + 1];
 #define STRING_LITERAL_2(str) \
   STRING_LITERAL_1(str), ((TERMINATED_1(str)) ? (str[1]) : ('\0'))
 #define STRING_LITERAL_1(str) str[0]
-#define STRING_LITERAL(str) utl::const_str<STRING_LITERAL_16(str)>::s
+#define STRING_LITERAL(str) utl::const_str<STRING_LITERAL_24(str)>::s
 
+#define TERMINATED_23(str) TERMINATED_22(str) && str[22]
+#define TERMINATED_22(str) TERMINATED_21(str) && str[21]
+#define TERMINATED_21(str) TERMINATED_20(str) && str[20]
+#define TERMINATED_20(str) TERMINATED_19(str) && str[19]
+#define TERMINATED_19(str) TERMINATED_18(str) && str[18]
+#define TERMINATED_18(str) TERMINATED_17(str) && str[17]
+#define TERMINATED_17(str) TERMINATED_16(str) && str[16]
+#define TERMINATED_16(str) TERMINATED_15(str) && str[15]
 #define TERMINATED_15(str) TERMINATED_14(str) && str[14]
 #define TERMINATED_14(str) TERMINATED_13(str) && str[13]
 #define TERMINATED_13(str) TERMINATED_12(str) && str[12]

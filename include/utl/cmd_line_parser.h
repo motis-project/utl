@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iomanip>
+
 #include "utl/const_str.h"
 #include "utl/parser/arg_parser.h"
 #include "utl/parser/cstr.h"
@@ -50,7 +52,6 @@ constexpr bool has_long_flag(...) {
 template <typename T, typename... Tags>
 struct cmd_line_flag : public Tags... {
   cmd_line_flag() = default;
-  cmd_line_flag(T t) : t(t) {}
   operator T() { return t; }
   T& val() { return t; }
   T t{};
@@ -114,7 +115,7 @@ inline std::string description() {
 
     ss << "  ";
     if constexpr (has_long_flag<Type>(0)) {
-      ss << std::setw(16) << f.long_ << " ";
+      ss << std::setw(14) << f.long_ << " ";
     }
     if constexpr (has_short_flag<Type>(0)) {
       ss << f.short_;
