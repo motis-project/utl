@@ -8,7 +8,9 @@ struct config {
   cmd_line_flag<bool, UTL_SHORT("-c"), UTL_LONG("--capture"),
                 UTL_DESC("capture incoming")>
       capture;
-  cmd_line_flag<std::string, UTL_LONG("--file"), UTL_DESC("target file")> file;
+  cmd_line_flag<std::string, required, UTL_LONG("--file"),
+                UTL_DESC("target file")>
+      file;
   cmd_line_flag<int, UTL_LONG("--num_threads"), UTL_DESC("thread pool size")>
       num_threads;
 };
@@ -26,4 +28,16 @@ TEST_CASE("cmd_line_flag_test") {
   CHECK(c.file.val() == "test");
   CHECK(c.num_threads.val() == 8);
   CHECK(description<config>() == expected_description);
+}
+
+TEST_CASE("cmd_line_flag_required_test") {
+  char const* args[] = {"./exe", "-c", "--num_threads", "8"};
+
+  bool thrown = false;
+  try {
+    parse<config>(sizeof(args) / sizeof(char const*), args);
+  } catch (...) {
+    thrown = true;
+  }
+  CHECK(thrown);
 }

@@ -7,6 +7,8 @@
 
 namespace utl {
 
+struct required {};
+
 template <char const* str>
 struct cmd_line_flag_desc {
   static constexpr auto const desc_ = str;
@@ -60,29 +62,37 @@ inline T parse(int argc, char const** argv) {
     using FieldType = std::remove_cv_t<std::remove_reference_t<decltype(val)>>;
     if constexpr (std::is_same_v<FieldType, bool>) {
       val = true;
+      return true;
     } else if (next_arg) {
       parse_arg(next_arg, val);
+      return true;
     }
+    return false;
   };
 
   T t{};
   utl::for_each_field(t, [&](auto& f) {
     using Type = std::remove_cv_t<std::remove_reference_t<decltype(f)>>;
 
+    auto found = false;
     for (auto i = 0; i < argc; ++i) {
       auto const s = cstr(argv[i]);
 
       if constexpr (has_short_flag<Type>(0)) {
         if (s == f.short_) {
-          parse_flag(f.val(), i == argc - 1 ? nullptr : argv[i + 1]);
+          found = parse_flag(f.val(), i == argc - 1 ? nullptr : argv[i + 1]);
         }
       }
 
       if constexpr (has_long_flag<Type>(0)) {
         if (s == f.long_) {
-          parse_flag(f.val(), i == argc - 1 ? nullptr : argv[i + 1]);
+          found = parse_flag(f.val(), i == argc - 1 ? nullptr : argv[i + 1]);
         }
       }
+    }
+
+    if (!found && std::is_base_of_v<required, Type>) {
+      throw std::runtime_error("required field not found");
     }
   });
   return t;
