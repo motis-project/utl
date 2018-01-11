@@ -15,7 +15,7 @@ struct size {
 
 struct cstr {
   cstr() : str(nullptr), len(0) {}
-  cstr(char const* s) : str(s), len(std::strlen(str)) {}
+  cstr(char const* s) : str(s), len(s ? std::strlen(str) : 0) {}
   cstr(char const* s, std::size_t l) : str(s), len(l) {}
   cstr(unsigned char const* s, std::size_t l)
       : str(reinterpret_cast<char const*>(s)), len(l) {}

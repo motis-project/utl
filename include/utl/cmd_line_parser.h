@@ -81,13 +81,13 @@ inline T parse(int argc, char const** argv) {
 
       if constexpr (has_short_flag<Type>(0)) {
         if (s == f.short_) {
-          found = parse_flag(f.val(), i == argc - 1 ? nullptr : argv[i + 1]);
+          found = parse_flag(f.val(), i >= argc - 1 ? nullptr : argv[i + 1]);
         }
       }
 
       if constexpr (has_long_flag<Type>(0)) {
         if (s == f.long_) {
-          found = parse_flag(f.val(), i == argc - 1 ? nullptr : argv[i + 1]);
+          found = parse_flag(f.val(), i >= argc - 1 ? nullptr : argv[i + 1]);
         }
       }
     }
