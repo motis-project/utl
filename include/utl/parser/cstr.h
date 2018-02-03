@@ -47,7 +47,7 @@ struct cstr {
     return std::lexicographical_compare(str, str + len, s.str, s.str + s.len);
   }
   char operator[](std::size_t i) const { return str[i]; }
-  operator bool() { return len != 0 && str != nullptr; }
+  operator bool() const { return len != 0 && str != nullptr; }
   char const* begin() const { return str; }
   char const* end() const { return str + len; }
   friend char const* begin(cstr const& s) { return s.begin(); }
@@ -87,6 +87,7 @@ struct cstr {
   bool empty() const { return len == 0; }
   std::size_t length() const { return len; }
   char const* c_str() const { return str; }
+  char const* data() const { return str; }
   std::size_t substr_offset(cstr needle) {
     for (std::size_t i = 0; i < len; ++i) {
       if (substr(i).starts_with(needle)) {
