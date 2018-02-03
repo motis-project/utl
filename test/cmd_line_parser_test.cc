@@ -16,9 +16,9 @@ struct config {
 };
 
 constexpr auto const expected_description =
-    R"(       --capture -c    capture incoming
-          --file       target file
-   --num_threads       thread pool size)";
+    R"(       --capture -c      capture incoming
+          --file       * target file
+   --num_threads         thread pool size)";
 
 TEST_CASE("cmd_line_flag_test") {
   char const* args[] = {"./exe", "-c", "--file", "test", "--num_threads", "8"};
