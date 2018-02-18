@@ -19,6 +19,7 @@ struct cstr {
   cstr(char const* s, std::size_t l) : str(s), len(l) {}
   cstr(unsigned char const* s, std::size_t l)
       : str(reinterpret_cast<char const*>(s)), len(l) {}
+  cstr(char const* begin, char const* end) : str(begin), len(end - begin) {}
   cstr(std::nullptr_t, std::size_t) : str(nullptr), len(0) {}
   cstr& operator++() {
     ++str;
