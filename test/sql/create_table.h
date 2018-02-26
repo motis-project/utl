@@ -43,7 +43,7 @@ constexpr auto col_type_str(T) {
   } else if (std::is_same_v<T, std::string>) {
     return "TEXT";
   } else {
-    throw std::runtime_error("unkown row type");
+    throw std::runtime_error("unknown row type");
   }
 }
 
