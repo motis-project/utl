@@ -2,6 +2,7 @@
 
 // (heavily) inspired by https://stackoverflow.com/a/14829088
 
+#include <array>
 #include <iterator>
 #include <utility>
 
