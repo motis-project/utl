@@ -194,7 +194,7 @@ template <typename Tuple, typename StrType, char Separator = ','>
 std::vector<Tuple> read_file(StrType path,
                              column_mapping<Tuple> defined_columns) {
   std::vector<Tuple> vec;
-  read_file(path.c_str(), vec, defined_columns);
+  read_file<Tuple, Separator>(path.c_str(), vec, defined_columns);
   return vec;
 }
 
