@@ -13,6 +13,12 @@ struct size {
   std::size_t size_;
 };
 
+struct field {
+  int from = 0;
+  int size = 0;
+  static constexpr auto MAX_SIZE = std::numeric_limits<int>::max();
+};
+
 struct cstr {
   cstr() : str(nullptr), len(0) {}
   cstr(char const* s) : str(s), len(s ? std::strlen(str) : 0) {}
@@ -64,6 +70,10 @@ struct cstr {
     return {str + begin, end - begin};
   }
   cstr substr(std::size_t begin) const { return {str + begin, len - begin}; }
+  cstr substr(field const& f) {
+    return (f.size == field::MAX_SIZE) ? substr(f.from)
+                                       : substr(f.from, size(f.size));
+  }
   bool starts_with(cstr prefix) const {
     if (len < prefix.len) {
       return false;
