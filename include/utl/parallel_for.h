@@ -24,7 +24,7 @@ inline void parallel_for(std::string const& desc, std::vector<T> const& jobs,
         }
 
         if (idx % mod == 0) {
-          uLOG() << desc << " " << idx << "/" << jobs.size();
+          uLOG(info) << desc << " " << idx << "/" << jobs.size();
         }
 
         func(jobs[idx]);
