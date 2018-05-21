@@ -13,12 +13,19 @@ struct size {
   std::size_t size_;
 };
 
+struct field {
+  int from = 0;
+  int size = 0;
+  static constexpr auto MAX_SIZE = std::numeric_limits<int>::max();
+};
+
 struct cstr {
   cstr() : str(nullptr), len(0) {}
-  cstr(char const* s) : str(s), len(std::strlen(str)) {}
+  cstr(char const* s) : str(s), len(s ? std::strlen(str) : 0) {}
   cstr(char const* s, std::size_t l) : str(s), len(l) {}
   cstr(unsigned char const* s, std::size_t l)
       : str(reinterpret_cast<char const*>(s)), len(l) {}
+  cstr(char const* begin, char const* end) : str(begin), len(end - begin) {}
   cstr(std::nullptr_t, std::size_t) : str(nullptr), len(0) {}
   cstr& operator++() {
     ++str;
@@ -47,7 +54,7 @@ struct cstr {
     return std::lexicographical_compare(str, str + len, s.str, s.str + s.len);
   }
   char operator[](std::size_t i) const { return str[i]; }
-  operator bool() { return len != 0 && str != nullptr; }
+  operator bool() const { return len != 0 && str != nullptr; }
   char const* begin() const { return str; }
   char const* end() const { return str + len; }
   friend char const* begin(cstr const& s) { return s.begin(); }
@@ -63,6 +70,10 @@ struct cstr {
     return {str + begin, end - begin};
   }
   cstr substr(std::size_t begin) const { return {str + begin, len - begin}; }
+  cstr substr(field const& f) {
+    return (f.size == field::MAX_SIZE) ? substr(f.from)
+                                       : substr(f.from, size(f.size));
+  }
   bool starts_with(cstr prefix) const {
     if (len < prefix.len) {
       return false;
@@ -87,6 +98,7 @@ struct cstr {
   bool empty() const { return len == 0; }
   std::size_t length() const { return len; }
   char const* c_str() const { return str; }
+  char const* data() const { return str; }
   std::size_t substr_offset(cstr needle) {
     for (std::size_t i = 0; i < len; ++i) {
       if (substr(i).starts_with(needle)) {

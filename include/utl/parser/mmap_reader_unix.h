@@ -125,7 +125,7 @@ struct mmap_reader {
     auto const length = nl != nullptr ? nl - start : last - it_;
     it_ = nl;
     ++it_;
-    return {start, length};
+    return {start, static_cast<size_t>(length)};
   }
 
   float progress() const {

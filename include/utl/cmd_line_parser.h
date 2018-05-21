@@ -54,6 +54,7 @@ struct cmd_line_flag : public Tags... {
   cmd_line_flag() = default;
   operator T() { return t; }
   T& val() { return t; }
+  T const& val() const { return t; }
   T t{};
 };
 
@@ -81,19 +82,23 @@ inline T parse(int argc, char const** argv) {
 
       if constexpr (has_short_flag<Type>(0)) {
         if (s == f.short_) {
-          found = parse_flag(f.val(), i == argc - 1 ? nullptr : argv[i + 1]);
+          found = parse_flag(f.val(), i >= argc - 1 ? nullptr : argv[i + 1]);
         }
       }
 
       if constexpr (has_long_flag<Type>(0)) {
         if (s == f.long_) {
-          found = parse_flag(f.val(), i == argc - 1 ? nullptr : argv[i + 1]);
+          found = parse_flag(f.val(), i >= argc - 1 ? nullptr : argv[i + 1]);
         }
       }
     }
 
     if (!found && std::is_base_of_v<required, Type>) {
-      throw std::runtime_error("required field not found");
+      if constexpr (has_long_flag<Type>(0)) {
+        throw std::runtime_error(f.long_);
+      } else {
+        throw std::runtime_error(f.short_);
+      }
     }
   });
   return t;
@@ -122,7 +127,53 @@ inline std::string description() {
     } else {
       ss << "  ";
     }
-    ss << "    " << f.desc_;
+    if constexpr (std::is_base_of_v<required, Type>) {
+      ss << "    *";
+    } else {
+      ss << "     ";
+    }
+
+    ss << " " << f.desc_;
+  });
+  return ss.str();
+}
+
+template <typename T>
+inline std::string print_flags(T const& t) {
+  std::stringstream ss;
+  auto first = true;
+  utl::for_each_field(t, [&](auto& f) {
+    using Type = std::remove_cv_t<std::remove_reference_t<decltype(f)>>;
+    using ValType =
+        std::remove_cv_t<std::remove_reference_t<decltype(f.val())>>;
+
+    if (first) {
+      first = false;
+    } else {
+      ss << "\n";
+    }
+
+    ss << "  ";
+    if constexpr (has_long_flag<Type>(0)) {
+      ss << std::setw(14) << f.long_ << " ";
+    }
+    if constexpr (has_short_flag<Type>(0)) {
+      ss << f.short_;
+    } else {
+      ss << "  ";
+    }
+    if constexpr (std::is_base_of_v<required, Type>) {
+      ss << "    *";
+    } else {
+      ss << "     ";
+    }
+
+    ss << " ";
+    if (std::is_same_v<ValType, bool>) {
+      ss << std::boolalpha << f.val();
+    } else {
+      ss << f.val();
+    }
   });
   return ss.str();
 }
