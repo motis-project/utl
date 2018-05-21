@@ -1,3 +1,5 @@
+#pragma once
+
 #include <vector>
 
 namespace utl {
@@ -16,6 +18,6 @@ struct to_vec_t {
   }
 };
 
-to_vec_t to_vec() { return to_vec_t(); }
+inline to_vec_t vec() { return to_vec_t(); }
 
 }  // namespace utl
