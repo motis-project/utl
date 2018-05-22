@@ -1,6 +1,6 @@
 gcc-7-release:
   tags:
-    - artful
+    - bionic
   script:
     - export CXX=g++-7
     - export CC=gcc-7
@@ -12,11 +12,11 @@ gcc-7-release:
 
 clang-5-debug-asan:
   tags:
-    - artful
+    - bionic
   script:
-    - export CXX=clang++
-    - export CC=clang
-    - export CXXFLAGS="-stdlib=libc++ -fsanitize=address -fno-omit-frame-pointer"
+    - export CXX=clang++-6.0
+    - export CC=clang-6.0
+    - export CXXFLAGS="-fsanitize=address -fno-omit-frame-pointer"
     - mkdir -p build-clang-5-debug-asan
     - cd build-clang-5-debug-asan
     - cmake -DCMAKE_BUILD_TYPE=Debug ..
@@ -25,7 +25,7 @@ clang-5-debug-asan:
 
 gcc-7-valgrind:
   tags:
-    - artful
+    - bionic
   script:
     - export CXX=g++-7
     - export CC=gcc-7
