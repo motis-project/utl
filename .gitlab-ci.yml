@@ -16,7 +16,7 @@ clang-5-debug-asan:
   script:
     - export CXX=clang++-6.0
     - export CC=clang-6.0
-    - export CXXFLAGS="-stdlib=libc++ -fsanitize=address -fno-omit-frame-pointer"
+    - export CXXFLAGS="-fsanitize=address -fno-omit-frame-pointer"
     - mkdir -p build-clang-5-debug-asan
     - cd build-clang-5-debug-asan
     - cmake -DCMAKE_BUILD_TYPE=Debug ..
