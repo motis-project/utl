@@ -14,8 +14,8 @@ clang-5-debug-asan:
   tags:
     - bionic
   script:
-    - export CXX=clang++
-    - export CC=clang
+    - export CXX=clang++-6.0
+    - export CC=clang-6.0
     - export CXXFLAGS="-stdlib=libc++ -fsanitize=address -fno-omit-frame-pointer"
     - mkdir -p build-clang-5-debug-asan
     - cd build-clang-5-debug-asan
