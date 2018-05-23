@@ -42,6 +42,23 @@ auto all(Container& c) {
   return range<decltype(begin(c)), decltype(end(c))>{begin(c), end(c)};
 }
 
+template <typename Container>
+struct holding_range : public range<typename Container::const_iterator,
+                                    typename Container::const_iterator> {
+  using parent = range<typename Container::const_iterator,
+                       typename Container::const_iterator>;
+
+  explicit holding_range(Container&& c)
+      : parent{begin(c), end(c)}, c_{std::forward<Container>(c)} {}
+
+  Container c_;
+};
+
+template <typename Container>
+auto all(Container&& c) {
+  return holding_range<Container>{std::forward<Container>(c)};
+}
+
 template <typename T>
 auto all(std::initializer_list<T>&& c) {
   return range<decltype(begin(c)), decltype(end(c))>{begin(c), end(c)};

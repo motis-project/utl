@@ -9,7 +9,7 @@ struct to_map_t {
   friend auto operator|(Range&& r, to_map_t&&) {
     auto it = r.begin();
     using value_t = decltype(r.read(it));
-    std::map<value_t> v;
+    std::map<typename value_t::first_type, typename value_t::second_type> v;
     while (r.valid(it)) {
       auto entry = r.read(it);
       v.emplace(std::move(entry.first), std::move(entry.second));
