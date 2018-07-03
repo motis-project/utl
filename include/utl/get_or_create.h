@@ -10,8 +10,7 @@ auto get_or_create(Map& m, K const& key, CreateFun&& f) ->
   auto const it = m.find(key);
   if (it == end(m)) {
     auto v = f();
-    auto pair = m.emplace(key, std::move(v));
-    return pair.first->second;
+    return m[key] = std::move(v);
   } else {
     return it->second;
   }
