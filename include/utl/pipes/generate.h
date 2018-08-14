@@ -3,6 +3,8 @@
 #include <type_traits>
 #include <utility>
 
+#include "utl/pipes/is_range.h"
+
 namespace utl {
 
 template <typename Fn>
@@ -42,5 +44,8 @@ template <typename Fn>
 auto generate(Fn&& fn) {
   return generator_range<Fn>{std::forward<Fn>(fn)};
 }
+
+template <typename Fn>
+struct is_range<generator_range<Fn>> : std::true_type {};
 
 }  // namespace utl

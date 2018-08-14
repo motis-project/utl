@@ -6,6 +6,8 @@
 #include "utl/const_str.h"
 #include "utl/parser/arg_parser.h"
 #include "utl/parser/csv.h"
+#include "utl/pipes/all.h"
+#include "utl/pipes/is_range.h"
 #include "utl/struct/for_each_field.h"
 
 namespace utl {
@@ -121,5 +123,8 @@ struct csv {
     return csv_range<T, LineRange, Separator>{std::forward<LineRange>(r)};
   }
 };
+
+template <typename T, typename LineRange, char Separator>
+struct is_range<csv_range<T, LineRange, Separator>> : std::true_type {};
 
 }  // namespace utl

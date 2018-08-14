@@ -2,14 +2,17 @@
 
 #include <utility>
 
+#include "utl/pipes/make_range.h"
+
 namespace utl {
 
 template <typename ForEachFn>
 struct for_each_t {
   for_each_t(ForEachFn&& f) : fn_(std::forward<ForEachFn>(f)) {}
 
-  template <typename Range>
-  friend void operator|(Range&& r, for_each_t&& f) {
+  template <typename T>
+  friend void operator|(T&& t, for_each_t&& f) {
+    auto r = make_range(std::forward<T>(t));
     auto it = r.begin();
     while (r.valid(it)) {
       f.fn_(r.read(it));
