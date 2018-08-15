@@ -50,6 +50,12 @@ auto all(Container& c) {
   return range<decltype(begin(c)), decltype(end(c))>{begin(c), end(c)};
 }
 
+template <typename BeginIt, typename EndIt>
+auto all(BeginIt&& a, EndIt&& e) {
+  return range<BeginIt, EndIt>{std::forward<BeginIt>(a),
+                               std::forward<EndIt>(e)};
+}
+
 template <typename Container>
 struct holding_range : public range<typename Container::const_iterator,
                                     typename Container::const_iterator> {
