@@ -60,7 +60,7 @@ constexpr auto is_paren_constructible()
                 std::enable_if_t<is_brace_constructible<T, count>() &&      \
                                  !is_brace_constructible<T, count + 1>() && \
                                  !is_paren_constructible<T, count>()>>      \
-  constexpr field_count<count> arity(T) {                                   \
+  constexpr field_count<count> arity(T&) {                                  \
     return {};                                                              \
   }
 

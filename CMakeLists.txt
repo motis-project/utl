@@ -1,10 +1,12 @@
 project(utl)
 cmake_minimum_required(VERSION 3.0)
 
-include_directories(include)
+find_package(Boost)
 
 add_library(utl INTERFACE)
 target_include_directories(utl INTERFACE include)
+target_include_directories(utl INTERFACE ${Boost_INCLUDE_DIR})
+
 
 file(GLOB_RECURSE utl-test-files test/*.cc)
 if (MSVC)
@@ -16,7 +18,7 @@ target_link_libraries(utl-test utl)
 if (MSVC)
   set_target_properties(utl-test PROPERTIES COMPILE_FLAGS "/std:c++latest")
 else()
-  set_target_properties(utl-test PROPERTIES COMPILE_FLAGS "-std=c++1z -Wall -Wextra")
+  set_target_properties(utl-test PROPERTIES COMPILE_FLAGS "-std=c++17 -Wall -Wextra")
 endif()
 
 add_custom_target(utl-format-check
