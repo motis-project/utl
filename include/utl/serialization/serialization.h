@@ -23,10 +23,25 @@ using byte_buf =
                 boost::alignment::aligned_allocator<uint8_t, MAX_ALIGN>>;
 
 struct serializer {
-  void ensure_size(offset_t const size) {
-    auto const space_left = buf_.size() - curr_offset_;
-    if (space_left < size) {
-      auto const missing = size - space_left;
+  void ensure_size(offset_t const size, offset_t alignment = 0) {
+    auto aligned_size = size;
+
+    if (alignment != 0) {
+      auto unaligned_ptr = reinterpret_cast<void*>(&buf_[curr_offset_]);
+      auto space = static_cast<size_t>(alignment) * 8u;
+      auto const aligned_ptr =
+          std::align(alignment, size, unaligned_ptr, space);
+      auto const new_offset =
+          aligned_ptr ? static_cast<uint8_t*>(aligned_ptr) - &buf_[0] : 0;
+      auto const adjustment = new_offset - curr_offset_;
+      curr_offset_ += adjustment;
+      aligned_size += adjustment;
+    }
+
+    auto const space_left =
+        static_cast<int64_t>(buf_.size()) - static_cast<int64_t>(curr_offset_);
+    if (space_left < static_cast<int64_t>(aligned_size)) {
+      auto const missing = aligned_size - space_left;
       buf_.resize(buf_.size() + missing);
     }
   };
@@ -44,7 +59,7 @@ struct serializer {
   template <typename T>
   void special(utl::vector<T>*, offset_t const pos) {
     auto const vec_data_size = sizeof(T) * get<utl::vector<T>>(pos)->used_size_;
-    ensure_size(vec_data_size);
+    ensure_size(vec_data_size, std::alignment_of_v<T>);
 
     auto const v = get<utl::vector<T>>(pos);
     std::memcpy(&buf_[curr_offset_], v->el_, vec_data_size);
@@ -74,7 +89,7 @@ struct serializer {
   void special(utl::unique_ptr<T>*, offset_t const pos) {
     constexpr auto const ptr_data_size = sizeof(T);
 
-    ensure_size(ptr_data_size);
+    ensure_size(ptr_data_size, std::alignment_of_v<T>);
 
     auto const v = get<utl::unique_ptr<T>>(pos);
     auto const old_ptr = v->el_;
