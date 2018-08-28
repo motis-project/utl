@@ -23,16 +23,19 @@ using byte_buf =
                 boost::alignment::aligned_allocator<uint8_t, MAX_ALIGN>>;
 
 struct serializer {
+  uint8_t* addr(offset_t const offset) { return (&buf_[0]) + offset; }
+  uint8_t* base() { return &buf_[0]; }
+
   void ensure_size(offset_t const size, offset_t alignment = 0) {
     auto aligned_size = size;
 
     if (alignment != 0) {
-      auto unaligned_ptr = reinterpret_cast<void*>(&buf_[curr_offset_]);
+      auto unaligned_ptr = static_cast<void*>(addr(curr_offset_));
       auto space = static_cast<size_t>(alignment) * 8u;
       auto const aligned_ptr =
           std::align(alignment, size, unaligned_ptr, space);
       auto const new_offset =
-          aligned_ptr ? static_cast<uint8_t*>(aligned_ptr) - &buf_[0] : 0;
+          aligned_ptr ? static_cast<uint8_t*>(aligned_ptr) - base() : 0;
       auto const adjustment = new_offset - curr_offset_;
       curr_offset_ += adjustment;
       aligned_size += adjustment;
@@ -50,7 +53,7 @@ struct serializer {
   void special(T*, offset_t const pos) {
     using Type = std::remove_reference_t<std::remove_const_t<T>>;
     if constexpr (!std::is_scalar_v<Type>) {
-      auto const old_base = &buf_[0];
+      auto const old_base = base();
       utl::for_each_field(*get<T>(pos),
                           [&](auto& f) { special(&f, offset(old_base, &f)); });
     }
@@ -62,7 +65,7 @@ struct serializer {
     ensure_size(vec_data_size, std::alignment_of_v<T>);
 
     auto const v = get<utl::vector<T>>(pos);
-    std::memcpy(&buf_[curr_offset_], v->el_, vec_data_size);
+    std::memcpy(addr(curr_offset_), v->el_, vec_data_size);
     auto const start = curr_offset_;
     curr_offset_ += vec_data_size;
 
@@ -94,7 +97,7 @@ struct serializer {
     auto const v = get<utl::unique_ptr<T>>(pos);
     auto const old_ptr = v->el_;
     auto const start = curr_offset_;
-    std::memcpy(&buf_[curr_offset_], v->el_, ptr_data_size);
+    std::memcpy(addr(curr_offset_), v->el_, ptr_data_size);
     curr_offset_ += ptr_data_size;
 
     v->el_ = reinterpret_cast<T*>(start);
@@ -112,10 +115,10 @@ struct serializer {
         std::remove_reference_t<std::remove_const_t<decltype(value)>>;
 
     ensure_size(obj_size);
-    std::memcpy(&buf_[0], &value, obj_size);
+    std::memcpy(base(), &value, obj_size);
     curr_offset_ = obj_size;
 
-    auto const old_base = &buf_[0];
+    auto const old_base = base();
     utl::for_each_field(*get<written_type_t>(0u),
                         [&](auto& v) { special(&v, offset(old_base, &v)); });
 
@@ -131,7 +134,7 @@ struct serializer {
 
   template <typename T>
   T* get(offset_t offset) {
-    return reinterpret_cast<T*>(&buf_[offset]);
+    return reinterpret_cast<T*>(addr(offset));
   }
 
   void resolve_pending() {

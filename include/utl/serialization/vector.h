@@ -11,30 +11,28 @@
 
 namespace utl {
 
-namespace {
-
-inline uint64_t next_power_of_two(uint64_t n) {
-  n--;
-  n |= n >> 1u;
-  n |= n >> 2u;
-  n |= n >> 4u;
-  n |= n >> 8u;
-  n |= n >> 16u;
-  n |= n >> 32u;
-  n++;
-  return n;
-}
-
-}  // namespace
-
 template <typename T, typename TemplateSizeType = uint32_t>
 struct vector final {
   using size_type = TemplateSizeType;
 
+  static inline TemplateSizeType next_power_of_two(TemplateSizeType n) {
+    n--;
+    n |= n >> 1u;
+    n |= n >> 2u;
+    n |= n >> 4u;
+    n |= n >> 8u;
+    n |= n >> 16u;
+    if constexpr (sizeof(TemplateSizeType) > 32) {
+      n |= n >> 32u;
+    }
+    n++;
+    return n;
+  }
+
   explicit vector(TemplateSizeType size = 0) { resize(size); }
 
   explicit vector(const char* str) {
-    auto length = std::strlen(str) + 1;
+    auto length = static_cast<size_type>(std::strlen(str) + 1);
     reserve(length);
     std::memcpy(el_, str, length);
     used_size_ = length;

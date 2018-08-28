@@ -6,6 +6,7 @@ find_package(Boost)
 add_library(utl INTERFACE)
 target_include_directories(utl INTERFACE include)
 target_include_directories(utl INTERFACE ${Boost_INCLUDE_DIR})
+target_compile_options(utl INTERFACE -D_SCL_SECURE_NO_WARNINGS)
 
 
 file(GLOB_RECURSE utl-test-files test/*.cc)
