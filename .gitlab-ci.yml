@@ -18,7 +18,7 @@ clang-5-debug-asan:
     - export BOOST_ROOT=/opt/boost_1_67_0-gcc-7
     - export CXX=clang++-6.0
     - export CC=clang-6.0
-    - export CXXFLAGS="-fsanitize=address -fno-omit-frame-pointer"
+    - export CXXFLAGS="-fsanitize=address -fsanitize=undefined -fno-omit-frame-pointer"
     - mkdir -p build-clang-5-debug-asan
     - cd build-clang-5-debug-asan
     - cmake -DCMAKE_BUILD_TYPE=Debug ..
