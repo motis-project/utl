@@ -44,7 +44,7 @@ struct unique_ptr {
 };
 
 template <typename T, typename... Args>
-utl::unique_ptr<T> make_unique(Args... args) {
+utl::unique_ptr<T> make_unique(Args&&... args) {
   return utl::unique_ptr<T>{new T{std::forward<Args>(args)...}, true};
 }
 
