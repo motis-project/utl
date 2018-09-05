@@ -6,6 +6,7 @@
 
 #include "boost/align/aligned_allocator.hpp"
 
+#include "utl/serialization/string.h"
 #include "utl/serialization/unique_ptr.h"
 #include "utl/serialization/vector.h"
 #include "utl/struct/for_each_field.h"
@@ -76,6 +77,23 @@ struct serializer {
     for (auto it = start; it != start + vec_data_size; it += sizeof(T)) {
       special(get<T>(it), it);
     }
+  }
+
+  void special(utl::string*, offset_t const pos) {
+    if (get<utl::string>(pos)->is_short()) {
+      return;
+    }
+
+    auto const vec_data_size = get<utl::string>(pos)->size();
+    ensure_size(vec_data_size, std::alignment_of_v<char>);
+
+    auto const v = get<utl::string>(pos);
+    std::memcpy(addr(curr_offset_), v->data(), vec_data_size);
+    auto const start = curr_offset_;
+    curr_offset_ += vec_data_size;
+
+    v->h_.ptr_ = reinterpret_cast<char const*>(start);
+    v->h_.self_allocated_ = false;
   }
 
   template <typename T>
@@ -181,6 +199,15 @@ void regain_pointers_from_offsets(uint8_t* base, utl::vector<T>* el) {
   el->el_ = reinterpret_cast<T*>(base + reinterpret_cast<offset_t>(el->el_));
   for (auto& m : *el) {
     regain_pointers_from_offsets(base, &m);
+  }
+}
+
+inline void regain_pointers_from_offsets(uint8_t* base, utl::string* el) {
+  if (el->is_short()) {
+    return;
+  } else {
+    el->h_.ptr_ = reinterpret_cast<char const*>(
+        base + reinterpret_cast<offset_t>(el->h_.ptr_));
   }
 }
 

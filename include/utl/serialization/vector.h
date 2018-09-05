@@ -264,6 +264,4 @@ inline bool operator>=(vector<T> const& a, vector<T> const& b) {
   return !(a < b);
 }
 
-using string = vector<char>;
-
 }  // namespace utl

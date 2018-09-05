@@ -17,10 +17,10 @@ TEST_CASE("struct serialization") {
   {
     serialize_me obj{1, {2, 3, utl::string{"testtes"}}};
     buf = utl::serialize(obj);
-  } // EOL obj
+  }  // EOL obj
 
   auto const expected_size =
-      sizeof(serialize_me) + 8;  // struct size + string length 8
+      sizeof(serialize_me);  // struct size + string length 8
   CHECK(buf.size() == expected_size);
 
   auto const serialized = utl::deserialize<serialize_me>(&buf[0]);
