@@ -19,9 +19,8 @@ TEST_CASE("struct serialization") {
     buf = utl::serialize(obj);
   }  // EOL obj
 
-  auto const expected_size =
-      sizeof(serialize_me);  // struct size + string length 8
-  CHECK(buf.size() == expected_size);
+  CHECK(buf.size() ==
+        sizeof(serialize_me));  // short string, no additional space
 
   auto const serialized = utl::deserialize<serialize_me>(&buf[0]);
   CHECK(serialized->a_ == 1);
