@@ -9,9 +9,9 @@ struct string {
   using size_t = uint32_t;
 
   static constexpr struct owning_t {
-  } owning;
+  } owning{};
   static constexpr struct non_owning_t {
-  } non_owning;
+  } non_owning{};
 
   string() { std::memset(this, 0, sizeof(*this)); }
   ~string() { reset(); }
