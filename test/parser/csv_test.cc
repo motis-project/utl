@@ -4,13 +4,13 @@
 
 using namespace utl;
 
-cstr csv_file = R"(index,width,height,weight,comment,enabled
+static cstr csv_file = R"(index,width,height,weight,comment,enabled
 0,77,2,55.2,"this is real!",true
 1,78,3,56.9,"hello",false
 2,78,3,57.0,"world",true
 )";
 
-cstr csv_file_semicolon = R"(index;width;height;weight;comment;enabled
+static cstr csv_file_semicolon = R"(index;width;height;weight;comment;enabled
 0;77;2;55.2;"this is real!";true
 1;78;3;56.9;"hello";false
 2;78;3;57.0;"world";true
@@ -27,7 +27,7 @@ TEST_CASE("simple_csv") {
   std::array<double, 3> weights = {{55.2, 56.9, 57}};
   std::array<bool, 3> enabled = {{true, false, true}};
 
-  int i = 0;
+  auto i = 0u;
   for (auto const& r : entries) {
     REQUIRE(std::get<0>(r) == indices[i]);
     REQUIRE(std::abs(std::get<1>(r) - weights[i]) < 0.001);
@@ -48,7 +48,7 @@ TEST_CASE("simple_csv_semicolon_seperator") {
   std::array<double, 3> weights = {{55.2, 56.9, 57}};
   std::array<bool, 3> enabled = {{true, false, true}};
 
-  int i = 0;
+  auto i = 0u;
   for (auto const& r : entries) {
     REQUIRE(std::get<0>(r) == indices[i]);
     REQUIRE(std::abs(std::get<1>(r) - weights[i]) < 0.001);
@@ -68,7 +68,7 @@ TEST_CASE("wrong_order") {
   std::array<double, 3> weights = {{55.2, 56.9, 57}};
   std::array<bool, 3> enabled = {{true, false, true}};
 
-  int i = 0;
+  auto i = 0u;
   for (auto const& r : entries) {
     REQUIRE(std::get<2>(r) == indices[i]);
     REQUIRE(std::abs(std::get<1>(r) - weights[i]) < 0.001);
@@ -94,7 +94,7 @@ TEST_CASE("missing_selected_column") {
   std::array<double, 3> weights = {{55.2, 56.9, 57}};
   std::array<bool, 3> enabled = {{true, false, true}};
 
-  int i = 0;
+  auto i = 0u;
   for (auto const& r : entries) {
     REQUIRE(std::get<2>(r) == indices[i]);
     REQUIRE(std::abs(std::get<1>(r) - weights[i]) < 0.001);
@@ -120,7 +120,7 @@ TEST_CASE("additional_column") {
   std::array<double, 3> weights = {{55.2, 56.9, 57}};
   std::array<bool, 3> enabled = {{true, false, true}};
 
-  int i = 0;
+  auto i = 0u;
   for (auto const& r : entries) {
     REQUIRE(std::get<2>(r) == indices[i]);
     REQUIRE(std::abs(std::get<1>(r) - weights[i]) < 0.001);
@@ -146,7 +146,7 @@ TEST_CASE("missing_column_bad_format") {
   std::array<double, 3> weights = {{55.2, 56.9, 57}};
   std::array<bool, 3> enabled = {{false, false, false}};
 
-  int i = 0;
+  auto i = 0u;
   for (auto const& r : entries) {
     REQUIRE(std::get<2>(r) == indices[i]);
     REQUIRE(std::abs(std::get<1>(r) - weights[i]) < 0.001);

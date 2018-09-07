@@ -19,7 +19,7 @@ TEST_CASE("zip") {
     {
       REQUIRE(it != end(range));
 
-      auto[str, num] = *it;
+      auto [str, num] = *it;
       CHECK(str == "asdf");
       CHECK(num == 1);
     }
@@ -27,7 +27,7 @@ TEST_CASE("zip") {
       ++it;
       REQUIRE(it != end(range));
 
-      auto[str, num] = *it;
+      auto [str, num] = *it;
       CHECK(str == "bsdf");
       CHECK(num == 2);
     }
@@ -35,7 +35,7 @@ TEST_CASE("zip") {
       ++it;
       REQUIRE(it != end(range));
 
-      auto[str, num] = *it;
+      auto [str, num] = *it;
       CHECK(str == "csdf");
       CHECK(num == 3);
     }
@@ -55,7 +55,7 @@ TEST_CASE("zip") {
     std::vector<int> vec{1, 2, 3};
 
     std::vector<int> result;
-    for (auto[a, b, c] : utl::zip(vec, vec, vec)) {
+    for (auto [a, b, c] : utl::zip(vec, vec, vec)) {
       result.push_back(a * b * c);
     }
 
@@ -69,7 +69,7 @@ TEST_CASE("zip") {
     std::vector<int> lhs{1, 2, 3};
     const std::vector<int> rhs{4, 5, 6};
 
-    for (auto const & [ a, b ] : utl::zip(lhs, rhs)) {
+    for (auto const [a, b] : utl::zip(lhs, rhs)) {
       static_assert(
           !std::is_const<std::remove_reference_t<decltype(a)>>::value);
       static_assert(std::is_const<std::remove_reference_t<decltype(b)>>::value);
@@ -79,7 +79,7 @@ TEST_CASE("zip") {
   SECTION("force_const_iterator") {
     std::vector<int> vec{1, 2, 3};
 
-    for (auto const & [e] : utl::czip(vec)) {
+    for (auto const [e] : utl::czip(vec)) {
       static_assert(std::is_const<std::remove_reference_t<decltype(e)>>::value);
     }
   }
@@ -88,7 +88,7 @@ TEST_CASE("zip") {
     std::vector<int> vec{1, 2, 3};
     std::vector<int> vec2{4, 5, 6};
 
-    for (auto const & [ a, b ] : utl::zip(vec, vec2)) {
+    for (auto const [a, b] : utl::zip(vec, vec2)) {
       a += b;
     }
 
@@ -116,7 +116,7 @@ TEST_CASE("zip") {
         {solid_stuff{5}, solid_stuff{6}, solid_stuff{7}}};
 
     std::vector<int> result;
-    for (auto const & [ a, b ] : utl::zip(lhs, rhs)) {
+    for (auto const [a, b] : utl::zip(lhs, rhs)) {
       result.push_back(a.val_ + b.val_);
     }
 
@@ -131,7 +131,7 @@ TEST_CASE("zip") {
     std::vector<int> vec2{3, 2, 1};
 
     auto const set = utl::to_set(utl::zip(vec, vec2), [](auto const& tup) {
-      auto[lhs, rhs] = tup;
+      auto [lhs, rhs] = tup;
       return lhs + rhs;
     });
 
@@ -145,7 +145,7 @@ TEST_CASE("zip") {
     std::set<std::string> set{"c", "b", "a"};
 
     std::vector<std::tuple<int, int, bool, std::string>> result;
-    for (auto const & [ i, pair, str ] : utl::zip(lst, map, set)) {
+    for (auto const [i, pair, str] : utl::zip(lst, map, set)) {
       result.emplace_back(i, pair.first, pair.second, str);
     }
 

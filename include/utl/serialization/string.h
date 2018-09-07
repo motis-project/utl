@@ -6,7 +6,11 @@
 namespace utl {
 
 struct string {
-  using size_t = uint32_t;
+  using msize_t = uint32_t;
+
+  static msize_t mstrlen(char const* s) {
+    return static_cast<msize_t>(std::strlen(s));
+  }
 
   static constexpr struct owning_t {
   } owning{};
@@ -16,7 +20,7 @@ struct string {
   string() { std::memset(this, 0, sizeof(*this)); }
   ~string() { reset(); }
 
-  string(char const* s, owning_t) : string() { set_owning(s, std::strlen(s)); }
+  string(char const* s, owning_t) : string() { set_owning(s, mstrlen(s)); }
   string(char const* s, non_owning_t) : string() { set_non_owning(s); }
   string(char const* s) : string(s, non_owning) {}  // NOLINT
 
@@ -46,11 +50,13 @@ struct string {
     std::memset(this, 0, sizeof(*this));
   }
 
-  void set_owning(std::string_view s) { set_owning(s.data(), s.size()); }
+  void set_owning(std::string_view s) {
+    set_owning(s.data(), static_cast<msize_t>(s.size()));
+  }
 
-  void set_owning(char const* str) { set_owning(str, std::strlen(str)); }
+  void set_owning(char const* str) { set_owning(str, mstrlen(str)); }
 
-  void set_owning(char const* str, size_t const size) {
+  void set_owning(char const* str, msize_t const size) {
     reset();
     if (str == nullptr || size == 0) {
       return;
@@ -70,14 +76,12 @@ struct string {
   }
 
   void set_non_owning(std::string_view v) {
-    set_non_owning(v.data(), v.size());
+    set_non_owning(v.data(), static_cast<msize_t>(v.size()));
   }
 
-  void set_non_owning(char const* str) {
-    set_non_owning(str, std::strlen(str));
-  }
+  void set_non_owning(char const* str) { set_non_owning(str, mstrlen(str)); }
 
-  void set_non_owning(char const* str, size_t const size) {
+  void set_non_owning(char const* str, msize_t const size) {
     reset();
     if (str == nullptr || size == 0) {
       return;
@@ -109,7 +113,7 @@ struct string {
   char const* data() const { return is_short() ? s_.s_ : h_.ptr_; }
 
   string& operator=(char const* s) {
-    set_non_owning(s, std::strlen(s));
+    set_non_owning(s, mstrlen(s));
     return *this;
   }
 
@@ -121,32 +125,36 @@ struct string {
     return a.view() == b.view();
   }
 
-  size_t size() const {
+  msize_t size() const {
     if (is_short()) {
       auto const pos = static_cast<char const*>(std::memchr(s_.s_, '\0', 15));
       if (pos == nullptr) {
         return 15;
       } else {
-        return pos - s_.s_;
+        return static_cast<msize_t>(pos - s_.s_);
       }
     } else {
       return h_.size_;
     }
   }
 
+  struct heap {
+    bool is_short_;
+    bool self_allocated_;
+    uint8_t __fill_2__;
+    uint8_t __fill_3__;
+    uint32_t size_;
+    char const* ptr_;
+  };
+
+  struct stack {
+    bool is_short_;
+    char s_[15];
+  };
+
   union {
-    struct {
-      bool is_short_;
-      bool self_allocated_;
-      uint8_t __fill_2__;
-      uint8_t __fill_3__;
-      uint32_t size_;
-      char const* ptr_;
-    } h_;
-    struct {
-      bool is_short_;
-      char s_[15];
-    } s_;
+    heap h_;
+    stack s_;
   };
 };
 

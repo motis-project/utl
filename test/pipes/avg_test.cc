@@ -13,11 +13,12 @@ TEST_CASE("vec test") {
             | transform([](auto&& i) { return i * i; })  //
             | remove_if([](auto&& i) { return i > 3; })  //
             | vec();
-  auto r1 = generate([i = 0]() mutable { return --i, -i * i; })  //
-            | take_while([](auto&& i) { return i > -5; })  //
-            | transform([](auto&& i) { return std::abs(i); })  //
-            | remove_if([](auto&& i) { return i > 3; })  //
-            | vec();
+  auto r1 =
+      generate([i = 0]() mutable { return static_cast<void>(--i), -i * i; })  //
+      | take_while([](auto&& i) { return i > -5; })  //
+      | transform([](auto&& i) { return std::abs(i); })  //
+      | remove_if([](auto&& i) { return i > 3; })  //
+      | vec();
   CHECK(r0 == r1);
 }
 

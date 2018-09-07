@@ -46,7 +46,8 @@ inline void parse_column(cstr& s, T& arg) {
   }
 
   int adjust_for_quote = (end == '"') ? -1 : 0;
-  arg.assign(begin.str, (s.str - begin.str) + adjust_for_quote + adjust_for_cr);
+  arg.assign(begin.str, static_cast<size_t>((s.str - begin.str) +
+                                            adjust_for_quote + adjust_for_cr));
 }
 
 template <int Index, typename... Args>
@@ -154,10 +155,11 @@ std::vector<std::array<cstr, std::tuple_size<Tuple>::value>> read_rows(
     cstr& s, std::array<column_idx_t, MAX_COLUMNS> column_map) {
   return read_rows<Tuple, Separator>(
       s, column_map,
-      std::distance(std::find_if_not(
-                        column_map.rbegin(), column_map.rend(),
-                        [](column_idx_t idx) { return idx == NO_COLUMN_IDX; }),
-                    column_map.rend()));
+      static_cast<size_t>(std::distance(
+          std::find_if_not(
+              column_map.rbegin(), column_map.rend(),
+              [](column_idx_t idx) { return idx == NO_COLUMN_IDX; }),
+          column_map.rend())));
 }
 
 template <typename Tuple>

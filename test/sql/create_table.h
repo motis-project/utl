@@ -25,7 +25,7 @@ bool is_not_null(T) {
 template <typename T, typename... Tags>
 struct sql_col : Tags... {
   sql_col() = default;
-  sql_col(T t) : t(t) {}
+  sql_col(T param) : t(param) {}
   operator T() { return t; }
   T& val() { return t; }
   T t;

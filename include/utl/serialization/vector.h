@@ -117,8 +117,8 @@ struct vector final {
   friend T* begin(vector& a) { return a.begin(); }
   friend T* end(vector& a) { return a.end(); }
 
-  inline T const& operator[](int index) const { return el_[index]; }
-  inline T& operator[](int index) { return el_[index]; }
+  inline T const& operator[](size_t index) const { return el_[index]; }
+  inline T& operator[](size_t index) { return el_[index]; }
 
   T const& back() const { return el_[used_size_ - 1]; }
   T& back() { return el_[used_size_ - 1]; }

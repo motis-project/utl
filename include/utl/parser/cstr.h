@@ -9,36 +9,39 @@
 namespace utl {
 
 struct size {
-  explicit size(std::size_t s) : size_(s) {}
-  std::size_t size_;
+  explicit size(size_t s) : size_(s) {}
+  size_t size_;
 };
 
 struct field {
-  int from = 0;
-  int size = 0;
+  size_t from = 0;
+  size_t size = 0;
   static constexpr auto MAX_SIZE = std::numeric_limits<int>::max();
 };
 
 struct cstr {
   cstr() : str(nullptr), len(0) {}
   cstr(char const* s) : str(s), len(s ? std::strlen(str) : 0) {}
-  cstr(char const* s, std::size_t l) : str(s), len(l) {}
-  cstr(unsigned char const* s, std::size_t l)
+  cstr(char const* s, size_t l) : str(s), len(l) {}
+  cstr(unsigned char const* s, size_t l)
       : str(reinterpret_cast<char const*>(s)), len(l) {}
-  cstr(char const* begin, char const* end) : str(begin), len(end - begin) {}
-  cstr(std::nullptr_t, std::size_t) : str(nullptr), len(0) {}
+  cstr(char const* begin, char const* end)
+      : str(begin), len(static_cast<size_t>(end - begin)) {
+    assert(begin <= end);
+  }
+  cstr(std::nullptr_t, size_t) : str(nullptr), len(0) {}
   cstr& operator++() {
     ++str;
     --len;
     return *this;
   }
-  cstr operator+(std::size_t inc) {
+  cstr operator+(size_t inc) {
     cstr tmp;
     tmp.str = str + inc;
     tmp.len = len - inc;
     return tmp;
   }
-  cstr& operator+=(std::size_t inc) {
+  cstr& operator+=(size_t inc) {
     str = str + inc;
     len = len - inc;
     return *this;
@@ -53,23 +56,23 @@ struct cstr {
   bool operator<(cstr const& s) const {
     return std::lexicographical_compare(str, str + len, s.str, s.str + s.len);
   }
-  char operator[](std::size_t i) const { return str[i]; }
+  char operator[](size_t i) const { return str[i]; }
   operator bool() const { return len != 0 && str != nullptr; }
   char const* begin() const { return str; }
   char const* end() const { return str + len; }
   friend char const* begin(cstr const& s) { return s.begin(); }
   friend char const* end(cstr const& s) { return s.end(); }
-  void assign(char const* s, std::size_t l) {
+  void assign(char const* s, size_t l) {
     str = s;
     len = l;
   }
-  cstr substr(std::size_t position, size s) const {
+  cstr substr(size_t position, size s) const {
     return {str + position, s.size_};
   }
-  cstr substr(std::size_t begin, std::size_t end) const {
+  cstr substr(size_t begin, size_t end) const {
     return {str + begin, end - begin};
   }
-  cstr substr(std::size_t begin) const { return {str + begin, len - begin}; }
+  cstr substr(size_t begin) const { return {str + begin, len - begin}; }
   cstr substr(field const& f) {
     return (f.size == field::MAX_SIZE) ? substr(f.from)
                                        : substr(f.from, size(f.size));
@@ -96,21 +99,21 @@ struct cstr {
   }
   cstr trim() { return skip_whitespace_front().skip_whitespace_back(); }
   bool empty() const { return len == 0; }
-  std::size_t length() const { return len; }
+  size_t length() const { return len; }
   char const* c_str() const { return str; }
   char const* data() const { return str; }
-  std::size_t substr_offset(cstr needle) {
-    for (std::size_t i = 0; i < len; ++i) {
+  size_t substr_offset(cstr needle) {
+    for (size_t i = 0; i < len; ++i) {
       if (substr(i).starts_with(needle)) {
         return i;
       }
     }
-    return std::numeric_limits<std::size_t>::max();
+    return std::numeric_limits<size_t>::max();
   }
   std::string to_str() const { return std::string(str, len); }
 
   char const* str;
-  std::size_t len;
+  size_t len;
 };
 
 inline cstr get_until(cstr s, char delimiter) {
@@ -121,7 +124,7 @@ inline cstr get_until(cstr s, char delimiter) {
   if (end == nullptr) {
     return s;
   }
-  return {s.str, static_cast<std::size_t>(end - s.str)};
+  return {s.str, static_cast<size_t>(end - s.str)};
 }
 
 inline cstr strip_cr(cstr s) {

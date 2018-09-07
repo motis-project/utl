@@ -21,7 +21,7 @@ struct csv_col_name {
 template <typename T, typename... Tags>
 struct csv_col : Tags... {
   csv_col() = default;
-  csv_col(T t) : t(t) {}
+  csv_col(T param) : t(param) {}
   operator T() { return t; }
   T& val() { return t; }
   T t{};
@@ -42,7 +42,7 @@ std::array<column_idx_t, MAX_COLUMNS> read_header(cstr s) {
     parse_column<cstr, Separator>(s, header);
 
     column_map[column] = NO_COLUMN_IDX;
-    auto c = 0u;
+    column_idx_t c = 0u;
     for_each_field<T>([&](auto&& f) {
       if (header == get_name(f)) {
         column_map[column] = c;
@@ -81,7 +81,7 @@ struct csv_range : public LineRange {
     }
 
     T t{};
-    for_each_field(t, [&, i = 0](auto& f) mutable {
+    for_each_field(t, [&, i = 0u](auto& f) mutable {
       if (row[i]) {
         parse_arg(row[i], f.val());
       }

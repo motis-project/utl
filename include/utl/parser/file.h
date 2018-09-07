@@ -48,7 +48,7 @@ struct file {
     }
   }
 
-  std::size_t size() {
+  size_t size() {
     LARGE_INTEGER filesize;
     GetFileSizeEx(f_, &filesize);
     return filesize.QuadPart;
@@ -71,7 +71,7 @@ struct file {
     return b;
   }
 
-  void write(void const* buf, std::size_t size) {
+  void write(void const* buf, size_t size) {
     constexpr auto block_size = 8192u;
     chunk(block_size, size, [&](size_t const from, unsigned block_size) {
       OVERLAPPED overlapped = {0};
@@ -104,12 +104,12 @@ struct file {
     f_ = nullptr;
   }
 
-  std::size_t size() {
+  size_t size() {
     auto err = std::fseek(f_, 0, SEEK_END);
     verify(!err, "fseek to SEEK_END error");
     auto size = std::ftell(f_);
     std::rewind(f_);
-    return size;
+    return static_cast<size_t>(size);
   }
 
   buffer content() {
@@ -120,7 +120,7 @@ struct file {
     return b;
   }
 
-  void write(void const* buf, std::size_t size) {
+  void write(void const* buf, size_t size) {
     auto bytes_written = std::fwrite(buf, 1, size, f_);
     verify(bytes_written == size, "file write error");
   }

@@ -35,8 +35,8 @@ struct serializer {
       auto space = static_cast<size_t>(alignment) * 8u;
       auto const aligned_ptr =
           std::align(alignment, size, unaligned_ptr, space);
-      auto const new_offset =
-          aligned_ptr ? static_cast<uint8_t*>(aligned_ptr) - base() : 0;
+      auto const new_offset = static_cast<offset_t>(
+          aligned_ptr ? static_cast<uint8_t*>(aligned_ptr) - base() : 0);
       auto const adjustment = new_offset - curr_offset_;
       curr_offset_ += adjustment;
       aligned_size += adjustment;
@@ -45,10 +45,11 @@ struct serializer {
     auto const space_left =
         static_cast<int64_t>(buf_.size()) - static_cast<int64_t>(curr_offset_);
     if (space_left < static_cast<int64_t>(aligned_size)) {
-      auto const missing = aligned_size - space_left;
+      auto const missing = static_cast<offset_t>(
+          static_cast<int64_t>(aligned_size) - space_left);
       buf_.resize(buf_.size() + missing);
     }
-  };
+  }
 
   template <typename T>
   void special(T*, offset_t const pos) {
@@ -147,7 +148,7 @@ struct serializer {
 
   template <typename T>
   static offset_t offset(uint8_t const* base, T* t) {
-    return reinterpret_cast<uint8_t*>(t) - base;
+    return static_cast<offset_t>(reinterpret_cast<uint8_t*>(t) - base);
   }
 
   template <typename T>
