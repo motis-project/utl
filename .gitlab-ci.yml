@@ -48,8 +48,8 @@ msvc-release:
     - cd %WD%
     - mkdir build-msvc-release
     - cd build-msvc-release
-    - cmake -G "NMake Makefiles JOM" -DCMAKE_BUILD_TYPE=Release ..
-    - jom utl-test
+    - cmake -GNinja -DCMAKE_BUILD_TYPE=Release ..
+    - ninja utl-test
     - utl-test
 
 msvc-debug:
@@ -62,8 +62,8 @@ msvc-debug:
     - cd %WD%
     - mkdir build-msvc-debug
     - cd build-msvc-debug
-    - cmake -G "NMake Makefiles JOM" -DCMAKE_BUILD_TYPE=Debug ..
-    - jom utl-test
+    - cmake -GNinja -DCMAKE_BUILD_TYPE=Debug ..
+    - ninja utl-test
     - utl-test
 
 # TODO(felix) enable
