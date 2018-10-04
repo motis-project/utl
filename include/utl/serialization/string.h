@@ -139,17 +139,17 @@ struct string {
   }
 
   struct heap {
-    bool is_short_;
-    bool self_allocated_;
-    uint8_t __fill_2__;
-    uint8_t __fill_3__;
-    uint32_t size_;
-    char const* ptr_;
+    bool is_short_{false};
+    bool self_allocated_{false};
+    uint8_t __fill_2__{0};
+    uint8_t __fill_3__{0};
+    uint32_t size_{0};
+    char const* ptr_{nullptr};
   };
 
   struct stack {
-    bool is_short_;
-    char s_[15];
+    bool is_short_{true};
+    char s_[15]{0};
   };
 
   union {

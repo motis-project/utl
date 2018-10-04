@@ -6,23 +6,12 @@ find_package(Boost)
 add_library(utl INTERFACE)
 target_include_directories(utl INTERFACE include)
 target_include_directories(utl SYSTEM INTERFACE ${Boost_INCLUDE_DIR})
-target_compile_options(utl INTERFACE -D_SCL_SECURE_NO_WARNINGS)
+target_compile_options(utl INTERFACE -D_SCL_SECURE_NO_WARNINGS=1)
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
   set(utl-compile-flags "\
-     -Wno-global-constructors \
-     -Wno-exit-time-destructors \
-     -fno-strict-aliasing \
-     -Weverything \
-     -Wno-c++98-compat \
-     -Wno-c++98-compat-pedantic \
-     -Wno-newline-eof \
-     -Wno-missing-prototypes \
-     -Wno-padded \
-     -Wno-double-promotion \
-     -Wno-undef \
-     -Wno-undefined-reinterpret-cast \
-     -Wno-float-conversion \
+     -Wall \
+     -Wextra \
      -Werror \
      -std=c++17 \
   ")
@@ -32,6 +21,7 @@ elseif(NOT MSVC)
      -Wextra \
      -Werror \
      -std=c++17 \
+     -Wno-unused-but-set-parameter \
   ")
 else()
   set(utl-compile-flags "\

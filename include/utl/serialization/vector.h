@@ -14,6 +14,9 @@ namespace utl {
 template <typename T, typename TemplateSizeType = uint32_t>
 struct vector final {
   using size_type = TemplateSizeType;
+  using value_type = T;
+  using iterator = T*;
+  using const_iterator = T const*;
 
   static inline TemplateSizeType next_power_of_two(TemplateSizeType n) {
     n--;
@@ -235,6 +238,9 @@ struct vector final {
   TemplateSizeType used_size_{0};
   TemplateSizeType allocated_size_{0};
   bool self_allocated_{false};
+  uint8_t __fill_0__{0};
+  uint16_t __fill_1__{0};
+  uint32_t __fill_2__{0};
 };
 
 template <typename T>

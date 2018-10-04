@@ -115,7 +115,7 @@ struct mmap_reader {
     if (it_ == last) {
       return {nullptr, 0};
     }
-    auto const num = last - it_;
+    auto const num = static_cast<size_t>(last - it_);
     auto const nl = static_cast<char*>(memchr(it_, '\n', num));
     if (nl == nullptr) {
       auto const tmp = it_;
