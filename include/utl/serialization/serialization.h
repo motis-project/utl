@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <limits>
 #include <map>
 #include <vector>
 
@@ -41,6 +42,7 @@ struct serializer {
       });
     } else if constexpr (std::is_pointer_v<Type>) {
       if (*origin == nullptr) {
+        write(pos, std::numeric_limits<offset_t>::max());
         return;
       }
       if (auto const it = offsets_.find(*origin); it != end(offsets_)) {
@@ -54,7 +56,9 @@ struct serializer {
   template <typename T>
   void special(utl::vector<T> const* origin, offset_t const pos) {
     auto const size = sizeof(T) * origin->used_size_;
-    auto const start = write(origin->el_, size, std::alignment_of_v<T>);
+    auto const start = origin->el_ != nullptr
+                           ? write(origin->el_, size, std::alignment_of_v<T>)
+                           : std::numeric_limits<offset_t>::max();
 
     write(pos + offsetof(utl::vector<T>, el_), start);
     write(pos + offsetof(utl::vector<T>, allocated_size_), origin->used_size_);
@@ -79,11 +83,18 @@ struct serializer {
 
   template <typename T>
   void special(utl::unique_ptr<T> const* origin, offset_t const pos) {
-    auto const start = write(origin->el_, sizeof(T), std::alignment_of_v<T>);
+    auto const start =
+        origin->el_ != nullptr
+            ? write(origin->el_, sizeof(T), std::alignment_of_v<T>)
+            : std::numeric_limits<offset_t>::max();
+
     write(pos + offsetof(utl::unique_ptr<T>, el_), start);
     write(pos + offsetof(utl::unique_ptr<T>, self_allocated_), false);
-    offsets_[origin->el_] = start;
-    special(origin->el_, start);
+
+    if (origin->el_ != nullptr) {
+      offsets_[origin->el_] = start;
+      special(origin->el_, start);
+    }
   }
 
   template <typename T>
@@ -148,6 +159,9 @@ struct range {
   template <typename T, typename Ptr>
   T regain(Ptr* ptr) const {
     auto const offset = reinterpret_cast<offset_t>(ptr);
+    if (offset == std::numeric_limits<offset_t>::max()) {
+      return nullptr;
+    }
     if (to_ != nullptr) {
       verify(offset < static_cast<offset_t>(to_ - from_),
              "pointer out of range");
