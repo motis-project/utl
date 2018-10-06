@@ -114,19 +114,14 @@ void serialize(Ctx& c, utl::unique_ptr<T> const* origin, offset_t const pos) {
 
 template <typename Target, typename T>
 void serialize(Target& t, T& value) {
-  using written_type_t =
-      std::remove_reference_t<std::remove_const_t<decltype(value)>>;
-
   serialization_context<Target> c{t};
 
-  auto const start =
-      c.write(&value, sizeof(value), std::alignment_of_v<written_type_t>);
-  utl::for_each_ptr_field(value, [&](auto& member) {
-    auto const member_offset =
-        static_cast<offset_t>(reinterpret_cast<char const*>(member) -
-                              reinterpret_cast<char const*>(&value));
-    serialize(c, member, start + member_offset);
-  });
+  serialize(
+      c, &value,
+      c.write(
+          &value, sizeof(value),
+          std::alignment_of_v<
+              std::remove_reference_t<std::remove_const_t<decltype(value)>>>));
 
   for (auto& p : c.pending_) {
     if (auto const it = c.offsets_.find(p.origin_ptr_); it != end(c.offsets_)) {
@@ -164,8 +159,7 @@ struct deserialization_context {
     return reinterpret_cast<T>(from_ + offset);
   }
 
-  uint8_t* from_{nullptr};
-  uint8_t* to_{nullptr};
+  uint8_t *from_, *to_;
 };  // namespace utl
 
 template <typename T>
