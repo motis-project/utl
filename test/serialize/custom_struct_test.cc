@@ -25,4 +25,9 @@ TEST_CASE("custom struct test") {
 
   auto const serialized =
       utl::deserialize<serialize_me>(&buf[0], &buf[0] + buf.size());
+  CHECK(1 == serialized->v1_);
+  CHECK(2 == serialized->v2_);
+  CHECK(3 == serialized->v3_);
+  CHECK(0 == serialized->v4_);
+  CHECK(1 == serialized->v5_);
 }
