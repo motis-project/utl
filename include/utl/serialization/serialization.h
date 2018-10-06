@@ -21,108 +21,14 @@ namespace utl {
 // =============================================================================
 // SERIALIZE
 // -----------------------------------------------------------------------------
+struct pending_offset {
+  void* origin_ptr_;
+  offset_t pos_;
+};
+
 template <typename Target>
-struct serializer {
-  struct pending_offset {
-    void* origin_ptr_;
-    offset_t pos_;
-  };
-
-  explicit serializer(Target& t) : t_{t} {}
-
-  template <typename T>
-  void special(T const* origin, offset_t const pos) {
-    using Type = std::remove_reference_t<std::remove_const_t<T>>;
-    if constexpr (!std::is_scalar_v<Type>) {
-      utl::for_each_ptr_field(*origin, [&](auto& member) {
-        auto const member_offset =
-            static_cast<offset_t>(reinterpret_cast<char const*>(member) -
-                                  reinterpret_cast<char const*>(origin));
-        special(member, pos + member_offset);
-      });
-    } else if constexpr (std::is_pointer_v<Type>) {
-      if (*origin == nullptr) {
-        write(pos, std::numeric_limits<offset_t>::max());
-        return;
-      }
-      if (auto const it = offsets_.find(*origin); it != end(offsets_)) {
-        write(pos, it->second);
-      } else {
-        pending_.emplace_back(pending_offset{*origin, pos});
-      }
-    }
-  }
-
-  template <typename T>
-  void special(utl::vector<T> const* origin, offset_t const pos) {
-    auto const size = sizeof(T) * origin->used_size_;
-    auto const start = origin->el_ != nullptr
-                           ? write(origin->el_, size, std::alignment_of_v<T>)
-                           : std::numeric_limits<offset_t>::max();
-
-    write(pos + offsetof(utl::vector<T>, el_), start);
-    write(pos + offsetof(utl::vector<T>, allocated_size_), origin->used_size_);
-    write(pos + offsetof(utl::vector<T>, self_allocated_), false);
-
-    auto i = 0u;
-    for (auto it = start; it != start + size; it += sizeof(T)) {
-      special(origin->el_ + i++, it);
-    }
-  }
-
-  void special(utl::string const* origin, offset_t const pos) {
-    if (origin->is_short()) {
-      return;
-    }
-
-    auto const start =
-        write(origin->data(), origin->size(), std::alignment_of_v<char>);
-    write(pos + offsetof(utl::string, h_.ptr_), start);
-    write(pos + offsetof(utl::string, h_.self_allocated_), false);
-  }
-
-  template <typename T>
-  void special(utl::unique_ptr<T> const* origin, offset_t const pos) {
-    auto const start =
-        origin->el_ != nullptr
-            ? write(origin->el_, sizeof(T), std::alignment_of_v<T>)
-            : std::numeric_limits<offset_t>::max();
-
-    write(pos + offsetof(utl::unique_ptr<T>, el_), start);
-    write(pos + offsetof(utl::unique_ptr<T>, self_allocated_), false);
-
-    if (origin->el_ != nullptr) {
-      offsets_[origin->el_] = start;
-      special(origin->el_, start);
-    }
-  }
-
-  template <typename T>
-  void serialize(T& value) {
-    using written_type_t =
-        std::remove_reference_t<std::remove_const_t<decltype(value)>>;
-
-    auto const start =
-        write(&value, sizeof(value), std::alignment_of_v<written_type_t>);
-    utl::for_each_ptr_field(value, [&](auto& member) {
-      auto const member_offset =
-          static_cast<offset_t>(reinterpret_cast<char const*>(member) -
-                                reinterpret_cast<char const*>(&value));
-      special(member, start + member_offset);
-    });
-    resolve_pending();
-  }
-
-  void resolve_pending() {
-    for (auto& p : pending_) {
-      if (auto const it = offsets_.find(p.origin_ptr_); it != end(offsets_)) {
-        write(p.pos_, it->second);
-      } else {
-        std::cout << "warning: dangling pointer " << p.origin_ptr_
-                  << " serialized at offset " << p.pos_ << "\n";
-      }
-    }
-  }
+struct serialization_context {
+  explicit serialization_context(Target& t) : t_{t} {}
 
   offset_t write(void const* ptr, offset_t const size, offset_t alignment = 0) {
     return t_.write(ptr, size, alignment);
@@ -138,26 +44,115 @@ struct serializer {
   Target& t_;
 };
 
+template <typename Ctx, typename T>
+void serialize(Ctx& c, T const* origin, offset_t const pos) {
+  using Type = std::remove_reference_t<std::remove_const_t<T>>;
+  if constexpr (!std::is_scalar_v<Type>) {
+    utl::for_each_ptr_field(*origin, [&](auto& member) {
+      auto const member_offset =
+          static_cast<offset_t>(reinterpret_cast<char const*>(member) -
+                                reinterpret_cast<char const*>(origin));
+      serialize(c, member, pos + member_offset);
+    });
+  } else if constexpr (std::is_pointer_v<Type>) {
+    if (*origin == nullptr) {
+      c.write(pos, std::numeric_limits<offset_t>::max());
+      return;
+    }
+    if (auto const it = c.offsets_.find(*origin); it != end(c.offsets_)) {
+      c.write(pos, it->second);
+    } else {
+      c.pending_.emplace_back(pending_offset{*origin, pos});
+    }
+  }
+}
+
+template <typename Ctx, typename T>
+void serialize(Ctx& c, utl::vector<T> const* origin, offset_t const pos) {
+  auto const size = sizeof(T) * origin->used_size_;
+  auto const start = origin->el_ != nullptr
+                         ? c.write(origin->el_, size, std::alignment_of_v<T>)
+                         : std::numeric_limits<offset_t>::max();
+
+  c.write(pos + offsetof(utl::vector<T>, el_), start);
+  c.write(pos + offsetof(utl::vector<T>, allocated_size_), origin->used_size_);
+  c.write(pos + offsetof(utl::vector<T>, self_allocated_), false);
+
+  auto i = 0u;
+  for (auto it = start; it != start + size; it += sizeof(T)) {
+    serialize(c, origin->el_ + i++, it);
+  }
+}
+
+template <typename Ctx>
+void serialize(Ctx& c, utl::string const* origin, offset_t const pos) {
+  if (origin->is_short()) {
+    return;
+  }
+
+  auto const start =
+      c.write(origin->data(), origin->size(), std::alignment_of_v<char>);
+  c.write(pos + offsetof(utl::string, h_.ptr_), start);
+  c.write(pos + offsetof(utl::string, h_.self_allocated_), false);
+}
+
+template <typename Ctx, typename T>
+void serialize(Ctx& c, utl::unique_ptr<T> const* origin, offset_t const pos) {
+  auto const start =
+      origin->el_ != nullptr
+          ? c.write(origin->el_, sizeof(T), std::alignment_of_v<T>)
+          : std::numeric_limits<offset_t>::max();
+
+  c.write(pos + offsetof(utl::unique_ptr<T>, el_), start);
+  c.write(pos + offsetof(utl::unique_ptr<T>, self_allocated_), false);
+
+  if (origin->el_ != nullptr) {
+    c.offsets_[origin->el_] = start;
+    serialize(c, origin->el_, start);
+  }
+}
+
 template <typename Target, typename T>
-void serialize(Target& t, T& el) {
-  return serializer<Target>(t).serialize(el);
+void serialize(Target& t, T& value) {
+  using written_type_t =
+      std::remove_reference_t<std::remove_const_t<decltype(value)>>;
+
+  serialization_context<Target> c{t};
+
+  auto const start =
+      c.write(&value, sizeof(value), std::alignment_of_v<written_type_t>);
+  utl::for_each_ptr_field(value, [&](auto& member) {
+    auto const member_offset =
+        static_cast<offset_t>(reinterpret_cast<char const*>(member) -
+                              reinterpret_cast<char const*>(&value));
+    serialize(c, member, start + member_offset);
+  });
+
+  for (auto& p : c.pending_) {
+    if (auto const it = c.offsets_.find(p.origin_ptr_); it != end(c.offsets_)) {
+      c.write(p.pos_, it->second);
+    } else {
+      std::cout << "warning: dangling pointer " << p.origin_ptr_
+                << " serialized at offset " << p.pos_ << "\n";
+    }
+  }
 }
 
 template <typename T>
 byte_buf serialize(T& el) {
   auto b = buf{};
-  serializer<buf>(b).serialize(el);
+  serialize(b, el);
   return std::move(b.buf_);
 }
 
 // =============================================================================
 // DESERIALIZE
 // -----------------------------------------------------------------------------
-struct range {
-  range(uint8_t* from, uint8_t* to) : from_{from}, to_{to} {}
+struct deserialization_context {
+  deserialization_context(uint8_t* from, uint8_t* to) : from_{from}, to_{to} {}
 
   template <typename T, typename Ptr>
-  T regain(Ptr* ptr) const {
+  T deserialize(Ptr* ptr) const {
     auto const offset = reinterpret_cast<offset_t>(ptr);
     if (offset == std::numeric_limits<offset_t>::max()) {
       return nullptr;
@@ -174,45 +169,44 @@ struct range {
 };  // namespace utl
 
 template <typename T>
-void regain_pointers_from_offsets(range const& r, T* el) {
+void deserialize(deserialization_context const& r, T* el) {
   using written_type_t = std::remove_reference_t<std::remove_const_t<T>>;
   if constexpr (std::is_pointer_v<written_type_t>) {
-    *el = r.regain<written_type_t>(*el);
+    *el = r.deserialize<written_type_t>(*el);
   } else if constexpr (std::is_scalar_v<written_type_t>) {
     return;
   } else {
-    utl::for_each_ptr_field(
-        *el, [&](auto& f) { regain_pointers_from_offsets(r, f); });
+    utl::for_each_ptr_field(*el, [&](auto& f) { deserialize(r, f); });
   }
 }
 
 template <typename T>
-void regain_pointers_from_offsets(range const& r, utl::vector<T>* el) {
-  el->el_ = r.regain<T*>(el->el_);
+void deserialize(deserialization_context const& r, utl::vector<T>* el) {
+  el->el_ = r.deserialize<T*>(el->el_);
   for (auto& m : *el) {
-    regain_pointers_from_offsets(r, &m);
+    deserialize(r, &m);
   }
 }
 
-inline void regain_pointers_from_offsets(range const& r, utl::string* el) {
+inline void deserialize(deserialization_context const& r, utl::string* el) {
   if (el->is_short()) {
     return;
   } else {
-    el->h_.ptr_ = r.regain<char*>(el->h_.ptr_);
+    el->h_.ptr_ = r.deserialize<char*>(el->h_.ptr_);
   }
 }
 
 template <typename T>
-void regain_pointers_from_offsets(range const& r, utl::unique_ptr<T>* el) {
-  el->el_ = r.regain<T*>(el->el_);
-  regain_pointers_from_offsets(r, el->el_);
+void deserialize(deserialization_context const& r, utl::unique_ptr<T>* el) {
+  el->el_ = r.deserialize<T*>(el->el_);
+  deserialize(r, el->el_);
 }
 
 template <typename T>
 T* deserialize(uint8_t* from, uint8_t* to = nullptr) {
-  range r{from, to};
+  deserialization_context r{from, to};
   auto const el = reinterpret_cast<T*>(from);
-  regain_pointers_from_offsets(r, el);
+  deserialize(r, el);
   return el;
 }
 
