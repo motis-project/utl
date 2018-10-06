@@ -163,44 +163,44 @@ struct deserialization_context {
 };  // namespace utl
 
 template <typename T>
-void deserialize(deserialization_context const& r, T* el) {
+void deserialize(deserialization_context const& c, T* el) {
   using written_type_t = std::remove_reference_t<std::remove_const_t<T>>;
   if constexpr (std::is_pointer_v<written_type_t>) {
-    *el = r.deserialize<written_type_t>(*el);
+    *el = c.deserialize<written_type_t>(*el);
   } else if constexpr (std::is_scalar_v<written_type_t>) {
     return;
   } else {
-    utl::for_each_ptr_field(*el, [&](auto& f) { deserialize(r, f); });
+    utl::for_each_ptr_field(*el, [&](auto& f) { deserialize(c, f); });
   }
 }
 
 template <typename T>
-void deserialize(deserialization_context const& r, utl::vector<T>* el) {
-  el->el_ = r.deserialize<T*>(el->el_);
+void deserialize(deserialization_context const& c, utl::vector<T>* el) {
+  el->el_ = c.deserialize<T*>(el->el_);
   for (auto& m : *el) {
-    deserialize(r, &m);
+    deserialize(c, &m);
   }
 }
 
-inline void deserialize(deserialization_context const& r, utl::string* el) {
+inline void deserialize(deserialization_context const& c, utl::string* el) {
   if (el->is_short()) {
     return;
   } else {
-    el->h_.ptr_ = r.deserialize<char*>(el->h_.ptr_);
+    el->h_.ptr_ = c.deserialize<char*>(el->h_.ptr_);
   }
 }
 
 template <typename T>
-void deserialize(deserialization_context const& r, utl::unique_ptr<T>* el) {
-  el->el_ = r.deserialize<T*>(el->el_);
-  deserialize(r, el->el_);
+void deserialize(deserialization_context const& c, utl::unique_ptr<T>* el) {
+  el->el_ = c.deserialize<T*>(el->el_);
+  deserialize(c, el->el_);
 }
 
 template <typename T>
 T* deserialize(uint8_t* from, uint8_t* to = nullptr) {
-  deserialization_context r{from, to};
+  deserialization_context c{from, to};
   auto const el = reinterpret_cast<T*>(from);
-  deserialize(r, el);
+  deserialize(c, el);
   return el;
 }
 
