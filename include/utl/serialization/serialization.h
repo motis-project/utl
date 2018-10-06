@@ -160,7 +160,7 @@ struct deserialization_context {
   }
 
   uint8_t *from_, *to_;
-};  // namespace utl
+};
 
 template <typename T>
 void deserialize(deserialization_context const& c, T* el) {
