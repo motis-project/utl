@@ -78,9 +78,11 @@ void serialize(Ctx& c, utl::vector<T> const* origin, offset_t const pos) {
   c.write(pos + offsetof(utl::vector<T>, allocated_size_), origin->used_size_);
   c.write(pos + offsetof(utl::vector<T>, self_allocated_), false);
 
-  auto i = 0u;
-  for (auto it = start; it != start + size; it += sizeof(T)) {
-    serialize(c, origin->el_ + i++, it);
+  if (origin->el_ != nullptr) {
+    auto i = 0u;
+    for (auto it = start; it != start + size; it += sizeof(T)) {
+      serialize(c, origin->el_ + i++, it);
+    }
   }
 }
 
