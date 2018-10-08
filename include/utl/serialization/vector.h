@@ -12,7 +12,7 @@
 namespace utl {
 
 template <typename T, typename TemplateSizeType = uint32_t>
-struct vector final {
+struct vector {
   using size_type = TemplateSizeType;
   using value_type = T;
   using iterator = T*;
