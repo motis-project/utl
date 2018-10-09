@@ -3,7 +3,6 @@
 #include <chrono>
 #include <cstdio>
 #include <ctime>
-#include <iostream>
 #include <stdexcept>
 
 #ifndef log_err
@@ -41,8 +40,8 @@
 #undef verify
 #endif
 
-#define verify(A, M)             \
+#define verify(A, M, ...)        \
   if (!(A)) {                    \
-    std::cout << M << "\n";      \
+    log_err(M, ##__VA_ARGS__);   \
     throw std::runtime_error(M); \
   }
