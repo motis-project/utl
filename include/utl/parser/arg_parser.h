@@ -13,10 +13,14 @@ inline void parse_arg(
     typename std::enable_if<std::is_integral<IntType>::value, IntType>::type
         default_value = 0) {
   IntType sign = 1;
-  if (s.len > 0 && s[0] == '-') {
-    sign = -1;
-    ++s;
-  } else if (s.len > 0 && s[0] == '+') {
+  if constexpr (std::is_signed_v<IntType>) {
+    if (s.len > 0 && s[0] == '-') {
+      sign = -1;
+      ++s;
+    }
+  }
+
+  if (s.len > 0 && s[0] == '+') {
     ++s;
   }
 
@@ -27,7 +31,7 @@ inline void parse_arg(
     if (c > '9' || c < '0') {
       break;
     }
-    arg = arg * 10 + (c - '0');
+    arg = arg * 10 + static_cast<IntType>(c - '0');
     value_okay = true;
     ++s;
   }

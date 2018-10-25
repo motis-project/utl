@@ -2,13 +2,16 @@
 
 #include <utility>
 
+#include "utl/pipes/make_range.h"
+
 namespace utl {
 
 struct sum {
   sum() {}
 
-  template <typename Range>
-  friend int operator|(Range&& r, sum&& f) {
+  template <typename T>
+  friend int operator|(T&& t, sum&& f) {
+    auto r = make_range(std::forward<T>(t));
     auto it = r.begin();
     while (r.valid(it)) {
       f.acc_ += r.read(it);

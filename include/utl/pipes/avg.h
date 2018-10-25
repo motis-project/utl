@@ -2,13 +2,14 @@
 
 #include <utility>
 
+#include "utl/pipes/make_range.h"
+
 namespace utl {
 
 struct avg {
-  avg() {}
-
-  template <typename Range>
-  friend double operator|(Range&& r, avg&& f) {
+  template <typename T>
+  friend double operator|(T&& t, avg&& f) {
+    auto r = make_range(std::forward<T>(t));
     auto it = r.begin();
     while (r.valid(it)) {
       f.sum_ += r.read(it);

@@ -5,25 +5,25 @@
 namespace utl {
 namespace cstr_cr_test {
 
-const char* one_line = "1\r\n";
-const char* one_line_lines[] = {"1"};
+constexpr char const* one_line = "1\r\n";
+constexpr char const* one_line_lines[] = {"1"};
 
-const char* one_line_no_end = "1";
-const char* one_line_no_end_lines[] = {"1"};
+constexpr char const* one_line_no_end = "1";
+constexpr char const* one_line_no_end_lines[] = {"1"};
 
-const char* two_lines = "1\r\n2\r\n";
-const char* two_lines_lines[] = {"1", "2"};
+constexpr char const* two_lines = "1\r\n2\r\n";
+constexpr char const* two_lines_lines[] = {"1", "2"};
 
-const char* empty_string = "";
+constexpr char const* empty_string = "";
 
-const char* empty_line = "\r\n";
-const char* empty_line_lines[] = {""};
+constexpr char const* empty_line = "\r\n";
+constexpr char const* empty_line_lines[] = {""};
 
-const char* empty_line_between = "1\r\n\n2\r\n";
-const char* empty_line_between_lines[] = {"1", "", "2"};
+constexpr char const* empty_line_between = "1\r\n\n2\r\n";
+constexpr char const* empty_line_between_lines[] = {"1", "", "2"};
 
-const char* empty_line_between_no_end = "1\r\n\n2";
-const char* empty_line_between_no_end_lines[] = {"1", "", "2"};
+constexpr char const* empty_line_between_no_end = "1\r\n\n2";
+constexpr char const* empty_line_between_no_end_lines[] = {"1", "", "2"};
 
 TEST_CASE("get_line_cr") {
   cstr str = one_line;

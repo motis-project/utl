@@ -2,6 +2,8 @@
 
 #include <utility>
 
+#include "utl/pipes/make_range.h"
+
 namespace utl {
 
 template <typename Range, typename RemoveIf>
@@ -36,10 +38,10 @@ template <typename Fn>
 struct remove_if_t {
   remove_if_t(Fn&& f) : fn_(std::forward<Fn>(f)) {}
 
-  template <typename Range>
-  friend auto operator|(Range&& r, remove_if_t&& f) {
-    return remove_if_range<Range, remove_if_t>(std::forward<Range>(r),
-                                               std::move(f));
+  template <typename T>
+  friend auto operator|(T&& r, remove_if_t&& f) {
+    return remove_if_range<decltype(make_range(r)), remove_if_t>(
+        make_range(std::forward<T>(r)), std::move(f));
   }
 
   Fn fn_;
@@ -49,5 +51,8 @@ template <typename RemoveIf>
 remove_if_t<RemoveIf> remove_if(RemoveIf&& f) {
   return remove_if_t<RemoveIf>(std::forward<RemoveIf>(f));
 }
+
+template <typename Range, typename RemoveIf>
+struct is_range<remove_if_range<Range, RemoveIf>> : std::true_type {};
 
 }  // namespace utl

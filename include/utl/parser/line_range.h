@@ -1,5 +1,7 @@
 #pragma once
 
+#include "utl/pipes/is_range.h"
+
 namespace utl {
 
 template <typename Reader>
@@ -25,5 +27,8 @@ struct line_range {
 
   Reader r_;
 };
+
+template <typename Reader>
+struct is_range<line_range<Reader>> : std::true_type {};
 
 }  // namespace utl

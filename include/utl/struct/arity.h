@@ -60,7 +60,7 @@ constexpr auto is_paren_constructible()
                 std::enable_if_t<is_brace_constructible<T, count>() &&      \
                                  !is_brace_constructible<T, count + 1>() && \
                                  !is_paren_constructible<T, count>()>>      \
-  constexpr field_count<count> arity(T) {                                   \
+  constexpr field_count<count> arity(T&) {                                  \
     return {};                                                              \
   }
 
@@ -76,5 +76,13 @@ MAKE_ARITY_FUNC(9)
 MAKE_ARITY_FUNC(10)
 MAKE_ARITY_FUNC(11)
 MAKE_ARITY_FUNC(12)
+MAKE_ARITY_FUNC(13)
+MAKE_ARITY_FUNC(14)
+MAKE_ARITY_FUNC(15)
+MAKE_ARITY_FUNC(16)
+MAKE_ARITY_FUNC(17)
+MAKE_ARITY_FUNC(18)
+MAKE_ARITY_FUNC(19)
+MAKE_ARITY_FUNC(20)
 
 }  // namespace utl

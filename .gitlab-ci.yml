@@ -2,6 +2,7 @@ gcc-7-release:
   tags:
     - bionic
   script:
+    - export BOOST_ROOT=/opt/boost_1_67_0-gcc-7
     - export CXX=g++-7
     - export CC=gcc-7
     - mkdir -p build-gcc-7-release
@@ -14,9 +15,10 @@ clang-5-debug-asan:
   tags:
     - bionic
   script:
+    - export BOOST_ROOT=/opt/boost_1_67_0-gcc-7
     - export CXX=clang++-6.0
     - export CC=clang-6.0
-    - export CXXFLAGS="-fsanitize=address -fno-omit-frame-pointer"
+    - export CXXFLAGS="-fsanitize=address -fsanitize=undefined -fno-omit-frame-pointer"
     - mkdir -p build-clang-5-debug-asan
     - cd build-clang-5-debug-asan
     - cmake -DCMAKE_BUILD_TYPE=Debug ..
@@ -27,6 +29,7 @@ gcc-7-valgrind:
   tags:
     - bionic
   script:
+    - export BOOST_ROOT=/opt/boost_1_67_0-gcc-7
     - export CXX=g++-7
     - export CC=gcc-7
     - mkdir -p gcc-7-valgrind
@@ -40,12 +43,13 @@ msvc-release:
     - windows
   script:
     - set WD=%cd%
+    - set BOOST_ROOT=C:\boost_1_67_0
     - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
     - cd %WD%
     - mkdir build-msvc-release
     - cd build-msvc-release
-    - cmake -G "NMake Makefiles JOM" -DCMAKE_BUILD_TYPE=Release ..
-    - jom utl-test
+    - cmake -GNinja -DCMAKE_BUILD_TYPE=Release ..
+    - ninja utl-test
     - utl-test
 
 msvc-debug:
@@ -53,12 +57,13 @@ msvc-debug:
     - windows
   script:
     - set WD=%cd%
+    - set BOOST_ROOT=C:\boost_1_67_0
     - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
     - cd %WD%
     - mkdir build-msvc-debug
     - cd build-msvc-debug
-    - cmake -G "NMake Makefiles JOM" -DCMAKE_BUILD_TYPE=Debug ..
-    - jom utl-test
+    - cmake -GNinja -DCMAKE_BUILD_TYPE=Debug ..
+    - ninja utl-test
     - utl-test
 
 # TODO(felix) enable
