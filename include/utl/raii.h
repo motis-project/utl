@@ -2,7 +2,9 @@
 
 #include <utility>
 
-#define UTL_FINALLY(fn) auto finally##__LINE__ = utl::make_finally(fn);
+#define TOKENPASTE(x, y) x ## y
+#define TOKENPASTE2(x, y) TOKENPASTE(x, y)
+#define UTL_FINALLY(fn) auto TOKENPASTE2(finally, __LINE__) = utl::make_finally(fn);
 
 namespace utl {
 
