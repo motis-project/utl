@@ -2,31 +2,34 @@
 
 #include <utility>
 
+#include "utl/clear_t.h"
 #include "utl/pipes/make_range.h"
 
 namespace utl {
 
 template <typename Range, typename RemoveIf>
-struct remove_if_range : public Range {
+struct remove_if_range : public clear_t<Range> {
+  using parent_t = clear_t<Range>;
+
   remove_if_range(Range&& r, RemoveIf&& remove_if)
-      : Range(std::forward<Range>(r)),
+      : parent_t(std::forward<parent_t>(r)),
         remove_if_(std::forward<RemoveIf>(remove_if)) {}
 
   template <typename It>
   void find(It& it) {
     while (this->valid(it) && remove_if_.fn_(this->read(it))) {
-      Range::next(it);
+      parent_t::next(it);
     }
   }
 
   template <typename It>
   void next(It& it) {
-    Range::next(it);
+    parent_t::next(it);
     find(it);
   }
 
   auto begin() {
-    auto it = Range::begin();
+    auto it = parent_t::begin();
     find(it);
     return it;
   }

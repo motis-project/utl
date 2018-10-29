@@ -2,19 +2,22 @@
 
 #include <utility>
 
+#include "utl/clear_t.h"
 #include "utl/pipes/make_range.h"
 
 namespace utl {
 
 template <typename Range, typename Transform>
-struct transform_range : public Range {
+struct transform_range : public clear_t<Range> {
+  using parent_t = clear_t<Range>;
+
   transform_range(Range&& r, Transform&& transform)
-      : Range(std::forward<Range>(r)),
+      : parent_t(std::forward<parent_t>(r)),
         transform_(std::forward<Transform>(transform)) {}
 
   template <typename It>
   auto read(It& it) {
-    return transform_.fn_(Range::read(it));
+    return transform_.fn_(parent_t::read(it));
   }
 
   Transform transform_;
@@ -26,9 +29,8 @@ struct transform_t {
 
   template <typename T>
   friend auto operator|(T&& r, transform_t&& f) {
-    using Range = decltype(make_range(r));
-    return transform_range<Range, transform_t>(make_range(std::forward<T>(r)),
-                                               std::move(f));
+    return transform_range<decltype(make_range(r)), transform_t>(
+        make_range(std::forward<T>(r)), std::move(f));
   }
 
   Fn fn_;

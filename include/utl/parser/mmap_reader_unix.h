@@ -100,6 +100,12 @@ struct mmap_reader {
 
   explicit mmap_reader(char const* filename) : m_(filename), it_(m_.ptr()) {}
 
+  mmap_reader(mmap_reader&&) = default;
+  mmap_reader& operator=(mmap_reader&&) = default;
+
+  mmap_reader(mmap_reader const&) = delete;
+  mmap_reader& operator=(mmap_reader const&) = delete;
+
   cstr read(size_t const num_bytes) {
     auto const start = it_;
     auto const last = m_.ptr() + m_.size();
