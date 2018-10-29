@@ -13,6 +13,7 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
      -Wall \
      -Wextra \
      -Werror \
+     -Wno-gnu-zero-variadic-macro-arguments \
      -std=c++17 \
   ")
 elseif(NOT MSVC)
