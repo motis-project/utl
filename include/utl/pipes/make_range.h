@@ -6,7 +6,7 @@
 namespace utl {
 
 template <typename T>
-auto make_range(T&& t) {
+auto&& make_range(T&& t) {
   using Type = std::remove_const_t<std::remove_reference_t<T>>;
   if constexpr (is_range<Type>::value) {
     return t;
