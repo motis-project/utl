@@ -14,19 +14,19 @@ inline void parse_arg(
         default_value = 0) {
   IntType sign = 1;
   if constexpr (std::is_signed_v<IntType>) {
-    if (s.len > 0 && s[0] == '-') {
+    if (s && s[0] == '-') {
       sign = -1;
       ++s;
     }
   }
 
-  if (s.len > 0 && s[0] == '+') {
+  if (s && s[0] == '+') {
     ++s;
   }
 
   arg = 0;
   bool value_okay = false;
-  while (s.len > 0) {
+  while (s) {
     char c = *s.str;
     if (c > '9' || c < '0') {
       break;
@@ -45,6 +45,11 @@ inline void parse_arg(
 
 template <typename T>
 inline void parse_fp(cstr& s, T& v) {
+  if (!s) {
+    v = {};
+    return;
+  }
+
   int sign = 1;
   if (*s.str == '-') {
     sign = -1;
