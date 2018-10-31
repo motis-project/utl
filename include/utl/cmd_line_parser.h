@@ -15,13 +15,13 @@ template <char const* str>
 struct cmd_line_flag_desc {
   static constexpr auto const desc_ = str;
 };
-#define UTL_DESC(str) cmd_line_flag_desc<STRING_LITERAL(str)>
+#define UTL_DESC(str) utl::cmd_line_flag_desc<STRING_LITERAL(str)>
 
 template <char const* str>
 struct cmd_line_flag_short {
   static constexpr auto const short_ = str;
 };
-#define UTL_SHORT(str) cmd_line_flag_short<STRING_LITERAL(str)>
+#define UTL_SHORT(str) utl::cmd_line_flag_short<STRING_LITERAL(str)>
 
 template <typename T>
 constexpr bool has_short_flag(decltype((void)T().short_, 0)) {
@@ -37,7 +37,7 @@ template <char const* str>
 struct cmd_line_flag_long {
   static constexpr auto const long_ = str;
 };
-#define UTL_LONG(str) cmd_line_flag_long<STRING_LITERAL(str)>
+#define UTL_LONG(str) utl::cmd_line_flag_long<STRING_LITERAL(str)>
 
 template <typename T>
 constexpr bool has_long_flag(decltype((void)T().long_, 0)) {
@@ -51,6 +51,7 @@ constexpr bool has_long_flag(...) {
 
 template <typename T, typename... Tags>
 struct cmd_line_flag : public Tags... {
+  cmd_line_flag(T init) : t{std::forward<T>(init)} {}
   cmd_line_flag() = default;
   operator T() { return t; }
   T& val() { return t; }
