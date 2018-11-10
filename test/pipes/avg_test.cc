@@ -9,7 +9,7 @@ using namespace utl;
 
 TEST_CASE("vec test") {
   std::list<int> v = {1, 2, 3, 4};
-  auto r0 = v  //
+  auto r0 = all(v)  //
             | transform([](auto&& i) { return i * i; })  //
             | remove_if([](auto&& i) { return i > 3; })  //
             | vec();
@@ -24,5 +24,5 @@ TEST_CASE("vec test") {
 
 TEST_CASE("find test") {
   std::vector<int> v = {1, 3, 5, 7, 9};
-  CHECK(*(v | find([](auto&& i) { return i == 7; })) == 7);
+  CHECK(*(all(v) | find([](auto&& i) { return i == 7; })) == 7);
 }
