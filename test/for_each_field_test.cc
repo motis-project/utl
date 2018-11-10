@@ -1,8 +1,8 @@
 #include "catch.hpp"
 
 #include <sstream>
-#include <vector>
 #include <string>
+#include <vector>
 
 #include "utl/struct/for_each_field.h"
 
@@ -19,10 +19,12 @@ struct ignore {};
 template <typename T>
 std::vector<std::string> encode(T&& m) {
   using Type = std::decay_t<T>;
-  std::vector<std::string> fields = { std::to_string(Type::id) };
+  std::vector<std::string> fields = {std::to_string(Type::id)};
   std::stringstream ss;
   utl::for_each_field(m, [&](auto&& f) {
-    if constexpr (!std::is_same_v<std::remove_const_t<std::remove_reference_t<decltype(f)>>, ignore>) {
+    if constexpr (!std::is_same_v<
+                      std::remove_const_t<std::remove_reference_t<decltype(f)>>,
+                      ignore>) {
       ss << f;
       fields.emplace_back(ss.str());
       ss.str("");
@@ -38,7 +40,8 @@ TEST_CASE("for_each_field") {
   CHECK(instance.j == 0);
   CHECK(instance.d == 0.0);
   CHECK(instance.s == "");
-  CHECK(std::vector<std::string>({ "77", "0", "0", "0", "" }) == encode(instance));
+  CHECK(std::vector<std::string>({"77", "0", "0", "0", ""}) ==
+        encode(instance));
 }
 
 struct current_time_req {
@@ -49,5 +52,5 @@ struct current_time_req {
 
 TEST_CASE("for_each_field^_1") {
   current_time_req a;
-  CHECK(std::vector<std::string>({ "49", "1" }) == encode(a));
+  CHECK(std::vector<std::string>({"49", "1"}) == encode(a));
 }
