@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ostream>
+#include <vector>
 
 #include "utl/struct/for_each_field.h"
 
