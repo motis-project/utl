@@ -1,6 +1,6 @@
 #include "catch.hpp"
 
-#include "join/join.h"
+#include "utl/join.h"
 
 #include <functional>
 
