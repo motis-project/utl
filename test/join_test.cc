@@ -29,10 +29,10 @@ struct tester {
   }
 
   std::function<void(it_t, it_t)> cb_b() {
-    return [this](it_t lb_a, it_t ub_a) {
+    return [this](it_t lb_b, it_t ub_b) {
       ranges_b_.push_back(
-          {static_cast<int>(std::distance(std::begin(a_), lb_a)),
-           static_cast<int>(std::distance(std::begin(a_), ub_a))});
+          {static_cast<int>(std::distance(std::begin(b_), lb_b)),
+           static_cast<int>(std::distance(std::begin(b_), ub_b))});
     };
   }
 
@@ -186,6 +186,97 @@ TEST_CASE("left_join") {
                     [](auto const& lhs, auto const& rhs) { return lhs > rhs; },
                     t.cb_both(), t.cb_a());
     CHECK(t.eq_a({{0, 1}}));
+    CHECK(t.eq_both({}));
+  }
+}
+
+TEST_CASE("full_join") {
+  {
+    tester t{{}, {}};
+    utl::full_join(t.a_, t.b_, t.cb_both(), t.cb_a(), t.cb_b());
+    CHECK(t.eq_a({}));
+    CHECK(t.eq_b({}));
+    CHECK(t.eq_both({}));
+  }
+  {
+    tester t{{1}, {1}};
+    utl::full_join(t.a_, t.b_, t.cb_both(), t.cb_a(), t.cb_b());
+    CHECK(t.eq_a({}));
+    CHECK(t.eq_b({}));
+    CHECK(t.eq_both({{0, 1, 0, 1}}));
+  }
+  {
+    tester t{{2}, {3}};
+    utl::full_join(t.a_, t.b_, t.cb_both(), t.cb_a(), t.cb_b());
+    CHECK(t.eq_a({{0, 1}}));
+    CHECK(t.eq_b({{0, 1}}));
+    CHECK(t.eq_both({}));
+  }
+  {
+    tester t{{1}, {}};
+    utl::full_join(t.a_, t.b_, t.cb_both(), t.cb_a(), t.cb_b());
+    CHECK(t.eq_a({{0, 1}}));
+    CHECK(t.eq_b({}));
+    CHECK(t.eq_both({}));
+  }
+  {
+    tester t{{}, {1}};
+    utl::full_join(t.a_, t.b_, t.cb_both(), t.cb_a(), t.cb_b());
+    CHECK(t.eq_a({}));
+    CHECK(t.eq_b({{0, 1}}));
+    CHECK(t.eq_both({}));
+  }
+  {
+    tester t{{}, {1, 2}};
+    utl::full_join(t.a_, t.b_, t.cb_both(), t.cb_a(), t.cb_b());
+    CHECK(t.eq_a({}));
+    CHECK(t.eq_b({{0, 1}, {1, 2}}));
+    CHECK(t.eq_both({}));
+  }
+  {
+    tester t{{}, {1, 2, 2}};
+    utl::full_join(t.a_, t.b_, t.cb_both(), t.cb_a(), t.cb_b());
+    CHECK(t.eq_a({}));
+    CHECK(t.eq_b({{0, 1}, {1, 3}}));
+    CHECK(t.eq_both({}));
+  }
+  {
+    tester t{{3}, {1, 2}};
+    utl::full_join(t.a_, t.b_, t.cb_both(), t.cb_a(), t.cb_b());
+    CHECK(t.eq_a({{0, 1}}));
+    CHECK(t.eq_b({{0, 1}, {1, 2}}));
+    CHECK(t.eq_both({}));
+  }
+  {
+    tester t{{3}, {1, 1, 2}};
+    utl::full_join(t.a_, t.b_, t.cb_both(), t.cb_a(), t.cb_b());
+    CHECK(t.eq_a({{0, 1}}));
+    CHECK(t.eq_b({{0, 2}, {2, 3}}));
+    CHECK(t.eq_both({}));
+  }
+
+  {
+    tester t{{2, 4}, {1, 3, 5}};
+    utl::full_join(t.a_, t.b_, t.cb_both(), t.cb_a(), t.cb_b());
+    CHECK(t.eq_a({{0, 1}, {1, 2}}));
+    CHECK(t.eq_b({{0, 1}, {1, 2}, {2, 3}}));
+    CHECK(t.eq_both({}));
+  }
+  {
+    tester t{{2, 8}, {1, 3, 3, 4, 4, 5}};
+    utl::full_join(t.a_, t.b_, t.cb_both(), t.cb_a(), t.cb_b());
+    CHECK(t.eq_a({{0, 1}, {1, 2}}));
+    CHECK(t.eq_b({{0, 1}, {1, 3}, {3, 5}, {5, 6}}));
+    CHECK(t.eq_both({}));
+  }
+
+  {
+    tester t{{2}, {3}};
+    utl::full_join(t.a_, t.b_,
+                    [](auto const& lhs, auto const& rhs) { return lhs > rhs; },
+                    t.cb_both(), t.cb_a(), t.cb_b());
+    CHECK(t.eq_a({{0, 1}}));
+    CHECK(t.eq_b({{0, 1}}));
     CHECK(t.eq_both({}));
   }
 }
