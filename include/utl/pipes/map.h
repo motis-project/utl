@@ -9,7 +9,7 @@ namespace utl {
 struct to_map_t {
   template <typename T>
   friend auto operator|(T&& t, to_map_t&&) {
-    auto r = make_range(std::forward<T>(t));
+    auto&& r = make_range(std::forward<T>(t));
     auto it = r.begin();
     using value_t = decltype(r.read(it));
     std::map<typename value_t::first_type, typename value_t::second_type> v;
