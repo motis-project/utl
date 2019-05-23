@@ -3,7 +3,10 @@ cmake_minimum_required(VERSION 3.0)
 
 find_package(Boost)
 
+include(cmake/pkg.cmake)
+
 add_library(utl INTERFACE)
+target_link_libraries(utl INTERFACE fmt-header-only)
 target_include_directories(utl INTERFACE include)
 target_include_directories(utl SYSTEM INTERFACE ${Boost_INCLUDE_DIR})
 target_compile_options(utl INTERFACE -D_SCL_SECURE_NO_WARNINGS=1)

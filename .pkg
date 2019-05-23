@@ -1,0 +1,4 @@
+[fmt]
+  url=git@git.motis-project.de:lib/fmt.git
+  branch=master
+  commit=7ad3015f5bc77eda28d52f820e6d89955bf0784a

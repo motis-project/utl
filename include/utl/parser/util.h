@@ -5,44 +5,36 @@
 #include <ctime>
 #include <stdexcept>
 
-#ifndef log_err
-#define log_err(M, ...) fprintf(stderr, "[ERR] " M "\n", ##__VA_ARGS__);
-#endif
+#include "fmt/format.h"
 
-#ifndef log_info
-#define log_info(M, ...) fprintf(stderr, "[NFO] " M "\n", ##__VA_ARGS__);
-#endif
+namespace utl {
 
-#define LOGGING
-#ifdef LOGGING
+template <typename Msg, typename... FmtArgs>
+inline void log_err(Msg&& msg, FmtArgs... args) {
+  fmt::print(msg, std::forward<FmtArgs>(args)...);
+}
 
-#ifndef log_time
-#define log_time(name, ...)                                          \
-  {                                                                  \
-    auto start = std::chrono::steady_clock::now();                   \
-    { __VA_ARGS__ }                                                  \
-    auto ms = std::chrono::duration_cast<std::chrono::milliseconds>( \
-                  std::chrono::steady_clock::now() - start)          \
-                  .count();                                          \
-    log_info("%s took %lldms", name, ms);                            \
+template <typename Msg, typename... FmtArgs>
+inline void log_info(Msg&& msg, FmtArgs... args) {
+  fmt::print(msg, std::forward<FmtArgs>(args)...);
+}
+
+template <typename NameType, typename Fn>
+inline void log_time(NameType&& name, Fn&& fn) {
+  auto start = std::chrono::steady_clock::now();
+  fn();
+  auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+                std::chrono::steady_clock::now() - start)
+                .count();
+  log_info("%s took %lldms", name, ms);
+}
+
+template <typename Msg, typename... FmtArgs>
+inline void verify(bool condition, Msg&& msg, FmtArgs... args) {
+  if (!condition) {
+    log_info(std::forward<Msg>(msg), std::forward<FmtArgs>(args)...);
+    throw std::runtime_error(msg);
   }
-#endif
-#else
+}
 
-#ifndef log_time
-#define log_time(name, ...) \
-  { __VA_ARGS__ }
-#endif
-
-#endif
-
-#ifdef verify
-#undef verify
-#endif
-
-#define verify(A, M, ...)        \
-  if (!(A)) {                    \
-    log_err(M, ##__VA_ARGS__);   \
-    throw std::runtime_error(M); \
-  }                              \
-  (void)
+}  // namespace utl
