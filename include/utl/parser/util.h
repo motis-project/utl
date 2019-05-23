@@ -44,4 +44,5 @@
   if (!(A)) {                    \
     log_err(M, ##__VA_ARGS__);   \
     throw std::runtime_error(M); \
-  }
+  }                              \
+  (void)
