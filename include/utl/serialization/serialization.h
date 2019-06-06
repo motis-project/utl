@@ -7,7 +7,6 @@
 
 #include "boost/align/aligned_allocator.hpp"
 
-#include "utl/parser/util.h"
 #include "utl/serialization/buf.h"
 #include "utl/serialization/file.h"
 #include "utl/serialization/offset_t.h"
@@ -15,6 +14,7 @@
 #include "utl/serialization/unique_ptr.h"
 #include "utl/serialization/vector.h"
 #include "utl/struct/for_each_field.h"
+#include "utl/verify.h"
 
 namespace utl {
 

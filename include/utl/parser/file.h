@@ -7,7 +7,7 @@
 #include <windows.h>
 
 #include "utl/parser/buffer.h"
-#include "utl/parser/util.h"
+#include "utl/verify.h"
 
 namespace utl {
 
@@ -88,7 +88,7 @@ struct file {
 #include <cstdio>
 
 #include "utl/parser/buffer.h"
-#include "utl/parser/util.h"
+#include "utl/verify.h"
 
 namespace utl {
 
