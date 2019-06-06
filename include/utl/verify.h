@@ -8,13 +8,13 @@ namespace utl {
 
 template <typename Msg, typename... FmtArgs>
 std::runtime_error fail(Msg&& msg, FmtArgs... args) {
+  fmt::print(msg, std::forward<FmtArgs>(args)...);
   return std::runtime_error{fmt::format(msg, std::forward<FmtArgs>(args)...)};
 }
 
 template <typename Msg, typename... FmtArgs>
 void verify(bool condition, Msg&& msg, FmtArgs... args) {
   if (!condition) {
-    fmt::print(msg, std::forward<FmtArgs>(args)...);
     throw fail(msg, std::forward<FmtArgs>(args)...);
   }
 }
@@ -22,7 +22,7 @@ void verify(bool condition, Msg&& msg, FmtArgs... args) {
 template <typename Msg, typename... FmtArgs>
 void verify_silent(bool condition, Msg&& msg, FmtArgs... args) {
   if (!condition) {
-    throw fail(msg, std::forward<FmtArgs>(args)...);
+    throw std::runtime_error{fmt::format(msg, std::forward<FmtArgs>(args)...)};
   }
 }
 
