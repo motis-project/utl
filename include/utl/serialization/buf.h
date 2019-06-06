@@ -5,6 +5,7 @@
 
 #include "utl/serialization/offset_t.h"
 #include "utl/serialization/serialization.h"
+#include "utl/verify.h"
 
 namespace utl {
 
