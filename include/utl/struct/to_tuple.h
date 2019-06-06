@@ -98,48 +98,40 @@ inline auto to_tuple(T& t, field_count<14>) {
 template <typename T>
 inline auto to_tuple(T& t, field_count<15>) {
   auto& [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15] = t;
-  return std::tie(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14,
-                  p15);
+  return std::tie(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15);
 }
 
 template <typename T>
 inline auto to_tuple(T& t, field_count<16>) {
-  auto& [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15,
-         p16] = t;
-  return std::tie(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14,
-                  p15, p16);
+  auto& [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16] = t;
+  return std::tie(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16);
 }
 
 template <typename T>
 inline auto to_tuple(T& t, field_count<17>) {
-  auto& [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16,
-         p17] = t;
-  return std::tie(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14,
-                  p15, p16, p17);
+  auto& [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17] = t;
+  return std::tie(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17);
 }
 
 template <typename T>
 inline auto to_tuple(T& t, field_count<18>) {
-  auto& [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16,
-         p17, p18] = t;
-  return std::tie(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14,
-                  p15, p16, p17, p18);
+  auto& [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18] = t;
+  return std::tie(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18);
 }
 
 template <typename T>
 inline auto to_tuple(T& t, field_count<19>) {
-  auto& [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16,
-         p17, p18, p19] = t;
-  return std::tie(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14,
-                  p15, p16, p17, p18, p19);
+  auto& [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18, p19] = t;
+  return std::tie(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18,
+                  p19);
 }
 
 template <typename T>
 inline auto to_tuple(T& t, field_count<20>) {
-  auto& [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16,
-         p17, p18, p19, p20] = t;
-  return std::tie(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14,
-                  p15, p16, p17, p18, p19, p20);
+  auto& [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18, p19,
+         p20] = t;
+  return std::tie(p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18,
+                  p19, p20);
 }
 
 template <typename T>
@@ -217,77 +209,68 @@ inline auto to_ptr_tuple(T& t, field_count<10>) {
 template <typename T>
 inline auto to_ptr_tuple(T& t, field_count<11>) {
   auto& [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11] = t;
-  return std::make_tuple(&p1, &p2, &p3, &p4, &p5, &p6, &p7, &p8, &p9, &p10,
-                         &p11);
+  return std::make_tuple(&p1, &p2, &p3, &p4, &p5, &p6, &p7, &p8, &p9, &p10, &p11);
 }
 
 template <typename T>
 inline auto to_ptr_tuple(T& t, field_count<12>) {
   auto& [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12] = t;
-  return std::make_tuple(&p1, &p2, &p3, &p4, &p5, &p6, &p7, &p8, &p9, &p10,
-                         &p11, &p12);
+  return std::make_tuple(&p1, &p2, &p3, &p4, &p5, &p6, &p7, &p8, &p9, &p10, &p11, &p12);
 }
 
 template <typename T>
 inline auto to_ptr_tuple(T& t, field_count<13>) {
   auto& [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13] = t;
-  return std::make_tuple(&p1, &p2, &p3, &p4, &p5, &p6, &p7, &p8, &p9, &p10,
-                         &p11, &p12, &p13);
+  return std::make_tuple(&p1, &p2, &p3, &p4, &p5, &p6, &p7, &p8, &p9, &p10, &p11, &p12, &p13);
 }
 
 template <typename T>
 inline auto to_ptr_tuple(T& t, field_count<14>) {
   auto& [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14] = t;
-  return std::make_tuple(&p1, &p2, &p3, &p4, &p5, &p6, &p7, &p8, &p9, &p10,
-                         &p11, &p12, &p13, &p14);
+  return std::make_tuple(&p1, &p2, &p3, &p4, &p5, &p6, &p7, &p8, &p9, &p10, &p11, &p12, &p13, &p14);
 }
 
 template <typename T>
 inline auto to_ptr_tuple(T& t, field_count<15>) {
   auto& [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15] = t;
-  return std::make_tuple(&p1, &p2, &p3, &p4, &p5, &p6, &p7, &p8, &p9, &p10,
-                         &p11, &p12, &p13, &p14, &p15);
+  return std::make_tuple(&p1, &p2, &p3, &p4, &p5, &p6, &p7, &p8, &p9, &p10, &p11, &p12, &p13, &p14,
+                         &p15);
 }
 
 template <typename T>
 inline auto to_ptr_tuple(T& t, field_count<16>) {
-  auto& [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15,
-         p16] = t;
-  return std::make_tuple(&p1, &p2, &p3, &p4, &p5, &p6, &p7, &p8, &p9, &p10,
-                         &p11, &p12, &p13, &p14, &p15, &p16);
+  auto& [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16] = t;
+  return std::make_tuple(&p1, &p2, &p3, &p4, &p5, &p6, &p7, &p8, &p9, &p10, &p11, &p12, &p13, &p14,
+                         &p15, &p16);
 }
 
 template <typename T>
 inline auto to_ptr_tuple(T& t, field_count<17>) {
-  auto& [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16,
-         p17] = t;
-  return std::make_tuple(&p1, &p2, &p3, &p4, &p5, &p6, &p7, &p8, &p9, &p10,
-                         &p11, &p12, &p13, &p14, &p15, &p16, &p17);
+  auto& [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17] = t;
+  return std::make_tuple(&p1, &p2, &p3, &p4, &p5, &p6, &p7, &p8, &p9, &p10, &p11, &p12, &p13, &p14,
+                         &p15, &p16, &p17);
 }
 
 template <typename T>
 inline auto to_ptr_tuple(T& t, field_count<18>) {
-  auto& [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16,
-         p17, p18] = t;
-  return std::make_tuple(&p1, &p2, &p3, &p4, &p5, &p6, &p7, &p8, &p9, &p10,
-                         &p11, &p12, &p13, &p14, &p15, &p16, &p17, &p18);
+  auto& [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18] = t;
+  return std::make_tuple(&p1, &p2, &p3, &p4, &p5, &p6, &p7, &p8, &p9, &p10, &p11, &p12, &p13, &p14,
+                         &p15, &p16, &p17, &p18);
 }
 
 template <typename T>
 inline auto to_ptr_tuple(T& t, field_count<19>) {
-  auto& [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16,
-         p17, p18, p19] = t;
-  return std::make_tuple(&p1, &p2, &p3, &p4, &p5, &p6, &p7, &p8, &p9, &p10,
-                         &p11, &p12, &p13, &p14, &p15, &p16, &p17, &p18, &p19);
+  auto& [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18, p19] = t;
+  return std::make_tuple(&p1, &p2, &p3, &p4, &p5, &p6, &p7, &p8, &p9, &p10, &p11, &p12, &p13, &p14,
+                         &p15, &p16, &p17, &p18, &p19);
 }
 
 template <typename T>
 inline auto to_ptr_tuple(T& t, field_count<20>) {
-  auto& [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16,
-         p17, p18, p19, p20] = t;
-  return std::make_tuple(&p1, &p2, &p3, &p4, &p5, &p6, &p7, &p8, &p9, &p10,
-                         &p11, &p12, &p13, &p14, &p15, &p16, &p17, &p18, &p19,
-                         &p20);
+  auto& [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18, p19,
+         p20] = t;
+  return std::make_tuple(&p1, &p2, &p3, &p4, &p5, &p6, &p7, &p8, &p9, &p10, &p11, &p12, &p13, &p14,
+                         &p15, &p16, &p17, &p18, &p19, &p20);
 }
 
 template <typename T>
