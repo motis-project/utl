@@ -1,65 +1,67 @@
-gcc-7-release:
+# GCC production
+gcc-release:
   tags:
     - bionic
   script:
-    - export BOOST_ROOT=/opt/boost_1_67_0-gcc-7
-    - export CXX=g++-7
-    - export CC=gcc-7
-    - mkdir -p build-gcc-7-release
-    - cd build-gcc-7-release
-    - cmake -DCMAKE_BUILD_TYPE=Release ..
-    - make -j12 utl-test
+    - export BOOST_ROOT=/opt/boost_1_70_0-clang-8
+    - mkdir -p build-release
+    - cd build-release
+    - cmake -GNinja -DCMAKE_BUILD_TYPE=Release ..
+    - ninja -j8 utl-test
     - ./utl-test
 
-clang-5-debug-asan:
+# Clang debug with address sanitizer
+clang-debug-asan:
   tags:
     - bionic
   script:
-    - export BOOST_ROOT=/opt/boost_1_67_0-gcc-7
-    - export CXX=clang++-6.0
-    - export CC=clang-6.0
+    - export ASAN_SYMBOLIZER_PATH=/usr/bin/llvm-symbolizer
     - export CXXFLAGS="-fsanitize=address -fsanitize=undefined -fno-omit-frame-pointer"
-    - mkdir -p build-clang-5-debug-asan
-    - cd build-clang-5-debug-asan
-    - cmake -DCMAKE_BUILD_TYPE=Debug ..
-    - make -j12 utl-test
+    - export BOOST_ROOT=/opt/boost_1_70_0-clang-8
+    - export CXX=clang++
+    - export CC=clang
+    - mkdir -p build-clang-debug-asan
+    - cd build-clang-debug-asan
+    - cmake -GNinja -DCMAKE_BUILD_TYPE=Debug ..
+    - ninja -j8 utl-test
     - ./utl-test
 
-gcc-7-valgrind:
+# GCC debug valgrind
+gcc-debug-valgrind:
   tags:
     - bionic
   script:
-    - export BOOST_ROOT=/opt/boost_1_67_0-gcc-7
-    - export CXX=g++-7
-    - export CC=gcc-7
-    - mkdir -p gcc-7-valgrind
-    - cd gcc-7-valgrind
-    - cmake -DCMAKE_BUILD_TYPE=Debug ..
-    - make -j12 utl-test
+    - export BOOST_ROOT=/opt/boost_1_70_0-clang-8
+    - mkdir -p build-gcc-debug-valgrind
+    - cd build-gcc-debug-valgrind
+    - cmake -GNinja -DCMAKE_BUILD_TYPE=Debug ..
+    - ninja -j8 utl-test
     - valgrind --leak-check=full --show-reachable=yes --gen-suppressions=all ./utl-test
 
+# MSVC release
 msvc-release:
   tags:
     - windows
   script:
     - set WD=%cd%
-    - set BOOST_ROOT=C:\boost_1_67_0
-    - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
+    - call "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
     - cd %WD%
+    - set BOOST_ROOT=C:\boost_1_70_0
     - mkdir build-msvc-release
     - cd build-msvc-release
     - cmake -GNinja -DCMAKE_BUILD_TYPE=Release ..
     - ninja utl-test
     - utl-test
 
+# MSVC debug
 msvc-debug:
   tags:
     - windows
   script:
     - set WD=%cd%
-    - set BOOST_ROOT=C:\boost_1_67_0
-    - call "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
+    - call "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
     - cd %WD%
+    - set BOOST_ROOT=C:\boost_1_70_0
     - mkdir build-msvc-debug
     - cd build-msvc-debug
     - cmake -GNinja -DCMAKE_BUILD_TYPE=Debug ..
