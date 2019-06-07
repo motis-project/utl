@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <limits>
 #include <string>
+#include <string_view>
 
 namespace utl {
 
@@ -112,6 +113,7 @@ struct cstr {
     return std::numeric_limits<size_t>::max();
   }
   std::string to_str() const { return std::string(str, len); }
+  std::string_view view() const { return {str, len}; }
 
   char const* str;
   size_t len;
