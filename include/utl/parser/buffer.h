@@ -2,6 +2,7 @@
 
 #include <cstdlib>
 #include <cstring>
+#include <new>
 
 #include "utl/verify.h"
 
@@ -52,6 +53,15 @@ struct buffer final {
 
   inline unsigned char* begin() { return data(); }
   inline unsigned char* end() { return data() + size_; }
+
+  inline void resize(std::size_t new_size) {
+    if (void* tmp = std::realloc(buf_, new_size)) {
+      buf_ = tmp;
+      size_ = new_size;
+    } else {
+      throw std::bad_alloc();
+    }
+  }
 
   void* buf_;
   std::size_t size_;

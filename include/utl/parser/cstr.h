@@ -150,6 +150,12 @@ void for_each_token(cstr s, char separator, Function f) {
 }
 
 template <typename Function>
+void for_each_token_numbered(cstr s, char separator, Function f) {
+  int token_number = 0;
+  for_each_token(s, separator, [&](cstr token) { f(token, ++token_number); });
+}
+
+template <typename Function>
 void for_each_line(cstr s, Function f) {
   for_each_token(s, '\n', [&f](cstr token) { f(strip_cr(token)); });
 }
