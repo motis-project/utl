@@ -11,7 +11,7 @@ target_include_directories(utl INTERFACE include)
 target_include_directories(utl SYSTEM INTERFACE ${Boost_INCLUDE_DIR})
 target_compile_options(utl INTERFACE -D_SCL_SECURE_NO_WARNINGS=1)
 
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   set(utl-compile-flags "\
      -Wall \
      -Wextra \
