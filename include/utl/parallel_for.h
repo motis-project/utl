@@ -11,7 +11,7 @@
 namespace utl {
 
 template <typename Fun>
-inline void parallel_for(size_t const job_count, Fun func) {
+inline void parallel_for_run(size_t const job_count, Fun func) {
   std::atomic<size_t> counter(0);
   std::vector<std::thread> threads;
   for (auto i = 0u; i < std::thread::hardware_concurrency(); ++i) {
@@ -30,15 +30,15 @@ inline void parallel_for(size_t const job_count, Fun func) {
   std::for_each(begin(threads), end(threads), [](auto& t) { t.join(); });
 }
 
-template <typename T, typename Fun>
-inline void parallel_for(std::vector<T> const& jobs, Fun func) {
-  parallel_for(jobs.size(), [&](auto const idx) { func(jobs[idx]); });
+template <typename Container, typename Fun>
+inline void parallel_for(Container const& jobs, Fun&& func) {
+  parallel_for_run(jobs.size(), [&](auto const idx) { func(jobs[idx]); });
 }
 
 template <typename T, typename Fun>
 inline void parallel_for(std::string const& desc, std::vector<T> const& jobs,
                          size_t const mod, Fun func) {
-  parallel_for(jobs.size(), [&](auto const idx) {
+  parallel_for_run(jobs.size(), [&](auto const idx) {
     if (idx % mod == 0) {
       uLOG(info) << desc << " " << idx << "/" << jobs.size();
     }
