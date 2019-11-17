@@ -10,6 +10,8 @@ namespace utl {
 template <typename Range, typename Transform>
 struct transform_range : public clear_t<Range> {
   using parent_t = clear_t<Range>;
+  using result_t = clear_t<decltype(std::declval<Transform>().fn_(
+      std::declval<typename parent_t::result_t>()))>;
 
   transform_range(Range&& r, Transform&& transform)
       : parent_t(std::forward<parent_t>(r)),

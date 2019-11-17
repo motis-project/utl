@@ -11,4 +11,5 @@
 #include "utl/pipes/sum.h"
 #include "utl/pipes/take_while.h"
 #include "utl/pipes/transform.h"
+#include "utl/pipes/unique.h"
 #include "utl/pipes/vec.h"

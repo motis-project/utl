@@ -26,3 +26,8 @@ TEST_CASE("find test") {
   std::vector<int> v = {1, 3, 5, 7, 9};
   CHECK(*(all(v) | find([](auto&& i) { return i == 7; })) == 7);
 }
+
+TEST_CASE("unique test") {
+  std::vector<int> v = {1, 3, 3, 5, 7, 7, 7, 7, 9};
+  CHECK((all(v) | unique() | vec()) == std::vector<int>({1, 3, 5, 7, 9}));
+}

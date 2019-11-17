@@ -43,4 +43,11 @@ void verify_silent(bool condition, Msg&& msg, FmtArgs... args) {
   }
 }
 
+template <typename Exception>
+void verify_ex(bool condition, Exception&& ex) {
+  if (!condition) {
+    throw ex;
+  }
+}
+
 }  // namespace utl

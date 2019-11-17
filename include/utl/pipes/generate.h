@@ -9,6 +9,8 @@ namespace utl {
 
 template <typename Fn>
 struct generator_range {
+  using result_t = clear_t<decltype(std::declval<Fn>()())>;
+
   struct end_it {};
 
   template <typename Value>

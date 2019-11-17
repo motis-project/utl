@@ -10,6 +10,7 @@ namespace utl {
 template <typename Range, typename RemoveIf>
 struct remove_if_range : public clear_t<Range> {
   using parent_t = clear_t<Range>;
+  using result_t = typename parent_t::result_t;
 
   remove_if_range(Range&& r, RemoveIf&& remove_if)
       : parent_t(std::forward<parent_t>(r)),

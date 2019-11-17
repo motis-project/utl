@@ -61,6 +61,8 @@ std::array<column_idx_t, MAX_COLUMNS> read_header(cstr s) {
 
 template <typename T, typename LineRange, char Separator = ','>
 struct csv_range : public LineRange {
+  using result_t = T;
+
   csv_range(LineRange&& r)
       : LineRange{std::forward<LineRange>(r)},
         headers_permutation_{read_header<T>(LineRange::begin())} {}

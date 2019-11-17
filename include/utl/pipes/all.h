@@ -3,19 +3,20 @@
 #include <initializer_list>
 #include <utility>
 
+#include "utl/clear_t.h"
 #include "utl/pipes/is_range.h"
 
 namespace utl {
 
 template <typename BeginIt, typename EndIt>
 struct range {
-  static constexpr auto const is_range = true;
+  using result_t = clear_t<decltype(*std::declval<BeginIt>())>;
 
   using it_t = BeginIt;
   using begin_t = BeginIt;
   using end_t = EndIt;
 
-  range(BeginIt&& begin, EndIt&& end)
+  range(BeginIt begin, EndIt end)
       : begin_(std::forward<BeginIt>(begin)), end_(std::forward<EndIt>(end)) {}
 
   BeginIt begin() { return begin_; }
@@ -39,6 +40,9 @@ struct range {
   BeginIt begin_;
   EndIt end_;
 };
+
+template <typename BeginIt, typename EndIt>
+range(BeginIt, EndIt)->range<BeginIt, EndIt>;
 
 template <typename BeginIt, typename EndIt>
 struct is_range<range<BeginIt, EndIt>> : std::true_type {};
