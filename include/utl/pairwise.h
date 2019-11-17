@@ -56,4 +56,16 @@ auto pairwise(Container& c) -> detail::pairwise_range<decltype(begin(c))> {
   return detail::pairwise_range<decltype(begin(c))>{c.begin(), c.end()};
 }
 
+template <typename Container>
+auto pairwise_begin(Container& c)
+    -> detail::pairwise_iterator<decltype(begin(c))> {
+  return detail::pairwise_iterator<decltype(begin(c))>{begin(c), end(c)};
+}
+
+template <typename Container>
+auto pairwise_end(Container& c)
+    -> detail::pairwise_iterator<decltype(begin(c))> {
+  return detail::pairwise_iterator<decltype(begin(c))>{end(c), end(c)};
+}
+
 }  // namespace utl
