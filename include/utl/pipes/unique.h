@@ -18,7 +18,9 @@ struct unique_range : public clear_t<Range> {
     while (this->valid(it) && parent_t::read(it) == pred_) {
       parent_t::next(it);
     }
-    pred_ = parent_t::read(it);
+    if (this->valid(it)) {
+      pred_ = parent_t::read(it);
+    }
   }
 
   template <typename It>
@@ -29,7 +31,9 @@ struct unique_range : public clear_t<Range> {
 
   auto begin() {
     auto it = parent_t::begin();
-    pred_ = parent_t::read(it);
+    if (this->valid(it)) {
+      pred_ = parent_t::read(it);
+    }
     return it;
   }
 
