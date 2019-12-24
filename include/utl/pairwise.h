@@ -16,6 +16,10 @@ struct pairwise_iterator {
   pairwise_iterator(Iterator begin, Iterator end)
       : first_(begin), second_(begin == end ? begin : std::next(begin)) {}
 
+  bool operator==(pairwise_iterator const& o) const {
+    return second_ == o.second_;
+  }
+
   bool operator!=(pairwise_iterator const& o) const {
     return second_ != o.second_;
   }
