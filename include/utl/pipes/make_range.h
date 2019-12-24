@@ -1,5 +1,7 @@
 #pragma once
 
+#if __cplusplus >= 201703L
+
 #include "utl/pipes/all.h"
 #include "utl/pipes/is_range.h"
 
@@ -15,6 +17,17 @@ auto&& make_range(T&& t) {
   } else {
     return all(std::forward<T>(t));
   }
+  throw std::runtime_error{"not reachable"};
 }
 
 }  // namespace utl
+#else
+namespace utl {
+
+template <typename T>
+auto&& make_range(T&& t) {
+  return t;
+}
+
+}  // namespace utl
+#endif
