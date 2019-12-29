@@ -67,3 +67,22 @@ TEST_CASE("csv_no_rows") {
     CHECK(result.empty() == true);
   }
 }
+
+TEST_CASE("csv_separator") {
+  struct baz {
+    csv_col<int, UTL_NAME("FOO")> foo;
+    csv_col<int, UTL_NAME("BAR")> bar;
+  };
+
+  constexpr auto const no_rows_input = R"(BAR$FOO
+1$2
+)";
+  auto const result = line_range<buf_reader>{buf_reader{no_rows_input}}  //
+                      | csv<baz, '$'>()  //
+                      | vec();
+
+
+  REQUIRE(result.size() == 1);
+  CHECK(result[0].foo.val() == 2);
+  CHECK(result[0].bar.val() == 1);
+}
