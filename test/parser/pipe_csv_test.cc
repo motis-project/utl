@@ -6,6 +6,7 @@
 #include "utl/pipes/avg.h"
 #include "utl/pipes/remove_if.h"
 #include "utl/pipes/transform.h"
+#include "utl/pipes/vec.h"
 
 using namespace utl;
 
@@ -39,4 +40,30 @@ TEST_CASE("csv") {
       | avg();
   CHECK(avg_volume <= 65844.5);
   CHECK(avg_volume >= 65844.3);
+}
+
+TEST_CASE("csv_no_rows") {
+  struct baz {
+    csv_col<int, UTL_NAME("FOO")> foo;
+    csv_col<int, UTL_NAME("BAR")> bar;
+  };
+
+  {
+    constexpr auto const no_rows_input = R"(FOO,BAR)";
+    auto const result = line_range<buf_reader>{buf_reader{no_rows_input}}  //
+                        | csv<quote>()  //
+                        | vec();
+
+    CHECK(result.empty() == true);
+  }
+  {
+    constexpr auto const no_rows_input = R"(FOO,BAR
+
+)";
+    auto const result = line_range<buf_reader>{buf_reader{no_rows_input}}  //
+                        | csv<quote>()  //
+                        | vec();
+
+    CHECK(result.empty() == true);
+  }
 }

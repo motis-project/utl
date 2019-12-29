@@ -93,7 +93,15 @@ struct csv_range : public LineRange {
     return t;
   }
 
-  auto begin() { return std::make_optional<T>(read_row(LineRange::begin())); }
+  std::optional<T> begin() {
+    cstr s;
+    LineRange::next(s);
+    if (LineRange::valid(s)) {
+      return read_row(s);
+    } else {
+      return std::nullopt;
+    }
+  }
 
   template <typename It>
   auto&& read(It& it) {
