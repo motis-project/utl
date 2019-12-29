@@ -51,7 +51,7 @@ TEST_CASE("csv_no_rows") {
   {
     constexpr auto const no_rows_input = R"(FOO,BAR)";
     auto const result = line_range<buf_reader>{buf_reader{no_rows_input}}  //
-                        | csv<quote>()  //
+                        | csv<baz>()  //
                         | vec();
 
     CHECK(result.empty() == true);
@@ -61,7 +61,7 @@ TEST_CASE("csv_no_rows") {
 
 )";
     auto const result = line_range<buf_reader>{buf_reader{no_rows_input}}  //
-                        | csv<quote>()  //
+                        | csv<baz>()  //
                         | vec();
 
     CHECK(result.empty() == true);
