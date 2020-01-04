@@ -3,6 +3,7 @@
 #include <cassert>
 #include <cctype>
 #include <cstring>
+
 #include <algorithm>
 #include <limits>
 #include <string>
@@ -23,6 +24,7 @@ struct field {
 
 struct cstr {
   cstr() : str(nullptr), len(0) {}
+  cstr(std::string const& s) : str(s.data()), len(s.length()) {}
   cstr(char const* s) : str(s), len(s ? std::strlen(str) : 0) {}
   cstr(char const* s, size_t l) : str(s), len(l) {}
   cstr(unsigned char const* s, size_t l)
@@ -51,6 +53,8 @@ struct cstr {
   bool operator==(cstr const& s) const {
     if (len != s.len) {
       return false;
+    } else if (len == 0) {
+      return true;
     } else {
       return strncmp(str, s.str, len) == 0;
     }
@@ -75,9 +79,12 @@ struct cstr {
     return {str + begin, end - begin};
   }
   cstr substr(size_t begin) const { return {str + begin, len - begin}; }
-  cstr substr(field const& f) {
+  cstr substr(field const& f) const {
     return (f.size == field::MAX_SIZE) ? substr(f.from)
                                        : substr(f.from, size(f.size));
+  }
+  bool contains(cstr needle) const {
+    return view().find(needle.view()) != std::string_view::npos;
   }
   bool starts_with(cstr prefix) const {
     if (len < prefix.len) {
@@ -137,7 +144,7 @@ inline cstr strip_cr(cstr s) {
 inline cstr get_line(cstr s) { return strip_cr(get_until(s, '\n')); }
 
 template <typename Function>
-void for_each_token(cstr s, char separator, Function f) {
+void for_each_token(cstr s, char separator, Function&& f) {
   while (s.len > 0) {
     cstr token = get_until(s, separator);
     f(token);
@@ -149,19 +156,80 @@ void for_each_token(cstr s, char separator, Function f) {
   }
 }
 
+struct line_iterator {
+  using iterator_category = std::input_iterator_tag;
+  using value_type = cstr;
+  using difference_type = std::ptrdiff_t;
+  using pointer = cstr;
+  using reference = cstr;
+
+  line_iterator() = default;
+  explicit line_iterator(cstr s) : s_{s} { ++*this; }
+
+  explicit operator bool() const { return s_; }
+
+  bool operator==(line_iterator const& i) const {
+    return line_.data() == i.line_.data() && s_ == i.s_;
+  }
+  bool operator!=(line_iterator const& i) const { return !(*this == i); }
+
+  line_iterator& operator+=(difference_type n) {
+    for (int i = 0; i != n; ++i) {
+      ++*this;
+    }
+    return *this;
+  }
+  line_iterator& operator++() {
+    line_ = get_until(s_, '\n');
+    s_ += line_.len;
+    if (s_.len != 0) {
+      ++s_;  // skip separator
+    }
+    line_ = strip_cr(line_);
+    if (line_.begin() == s_.end()) {
+      line_ = cstr{};
+    }
+    return *this;
+  }
+  line_iterator operator++(int) {
+    line_iterator curr = *this;
+    ++*this;
+    return curr;
+  }
+  line_iterator operator+(difference_type const n) {
+    line_iterator curr = *this;
+    *this += n;
+    return curr;
+  }
+
+  reference operator*() { return line_; }
+  reference const& operator*() const { return line_; }
+  pointer* operator->() { return &line_; }
+
+  cstr s_;
+  cstr line_;
+};
+
+struct lines {
+  explicit lines(cstr s) : s_{s} {}
+  line_iterator begin() const { return line_iterator{s_}; }
+  line_iterator end() const { return line_iterator{cstr{}}; }
+  cstr s_;
+};
+
 template <typename Function>
-void for_each_token_numbered(cstr s, char separator, Function f) {
+void for_each_token_numbered(cstr s, char separator, Function&& f) {
   int token_number = 0;
   for_each_token(s, separator, [&](cstr token) { f(token, ++token_number); });
 }
 
 template <typename Function>
-void for_each_line(cstr s, Function f) {
+void for_each_line(cstr s, Function&& f) {
   for_each_token(s, '\n', [&f](cstr token) { f(strip_cr(token)); });
 }
 
 template <typename Function>
-void for_each_line_numbered(cstr s, Function f) {
+void for_each_line_numbered(cstr s, Function&& f) {
   int line_number = 0;
   for_each_line(s, [&line_number, &f](cstr line) { f(line, ++line_number); });
 }

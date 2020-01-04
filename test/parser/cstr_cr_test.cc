@@ -1,5 +1,5 @@
 #include "../catch.hpp"
-
+#include "utl/enumerate.h"
 #include "utl/parser/cstr.h"
 
 namespace utl {
@@ -25,6 +25,25 @@ constexpr char const* empty_line_between_lines[] = {"1", "", "2"};
 constexpr char const* empty_line_between_no_end = "1\r\n\n2";
 constexpr char const* empty_line_between_no_end_lines[] = {"1", "", "2"};
 
+TEST_CASE("line iterator test") {
+  line_iterator it{empty_line_between_no_end};
+  line_iterator end;
+
+  REQUIRE(it != end);
+  REQUIRE(*it == empty_line_between_no_end_lines[0]);
+  ++it;
+
+  REQUIRE(it != end);
+  REQUIRE(*it == empty_line_between_no_end_lines[1]);
+  ++it;
+
+  REQUIRE(it != end);
+  REQUIRE(*it == empty_line_between_no_end_lines[2]);
+  ++it;
+
+  REQUIRE(it == end);
+}
+
 TEST_CASE("get_line_cr") {
   cstr str = one_line;
   auto line = get_line(str);
@@ -39,6 +58,13 @@ TEST_CASE("one_line_cr") {
     REQUIRE(std::strncmp(line.str, one_line_lines[i++], line.len) == 0);
   });
   REQUIRE(i == 1);
+
+  i = 0;
+  for (auto const [idx, line] : enumerate(lines{one_line})) {
+    REQUIRE(std::strncmp(line.str, one_line_lines[idx], line.len) == 0);
+    ++i;
+  }
+  REQUIRE(i == 1);
 }
 
 TEST_CASE("one_line_no_end_cr") {
@@ -46,6 +72,13 @@ TEST_CASE("one_line_no_end_cr") {
   for_each_line(one_line_no_end, [&](cstr line) {
     REQUIRE(std::strncmp(line.str, one_line_no_end_lines[i++], line.len) == 0);
   });
+  REQUIRE(i == 1);
+
+  i = 0;
+  for (auto const [idx, line] : enumerate(lines{one_line_no_end})) {
+    REQUIRE(std::strncmp(line.str, one_line_no_end_lines[idx], line.len) == 0);
+    ++i;
+  }
   REQUIRE(i == 1);
 }
 
@@ -55,6 +88,13 @@ TEST_CASE("two_lines_cr") {
     REQUIRE(std::strncmp(line.str, two_lines_lines[i++], line.len) == 0);
   });
   REQUIRE(i == 2);
+
+  i = 0;
+  for (auto const [idx, line] : enumerate(lines{two_lines})) {
+    REQUIRE(std::strncmp(line.str, two_lines_lines[idx], line.len) == 0);
+    ++i;
+  }
+  REQUIRE(i == 2);
 }
 
 TEST_CASE("empty_line_cr") {
@@ -63,12 +103,23 @@ TEST_CASE("empty_line_cr") {
     REQUIRE(std::strncmp(line.str, empty_line_lines[i++], line.len) == 0);
   });
   REQUIRE(i == 1);
+
+  i = 0;
+  for (auto const [idx, line] : enumerate(lines{empty_line})) {
+    REQUIRE(std::strncmp(line.str, empty_line_lines[idx], line.len) == 0);
+    ++i;
+  }
+  REQUIRE(i == 1);
 }
 
 TEST_CASE("empty_string_cr") {
   int i = 0;
   for_each_line(empty_string, [&](cstr) { i++; });
   REQUIRE(i == 0);
+
+  for (auto const [idx, line] : enumerate(lines{empty_string})) {
+    REQUIRE(false);
+  }
 }
 
 TEST_CASE("empty_line_between_cr") {
@@ -78,6 +129,14 @@ TEST_CASE("empty_line_between_cr") {
             0);
   });
   REQUIRE(i == 3);
+
+  i = 0;
+  for (auto const [idx, line] : enumerate(lines{empty_line_between})) {
+    REQUIRE(std::strncmp(line.str, empty_line_between_lines[idx], line.len) ==
+            0);
+    ++i;
+  }
+  REQUIRE(i == 3);
 }
 
 TEST_CASE("empty_line_between_no_end_cr") {
@@ -86,6 +145,14 @@ TEST_CASE("empty_line_between_no_end_cr") {
     REQUIRE(std::strncmp(line.str, empty_line_between_no_end_lines[i++],
                          line.len) == 0);
   });
+  REQUIRE(i == 3);
+
+  i = 0;
+  for (auto const [idx, line] : enumerate(lines{empty_line_between_no_end})) {
+    REQUIRE(std::strncmp(line.str, empty_line_between_no_end_lines[idx],
+                         line.len) == 0);
+    ++i;
+  }
   REQUIRE(i == 3);
 }
 
@@ -103,14 +170,14 @@ TEST_CASE("substr_len_middle_cr") {
   REQUIRE(s.substr(1, size(1)).str == s.str + 1);
 }
 
-TEST_CASE("sbustr_pos_begin_cr") {
+TEST_CASE("substr_pos_begin_cr") {
   cstr s = "abc";
   REQUIRE(s.substr(0, 2) == "ab");
   REQUIRE(s.substr(0, 2).len == 2);
   REQUIRE(s.substr(0, 2).str == s.str);
 }
 
-TEST_CASE("sbustr_pos_middle_cr") {
+TEST_CASE("substr_pos_middle_cr") {
   cstr s = "abc";
   REQUIRE(s.substr(1, 2) == "b");
   REQUIRE(s.substr(1, 2).len == 1);
