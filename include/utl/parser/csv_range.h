@@ -66,7 +66,7 @@ struct csv_range : public LineRange {
 
   csv_range(LineRange&& r)
       : LineRange{std::forward<LineRange>(r)},
-        headers_permutation_{read_header<T>(LineRange::begin())} {}
+        headers_permutation_{read_header<T, Separator>(LineRange::begin())} {}
 
   inline T read_row(cstr s) {
     std::array<cstr, MAX_COLUMNS> row;
@@ -93,7 +93,15 @@ struct csv_range : public LineRange {
     return t;
   }
 
-  auto begin() { return std::make_optional<T>(read_row(LineRange::begin())); }
+  std::optional<T> begin() {
+    cstr s;
+    LineRange::next(s);
+    if (LineRange::valid(s)) {
+      return read_row(s);
+    } else {
+      return std::nullopt;
+    }
+  }
 
   template <typename It>
   auto&& read(It& it) {
