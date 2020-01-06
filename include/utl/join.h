@@ -172,4 +172,12 @@ void full_join(ContainerA&& a, ContainerB&& b, FnMatch&& fn_match,
             std::forward<FnRight>(fn_right));
 }
 
+template <typename Key>
+struct join_less {
+  template <typename Lhs, typename Rhs>
+  bool operator()(Lhs const& lhs, Rhs const& rhs) const {
+    return Key{}.key(lhs) < Key{}.key(rhs);
+  }
+};
+
 }  // namespace utl
