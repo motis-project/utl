@@ -11,7 +11,14 @@ namespace detail {
 
 template <typename Iterator>
 struct pairwise_iterator {
-  using ref_t = typename std::iterator_traits<Iterator>::reference;
+  using iterator_category = typename std::forward_iterator_tag;
+  using difference_type =
+      typename std::iterator_traits<Iterator>::difference_type;
+  using value_type =
+      std::pair<typename std::iterator_traits<Iterator>::reference,
+                typename std::iterator_traits<Iterator>::reference>;
+  using pointer = value_type*;
+  using reference = value_type&;
 
   pairwise_iterator(Iterator begin, Iterator end)
       : first_(begin), second_(begin == end ? begin : std::next(begin)) {}
@@ -31,9 +38,7 @@ struct pairwise_iterator {
     return *this;
   }
 
-  std::pair<ref_t, ref_t> operator*() const {
-    return std::pair<ref_t, ref_t>{*first_, *second_};
-  }
+  value_type operator*() const { return value_type{*first_, *second_}; }
 
   Iterator first_, second_;
 };
