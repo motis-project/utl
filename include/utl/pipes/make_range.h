@@ -2,6 +2,8 @@
 
 #if __cplusplus >= 201703L
 
+#include <stdexcept>
+
 #include "utl/pipes/all.h"
 #include "utl/pipes/is_range.h"
 
