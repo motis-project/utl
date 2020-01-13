@@ -86,3 +86,23 @@ TEST_CASE("csv_separator") {
   CHECK(result[0].foo.val() == 2);
   CHECK(result[0].bar.val() == 1);
 }
+
+TEST_CASE("csv_escaped_string") {
+  struct dat {
+    csv_col<std::string, UTL_NAME("FOO")> foo;
+    csv_col<std::string, UTL_NAME("BAR")> bar;
+    csv_col<std::string, UTL_NAME("BAZ")> baz;
+  };
+
+  constexpr auto const input = R"(BAR,FOO,BAZ
+"asd","[\"asd\", \"bsd\"]","xxx"
+)";
+  auto const result = line_range<buf_reader>{buf_reader{input}}  //
+                      | csv<dat, ','>()  //
+                      | vec();
+
+  REQUIRE(result.size() == 1);
+  CHECK(result[0].foo.val() == R"([\"asd\", \"bsd\"])");
+  CHECK(result[0].bar.val() == "asd");
+  CHECK(result[0].baz.val() == "xxx");
+}

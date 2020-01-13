@@ -15,6 +15,7 @@ namespace utl {
 
 template <typename T, char Separator = ','>
 inline void parse_column(cstr& s, T& arg) {
+  constexpr char const kEscapeChar = '\\';
   char end = Separator;
   if (*s.str == '"') {
     end = '"';
@@ -27,7 +28,7 @@ inline void parse_column(cstr& s, T& arg) {
     char c = *s.str;
 
     // Skip escaped end character ("")
-    if (end != Separator && c == end && s.len >= 2 && s.str[1] == end) {
+    if (end != Separator && c == kEscapeChar && s.len >= 2 && s.str[1] == end) {
       s += 2;
       continue;
     }
