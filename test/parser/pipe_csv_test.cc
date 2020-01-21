@@ -95,14 +95,14 @@ TEST_CASE("csv_escaped_string") {
   };
 
   constexpr auto const input = R"(BAR,FOO,BAZ
-"asd","[\"asd\", \"bsd\"]","xxx"
+"asd","[""asd"", ""bsd""]","xxx"
 )";
   auto const result = line_range<buf_reader>{buf_reader{input}}  //
                       | csv<dat, ','>()  //
                       | vec();
 
   REQUIRE(result.size() == 1);
-  CHECK(result[0].foo.val() == R"([\"asd\", \"bsd\"])");
+  CHECK(result[0].foo.val() == R"([""asd"", ""bsd""])");
   CHECK(result[0].bar.val() == "asd");
   CHECK(result[0].baz.val() == "xxx");
 }
