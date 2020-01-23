@@ -5,6 +5,7 @@
 #include "utl/pipes/for_each.h"
 #include "utl/pipes/generate.h"
 #include "utl/pipes/is_range.h"
+#include "utl/pipes/iterable.h"
 #include "utl/pipes/make_range.h"
 #include "utl/pipes/map.h"
 #include "utl/pipes/remove_if.h"

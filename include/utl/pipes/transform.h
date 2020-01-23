@@ -18,7 +18,7 @@ struct transform_range : public clear_t<Range> {
         transform_(std::forward<Transform>(transform)) {}
 
   template <typename It>
-  auto read(It& it) {
+  auto read(It& it) const {
     return transform_.fn_(parent_t::read(it));
   }
 

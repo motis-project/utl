@@ -29,7 +29,7 @@ struct unique_range : public clear_t<Range> {
     find(it);
   }
 
-  auto begin() {
+  auto begin() const {
     auto it = parent_t::begin();
     if (this->valid(it)) {
       pred_ = parent_t::read(it);
@@ -37,7 +37,7 @@ struct unique_range : public clear_t<Range> {
     return it;
   }
 
-  typename parent_t::result_t pred_;
+  mutable typename parent_t::result_t pred_;
 };
 
 struct unique_t {

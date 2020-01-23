@@ -104,7 +104,7 @@ struct csv_range : public LineRange {
   }
 
   template <typename It>
-  auto&& read(It& it) {
+  auto&& read(It& it) const {
     return *it;
   }
 
@@ -120,7 +120,7 @@ struct csv_range : public LineRange {
   }
 
   template <typename It>
-  bool valid(It& it) {
+  bool valid(It& it) const {
     return it.has_value();
   }
 

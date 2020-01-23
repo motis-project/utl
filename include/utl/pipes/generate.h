@@ -25,7 +25,7 @@ struct generator_range {
   end_it end() { return end_it{}; }
 
   template <typename It>
-  auto&& read(It& it) {
+  auto&& read(It& it) const {
     return it.val_;
   }
 
@@ -35,7 +35,7 @@ struct generator_range {
   }
 
   template <typename It>
-  bool valid(It&) {
+  bool valid(It&) const {
     return true;
   }
 

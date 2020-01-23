@@ -2,6 +2,7 @@
 
 #include <list>
 
+#include "utl/enumerate.h"
 #include "utl/pipes.h"
 #include "utl/zip.h"
 
@@ -29,5 +30,11 @@ TEST_CASE("find test") {
 
 TEST_CASE("unique test") {
   std::vector<int> v = {1, 3, 3, 5, 7, 7, 7, 7, 9};
-  CHECK((all(v) | unique() | vec()) == std::vector<int>({1, 3, 5, 7, 9}));
+  std::vector<int> result = {1, 3, 5, 7, 9};
+  CHECK((all(v) | unique() | vec()) == result);
+
+  int i = 0;
+  for (auto const& val : all(v) | unique() | iterable()) {
+    CHECK(val == result[i++]);
+  }
 }

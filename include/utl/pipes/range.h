@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <utility>
 
 #include "utl/clear_t.h"
@@ -17,21 +18,21 @@ struct range {
   range(BeginIt begin, EndIt end)
       : begin_(std::forward<BeginIt>(begin)), end_(std::forward<EndIt>(end)) {}
 
-  BeginIt begin() { return begin_; }
-  EndIt end() { return end_; }
+  BeginIt begin() const { return begin_; }
+  EndIt end() const { return end_; }
 
   template <typename It>
-  auto&& read(It& it) {
+  auto&& read(It& it) const {
     return *it;
   }
 
   template <typename It>
-  void next(It& it) {
+  void next(It& it) const {
     ++it;
   }
 
   template <typename It>
-  bool valid(It& it) {
+  bool valid(It& it) const {
     return it != end_;
   }
 
