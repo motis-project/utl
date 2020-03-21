@@ -23,7 +23,7 @@ if(NOT IS_DIRECTORY "${CMAKE_SOURCE_DIR}/deps")
 
   message(STATUS ${pkg-bin})
   execute_process(
-    COMMAND ${pkg-bin} -l
+    COMMAND ${pkg-bin} -l -h
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
   )
 endif()

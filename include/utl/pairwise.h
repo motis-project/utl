@@ -11,7 +11,7 @@ namespace detail {
 
 template <typename Iterator>
 struct pairwise_iterator {
-  using iterator_category = typename std::forward_iterator_tag;
+  using iterator_category = std::forward_iterator_tag;
   using difference_type =
       typename std::iterator_traits<Iterator>::difference_type;
   using value_type =

@@ -1,0 +1,33 @@
+name: Run Tests
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Download pkg
+      run: |
+        wget https://git.motis-project.de/dl/pkg/-/jobs/artifacts/master/raw/build/pkg?job=linux-release
+        mv pkg\?job=linux-release pkg
+        chmod +x pkg
+
+    - name: Download dependencies
+      run: |
+        ./pkg -l -h
+
+    - name: Build
+      run: |
+        docker run \
+          -v "$PWD:/repo" \
+          --rm motisproject/cpp-build:latest \
+          bash -c "cmake -GNinja /repo && ninja utl-test && cp utl-test /repo"
+        ./utl-test
