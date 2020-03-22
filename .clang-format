@@ -15,9 +15,7 @@ IncludeCategories:
     Priority:        1
   - Regex:           '^<c.*'
     Priority:        2
-  - Regex:           '^"boost.*'
-    Priority:        3
   - Regex:           '^<.*'
-    Priority:        4
+    Priority:        3
   - Regex:           '.*'
-    Priority:        5
+    Priority:        4
