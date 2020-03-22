@@ -1,5 +1,3 @@
-# This is a basic workflow to help you get started with Actions
-
 name: Windows Build
 
 on:
@@ -16,7 +14,7 @@ jobs:
     - uses: ilammy/msvc-dev-cmd@v1
 
     - name: CMake
-      run: cmake -S . -B build
+      run: cmake -GNinja -S . -B build
 
     - name: Build
       run: cmake --build build
