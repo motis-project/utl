@@ -15,9 +15,11 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - uses: ilammy/msvc-dev-cmd@v1
-      with:
-        toolset: 16.4.5
+    - name: Setup developer console
+      run: |
+        set WD=%cd%
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
+        cd %WD%
 
     - name: CMake
       run: cmake -GNinja -S . -B build
