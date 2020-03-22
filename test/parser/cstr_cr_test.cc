@@ -117,7 +117,8 @@ TEST_CASE("empty_string_cr") {
   for_each_line(empty_string, [&](cstr) { i++; });
   REQUIRE(i == 0);
 
-  for (auto const [idx, line] : enumerate(lines{empty_string})) {
+  for (auto const entry : enumerate(lines{empty_string})) {
+    (void) entry;
     REQUIRE(false);
   }
 }

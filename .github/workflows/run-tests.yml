@@ -21,13 +21,24 @@ jobs:
         chmod +x pkg
 
     - name: Download dependencies
-      run: |
-        ./pkg -l -h
+      run: ./pkg -l -h
+
+    - name: Cache
+      uses: actions/cache@v1.1.2
+      with:
+        path: ccache
+        key: ccache-${{ hashFiles('**/*.h') }}-${{ hashFiles('**/*.cc') }}
+
+    - name: Pull Docker image
+      run: docker pull motisproject/cpp-build:latest
 
     - name: Build
       run: |
         docker run \
           -v "$PWD:/repo" \
+          -e CCACHE_DIR=/repo/ccache \
           --rm motisproject/cpp-build:latest \
-          bash -c "cmake -GNinja /repo && ninja utl-test && cp utl-test /repo"
-        ./utl-test
+          bash -c "ccache -z && cmake-ccache-gcc-9 /repo && ninja utl-test && ccache -s && cp utl-test /repo"
+
+    - name: Run Tests
+      run: ./utl-test
