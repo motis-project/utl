@@ -19,5 +19,5 @@ jobs:
     - name: Build
       run: cmake --build build
 
-    - name: Build
-      run: build\Debug\utl-test.exe
+    - name: Run tests
+      run: utl-test.exe
