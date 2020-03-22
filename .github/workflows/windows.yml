@@ -14,7 +14,10 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
+
     - uses: ilammy/msvc-dev-cmd@v1
+      with:
+        toolset: 16.4.5
 
     - name: CMake
       run: cmake -GNinja -S . -B build
