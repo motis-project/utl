@@ -14,12 +14,7 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
-
-    - name: Setup developer console
-      run: |
-        set WD=%cd%
-        call "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
-        cd %WD%
+    - uses: microsoft/setup-msbuild@v1.0.0
 
     - name: CMake
       run: cmake -GNinja -S . -B build
