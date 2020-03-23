@@ -33,7 +33,7 @@ jobs:
     - name: Cache
       uses: actions/cache@v1.1.2
       with:
-        path: /root/.ccache
+        path: $HOME/.ccache
         key: ccache-${{ matrix.cxx }}-${{ matrix.mode }}-${{ hashFiles('**/*.h') }}-${{ hashFiles('**/*.cc') }}
 
     - name: CMake
