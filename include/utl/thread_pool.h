@@ -10,8 +10,9 @@
 namespace utl {
 
 struct thread_pool {
-  explicit thread_pool(std::function<void()> initializer = [] {},
-                       std::function<void()> finalizer = [] {})
+  explicit thread_pool(
+      std::function<void()> initializer = [] {},
+      std::function<void()> finalizer = [] {})
       : initializer_{std::move(initializer)},
         finalizer_{std::move(finalizer)},
         threads_active_{0},

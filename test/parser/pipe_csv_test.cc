@@ -81,7 +81,6 @@ TEST_CASE("csv_separator") {
                       | csv<baz, '$'>()  //
                       | vec();
 
-
   REQUIRE(result.size() == 1);
   CHECK(result[0].foo.val() == 2);
   CHECK(result[0].bar.val() == 1);
