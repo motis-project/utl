@@ -15,6 +15,9 @@ jobs:
     container:
       image: motisproject/cpp-build:latest
 
+    env:
+      CCACHE_DIR: ccache
+
     strategy:
       matrix:
         cxx: [gcc-9, clang-9, clang-9-san]
@@ -24,6 +27,7 @@ jobs:
           mode: Release
 
     steps:
+
     - uses: actions/checkout@v2
 
     - name: Download pkg
@@ -35,11 +39,20 @@ jobs:
     - name: Download dependencies
       run: ./pkg -l -h
 
+    - name: Cache
+      uses: actions/cache@v1.1.2
+      with:
+        path: ccache
+        key: ccache-${{ hashFiles('**/*.h') }}-${{ hashFiles('**/*.cc') }}
+
     - name: CMake
       run: cmake-ccache-${{ matrix.cxx }} -G "Ninja" -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.mode }}
 
     - name: Build
-      run: cmake --build build
+      run: |
+        ccache -z
+        cmake --build build
+        ccache -s
 
     - name: Run Tests
       run: ./build/utl-test
