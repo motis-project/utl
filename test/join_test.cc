@@ -122,16 +122,16 @@ TEST_CASE("inner_join") {
 TEST_CASE("inner_join_reverse") {
   {
     tester t{{1, 1}, {1, 1}};
-    utl::inner_join(t.a_, t.b_,
-                     [](auto const& lhs, auto const& rhs) { return lhs > rhs; },
-                     t.cb_both());
+    utl::inner_join(
+        t.a_, t.b_, [](auto const& lhs, auto const& rhs) { return lhs > rhs; },
+        t.cb_both());
     CHECK(t.eq_both({{0, 2, 0, 2}}));
   }
   {
     tester t{{2, 1}, {2, 1}};
-    utl::inner_join(t.a_, t.b_,
-                     [](auto const& lhs, auto const& rhs) { return lhs > rhs; },
-                     t.cb_both());
+    utl::inner_join(
+        t.a_, t.b_, [](auto const& lhs, auto const& rhs) { return lhs > rhs; },
+        t.cb_both());
     CHECK(t.eq_both({{0, 1, 0, 1}, {1, 2, 1, 2}}));
   }
 }
@@ -182,9 +182,9 @@ TEST_CASE("left_join") {
 
   {
     tester t{{3}, {2}};
-    utl::left_join(t.a_, t.b_,
-                    [](auto const& lhs, auto const& rhs) { return lhs > rhs; },
-                    t.cb_both(), t.cb_a());
+    utl::left_join(
+        t.a_, t.b_, [](auto const& lhs, auto const& rhs) { return lhs > rhs; },
+        t.cb_both(), t.cb_a());
     CHECK(t.eq_a({{0, 1}}));
     CHECK(t.eq_both({}));
   }
@@ -272,9 +272,9 @@ TEST_CASE("full_join") {
 
   {
     tester t{{2}, {3}};
-    utl::full_join(t.a_, t.b_,
-                    [](auto const& lhs, auto const& rhs) { return lhs > rhs; },
-                    t.cb_both(), t.cb_a(), t.cb_b());
+    utl::full_join(
+        t.a_, t.b_, [](auto const& lhs, auto const& rhs) { return lhs > rhs; },
+        t.cb_both(), t.cb_a(), t.cb_b());
     CHECK(t.eq_a({{0, 1}}));
     CHECK(t.eq_b({{0, 1}}));
     CHECK(t.eq_both({}));

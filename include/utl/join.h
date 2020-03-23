@@ -69,9 +69,9 @@ void join_impl(ItA a_begin, ItA a_end, ItB b_begin, ItB b_end, Less&& less,
 template <typename ItA, typename ItB, typename Less, typename FnMatch>
 void inner_join(ItA a_begin, ItA a_end, ItB b_begin, ItB b_end, Less&& less,
                 FnMatch&& fn_match) {
-  join_impl(a_begin, a_end, b_begin, b_end, std::forward<Less>(less),
-            std::forward<FnMatch>(fn_match), [](auto, auto) {},
-            [](auto, auto) {});
+  join_impl(
+      a_begin, a_end, b_begin, b_end, std::forward<Less>(less),
+      std::forward<FnMatch>(fn_match), [](auto, auto) {}, [](auto, auto) {});
 }
 
 template <typename ContainerA, typename ContainerB, typename Less,
@@ -85,10 +85,10 @@ void inner_join(ContainerA&& a, ContainerB&& b, Less&& less,
 template <typename ItA, typename ItB, typename FnMatch>
 void inner_join(ItA a_begin, ItA a_end, ItB b_begin, ItB b_end,
                 FnMatch&& fn_match) {
-  join_impl(a_begin, a_end, b_begin, b_end,
-            [](auto const& lhs, auto const& rhs) { return lhs < rhs; },
-            std::forward<FnMatch>(fn_match), [](auto, auto) {},
-            [](auto, auto) {});
+  join_impl(
+      a_begin, a_end, b_begin, b_end,
+      [](auto const& lhs, auto const& rhs) { return lhs < rhs; },
+      std::forward<FnMatch>(fn_match), [](auto, auto) {}, [](auto, auto) {});
 }
 
 template <typename ContainerA, typename ContainerB, typename FnMatch>
@@ -119,10 +119,11 @@ void left_join(ContainerA&& a, ContainerB&& b, Less&& less, FnMatch&& fn_match,
 template <typename ItA, typename ItB, typename FnMatch, typename FnLeft>
 void left_join(ItA a_begin, ItA a_end, ItB b_begin, ItB b_end,
                FnMatch&& fn_match, FnLeft&& fn_left) {
-  join_impl(a_begin, a_end, b_begin, b_end,
-            [](auto const& lhs, auto const& rhs) { return lhs < rhs; },
-            std::forward<FnMatch>(fn_match), std::forward<FnLeft>(fn_left),
-            [](auto, auto) {});
+  join_impl(
+      a_begin, a_end, b_begin, b_end,
+      [](auto const& lhs, auto const& rhs) { return lhs < rhs; },
+      std::forward<FnMatch>(fn_match), std::forward<FnLeft>(fn_left),
+      [](auto, auto) {});
 }
 
 template <typename ContainerA, typename ContainerB, typename FnMatch,
@@ -157,10 +158,11 @@ template <typename ItA, typename ItB, typename FnMatch, typename FnLeft,
           typename FnRight>
 void full_join(ItA a_begin, ItA a_end, ItB b_begin, ItB b_end,
                FnMatch&& fn_match, FnLeft&& fn_left, FnRight&& fn_right) {
-  join_impl(a_begin, a_end, b_begin, b_end,
-            [](auto const& lhs, auto const& rhs) { return lhs < rhs; },
-            std::forward<FnMatch>(fn_match), std::forward<FnLeft>(fn_left),
-            std::forward<FnRight>(fn_right));
+  join_impl(
+      a_begin, a_end, b_begin, b_end,
+      [](auto const& lhs, auto const& rhs) { return lhs < rhs; },
+      std::forward<FnMatch>(fn_match), std::forward<FnLeft>(fn_left),
+      std::forward<FnRight>(fn_right));
 }
 
 template <typename ContainerA, typename ContainerB, typename FnMatch,

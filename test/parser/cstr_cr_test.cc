@@ -118,7 +118,7 @@ TEST_CASE("empty_string_cr") {
   REQUIRE(i == 0);
 
   for (auto const entry : enumerate(lines{empty_string})) {
-    (void) entry;
+    (void)entry;
     REQUIRE(false);
   }
 }
