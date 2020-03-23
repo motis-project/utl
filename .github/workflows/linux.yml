@@ -1,3 +1,4 @@
+
 name: Run Tests
 
 on:
@@ -11,6 +12,17 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    container:
+      image: motisproject/cpp-build:latest
+
+    strategy:
+      matrix:
+        cxx: [gcc-9, clang-9, clang-9-san]
+        mode: [Debug, Release]
+        exclude:
+        - cxx: clang-9-san
+          mode: Release
+
     steps:
     - uses: actions/checkout@v2
 
@@ -23,22 +35,11 @@ jobs:
     - name: Download dependencies
       run: ./pkg -l -h
 
-    - name: Cache
-      uses: actions/cache@v1.1.2
-      with:
-        path: ccache
-        key: ccache-${{ hashFiles('**/*.h') }}-${{ hashFiles('**/*.cc') }}
-
-    - name: Pull Docker image
-      run: docker pull motisproject/cpp-build:latest
+    - name: CMake
+      run: cmake-ccache-${{ matrix.cxx }} -G "Ninja" -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.mode }}
 
     - name: Build
-      run: |
-        docker run \
-          -v "$PWD:/repo" \
-          -e CCACHE_DIR=/repo/ccache \
-          --rm motisproject/cpp-build:latest \
-          bash -c "ccache -z && cmake-ccache-gcc-9 /repo && ninja utl-test && ccache -s && cp utl-test /repo"
+      run: cmake --build build
 
     - name: Run Tests
       run: ./utl-test
