@@ -23,6 +23,9 @@ jobs:
         - cxx: clang-9-san
           mode: Release
 
+    env:
+      CCACHE_DIR: ${{ github.workspace }}/.ccache
+
     steps:
 
     - uses: actions/checkout@v2
@@ -33,7 +36,7 @@ jobs:
     - name: Cache
       uses: actions/cache@v1.1.2
       with:
-        path: $HOME/.ccache
+        path: ${{ github.workspace }}/.ccache
         key: ccache-${{ matrix.cxx }}-${{ matrix.mode }}-${{ hashFiles('**/*.h') }}-${{ hashFiles('**/*.cc') }}
 
     - name: CMake
