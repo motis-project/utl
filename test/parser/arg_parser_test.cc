@@ -1,6 +1,6 @@
 #include <cmath>
 
-#include "../catch.hpp"
+#include "catch/catch.hpp"
 
 #include "utl/parser/arg_parser.h"
 #include "utl/parser/csv.h"

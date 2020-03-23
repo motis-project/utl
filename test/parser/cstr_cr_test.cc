@@ -1,4 +1,4 @@
-#include "../catch.hpp"
+#include "catch/catch.hpp"
 #include "utl/enumerate.h"
 #include "utl/parser/cstr.h"
 

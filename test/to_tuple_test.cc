@@ -1,4 +1,4 @@
-#include "catch.hpp"
+#include "catch/catch.hpp"
 
 #include "utl/struct/to_tuple.h"
 
