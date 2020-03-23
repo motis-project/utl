@@ -17,7 +17,7 @@ static cstr csv_file_semicolon = R"(index;width;height;weight;comment;enabled
 )";
 
 TEST_CASE("simple_csv") {
-  typedef std::tuple<int, double, bool> entry;
+  using entry = std::tuple<int, double, bool>;
   std::vector<entry> entries;
   read(csv_file, entries, {{"index", "weight", "enabled"}});
 
@@ -27,7 +27,7 @@ TEST_CASE("simple_csv") {
   std::array<double, 3> weights = {{55.2, 56.9, 57}};
   std::array<bool, 3> enabled = {{true, false, true}};
 
-  auto i = 0u;
+  auto i = 0U;
   for (auto const& r : entries) {
     REQUIRE(std::get<0>(r) == indices[i]);
     REQUIRE(std::abs(std::get<1>(r) - weights[i]) < 0.001);
@@ -37,7 +37,7 @@ TEST_CASE("simple_csv") {
 }
 
 TEST_CASE("simple_csv_semicolon_seperator") {
-  typedef std::tuple<int, double, bool> entry;
+  using entry = std::tuple<int, double, bool>;
   std::vector<entry> entries;
   read<entry, ';'>(csv_file_semicolon, entries,
                    {{"index", "weight", "enabled"}});
@@ -48,7 +48,7 @@ TEST_CASE("simple_csv_semicolon_seperator") {
   std::array<double, 3> weights = {{55.2, 56.9, 57}};
   std::array<bool, 3> enabled = {{true, false, true}};
 
-  auto i = 0u;
+  auto i = 0U;
   for (auto const& r : entries) {
     REQUIRE(std::get<0>(r) == indices[i]);
     REQUIRE(std::abs(std::get<1>(r) - weights[i]) < 0.001);
@@ -58,7 +58,7 @@ TEST_CASE("simple_csv_semicolon_seperator") {
 }
 
 TEST_CASE("wrong_order") {
-  typedef std::tuple<bool, double, int> entry;
+  using entry = std::tuple<bool, double, int>;
   std::vector<entry> entries;
   read(csv_file, entries, {{"enabled", "weight", "index"}});
 
@@ -68,7 +68,7 @@ TEST_CASE("wrong_order") {
   std::array<double, 3> weights = {{55.2, 56.9, 57}};
   std::array<bool, 3> enabled = {{true, false, true}};
 
-  auto i = 0u;
+  auto i = 0U;
   for (auto const& r : entries) {
     REQUIRE(std::get<2>(r) == indices[i]);
     REQUIRE(std::abs(std::get<1>(r) - weights[i]) < 0.001);
@@ -84,7 +84,7 @@ TEST_CASE("missing_selected_column") {
 78,3,57.0,"world",true
 )";
 
-  typedef std::tuple<bool, double, int> entry;
+  using entry = std::tuple<bool, double, int>;
   std::vector<entry> entries;
   read(my_file, entries, {{"enabled", "weight", "index"}});
 
@@ -94,7 +94,7 @@ TEST_CASE("missing_selected_column") {
   std::array<double, 3> weights = {{55.2, 56.9, 57}};
   std::array<bool, 3> enabled = {{true, false, true}};
 
-  auto i = 0u;
+  auto i = 0U;
   for (auto const& r : entries) {
     REQUIRE(std::get<2>(r) == indices[i]);
     REQUIRE(std::abs(std::get<1>(r) - weights[i]) < 0.001);
@@ -110,7 +110,7 @@ TEST_CASE("additional_column") {
 78,3,57.0,"world",true,123
 )";
 
-  typedef std::tuple<bool, double, int> entry;
+  using entry = std::tuple<bool, double, int>;
   std::vector<entry> entries;
   read(my_file, entries, {{"enabled", "weight", "index"}});
 
@@ -120,7 +120,7 @@ TEST_CASE("additional_column") {
   std::array<double, 3> weights = {{55.2, 56.9, 57}};
   std::array<bool, 3> enabled = {{true, false, true}};
 
-  auto i = 0u;
+  auto i = 0U;
   for (auto const& r : entries) {
     REQUIRE(std::get<2>(r) == indices[i]);
     REQUIRE(std::abs(std::get<1>(r) - weights[i]) < 0.001);
@@ -136,7 +136,7 @@ TEST_CASE("missing_column_bad_format") {
 78,3,57.0,"world"
 )";
 
-  typedef std::tuple<bool, double, int> entry;
+  using entry = std::tuple<bool, double, int>;
   std::vector<entry> entries;
   read(my_file, entries, {{"enabled", "weight", "index"}});
 
@@ -146,7 +146,7 @@ TEST_CASE("missing_column_bad_format") {
   std::array<double, 3> weights = {{55.2, 56.9, 57}};
   std::array<bool, 3> enabled = {{false, false, false}};
 
-  auto i = 0u;
+  auto i = 0U;
   for (auto const& r : entries) {
     REQUIRE(std::get<2>(r) == indices[i]);
     REQUIRE(std::abs(std::get<1>(r) - weights[i]) < 0.001);

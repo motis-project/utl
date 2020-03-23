@@ -2,8 +2,7 @@
 
 #include "utl/parser/csv.h"
 
-namespace utl {
-namespace csv_test {
+namespace utl::csv_test {
 
 static cstr csv_file =
     "index,width,height,weight,comment,enabled\r\n"
@@ -20,7 +19,7 @@ static cstr csv_file_semicolon =
     "\r\n";
 
 TEST_CASE("simple_csv_cr") {
-  typedef std::tuple<unsigned, double, bool> entry;
+  using entry = std::tuple<unsigned, double, bool>;
   std::vector<entry> entries;
   read(csv_file, entries, {{"index", "weight", "enabled"}});
 
@@ -30,7 +29,7 @@ TEST_CASE("simple_csv_cr") {
   std::array<double, 3> weights = {{55.2, 56.9, 57}};
   std::array<bool, 3> enabled = {{true, false, true}};
 
-  auto i = 0u;
+  auto i = 0U;
   for (auto const& r : entries) {
     REQUIRE(std::get<0>(r) == indices[i]);
     REQUIRE(std::abs(std::get<1>(r) - weights[i]) < 0.001);
@@ -40,7 +39,7 @@ TEST_CASE("simple_csv_cr") {
 }
 
 TEST_CASE("simple_csv_semicolon_seperator_cr") {
-  typedef std::tuple<unsigned, double, bool> entry;
+  using entry = std::tuple<unsigned, double, bool>;
   std::vector<entry> entries;
   read<entry, ';'>(csv_file_semicolon, entries,
                    {{"index", "weight", "enabled"}});
@@ -51,7 +50,7 @@ TEST_CASE("simple_csv_semicolon_seperator_cr") {
   std::array<double, 3> weights = {{55.2, 56.9, 57}};
   std::array<bool, 3> enabled = {{true, false, true}};
 
-  auto i = 0u;
+  auto i = 0U;
   for (auto const& r : entries) {
     REQUIRE(std::get<0>(r) == indices[i]);
     REQUIRE(std::abs(std::get<1>(r) - weights[i]) < 0.001);
@@ -61,7 +60,7 @@ TEST_CASE("simple_csv_semicolon_seperator_cr") {
 }
 
 TEST_CASE("wrong_order_cr") {
-  typedef std::tuple<bool, double, int> entry;
+  using entry = std::tuple<bool, double, int>;
   std::vector<entry> entries;
   read(csv_file, entries, {{"enabled", "weight", "index"}});
 
@@ -71,7 +70,7 @@ TEST_CASE("wrong_order_cr") {
   std::array<double, 3> weights = {{55.2, 56.9, 57}};
   std::array<bool, 3> enabled = {{true, false, true}};
 
-  auto i = 0u;
+  auto i = 0U;
   for (auto const& r : entries) {
     REQUIRE(std::get<2>(r) == indices[i]);
     REQUIRE(std::abs(std::get<1>(r) - weights[i]) < 0.001);
@@ -88,7 +87,7 @@ TEST_CASE("missing_selected_column_cr") {
       "78,3,57.0,\"world\",true\r\n"
       "\r\n";
 
-  typedef std::tuple<bool, double, int> entry;
+  using entry = std::tuple<bool, double, int>;
   std::vector<entry> entries;
   read(my_file, entries, {{"enabled", "weight", "index"}});
 
@@ -98,7 +97,7 @@ TEST_CASE("missing_selected_column_cr") {
   std::array<double, 3> weights = {{55.2, 56.9, 57}};
   std::array<bool, 3> enabled = {{true, false, true}};
 
-  auto i = 0u;
+  auto i = 0U;
   for (auto const& r : entries) {
     REQUIRE(std::get<2>(r) == indices[i]);
     REQUIRE(std::abs(std::get<1>(r) - weights[i]) < 0.001);
@@ -115,7 +114,7 @@ TEST_CASE("additional_column_cr") {
       "78,3,57.0,\"world\",true,123\r\n"
       "\r\n";
 
-  typedef std::tuple<bool, double, int> entry;
+  using entry = std::tuple<bool, double, int>;
   std::vector<entry> entries;
   read(my_file, entries, {{"enabled", "weight", "index"}});
 
@@ -125,7 +124,7 @@ TEST_CASE("additional_column_cr") {
   std::array<double, 3> weights = {{55.2, 56.9, 57}};
   std::array<bool, 3> enabled = {{true, false, true}};
 
-  auto i = 0u;
+  auto i = 0U;
   for (auto const& r : entries) {
     REQUIRE(std::get<2>(r) == indices[i]);
     REQUIRE(std::abs(std::get<1>(r) - weights[i]) < 0.001);
@@ -142,7 +141,7 @@ TEST_CASE("missing_column_bad_format_cr") {
       "78,3,57.0,\"world\"\r\n"
       "\r\n";
 
-  typedef std::tuple<bool, double, int> entry;
+  using entry = std::tuple<bool, double, int>;
   std::vector<entry> entries;
   read(my_file, entries, {{"enabled", "weight", "index"}});
 
@@ -152,7 +151,7 @@ TEST_CASE("missing_column_bad_format_cr") {
   std::array<double, 3> weights = {{55.2, 56.9, 57}};
   std::array<bool, 3> enabled = {{false, false, false}};
 
-  auto i = 0u;
+  auto i = 0U;
   for (auto const& r : entries) {
     REQUIRE(std::get<2>(r) == indices[i]);
     REQUIRE(std::abs(std::get<1>(r) - weights[i]) < 0.001);
@@ -207,5 +206,4 @@ TEST_CASE("empty_cr") {
   REQUIRE(check_data == dists);
 }
 
-}  // namespace csv_test
-}  // namespace utl
+}  // namespace utl::csv_test

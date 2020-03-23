@@ -85,7 +85,7 @@ TEST_CASE("parse_string_str_end") {
 }
 
 TEST_CASE("parse_string_\"") {
-  cstr s = "\"hello\",\"world\"";
+  cstr s = R"("hello","world")";
   std::string string1;
   std::string string2;
   parse_column(s, string1);
@@ -123,7 +123,7 @@ TEST_CASE("parse_float") {
   REQUIRE(s.len == 3);
   REQUIRE(*s.str == ';');
 
-  float target = 33.7994f;
+  float target = 33.7994F;
   REQUIRE(std::abs(f - target) < 0.001);
 }
 
@@ -134,7 +134,7 @@ TEST_CASE("parse_negative_float") {
   REQUIRE(s.len == 2);
   REQUIRE(*s.str == ',');
 
-  float target = -33.7894f;
+  float target = -33.7894F;
   REQUIRE(std::abs(f - target) < 0.001);
 }
 
@@ -144,7 +144,7 @@ TEST_CASE("parse_float_str_end") {
   parse_arg(s, f);
   REQUIRE(s.len == 0);
 
-  float target = 33.7994f;
+  float target = 33.7994F;
   REQUIRE(std::abs(f - target) < 0.001);
 }
 
@@ -154,7 +154,7 @@ TEST_CASE("parse_negative_float_str_end") {
   parse_arg(s, f);
   REQUIRE(s.len == 0);
 
-  float target = -33.7894f;
+  float target = -33.7894F;
   REQUIRE(std::abs(f - target) < 0.001);
 }
 
