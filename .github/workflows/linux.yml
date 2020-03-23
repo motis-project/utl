@@ -15,10 +15,6 @@ jobs:
     container:
       image: motisproject/cpp-build:latest
 
-    env:
-      CCACHE_DIR: ccache
-      CCACHE_NOHASHDIR: true
-
     strategy:
       matrix:
         cxx: [gcc-9, clang-9, clang-9-san]
@@ -31,19 +27,13 @@ jobs:
 
     - uses: actions/checkout@v2
 
-    - name: Download pkg
-      run: |
-        wget https://git.motis-project.de/dl/pkg/-/jobs/artifacts/master/raw/build/pkg?job=linux-release
-        mv pkg\?job=linux-release pkg
-        chmod +x pkg
-
     - name: Download dependencies
-      run: ./pkg -l -h
+      run: pkg -l -h
 
     - name: Cache
       uses: actions/cache@v1.1.2
       with:
-        path: ccache
+        path: /root/.ccache
         key: ccache-${{ matrix.cxx }}-${{ matrix.mode }}-${{ hashFiles('**/*.h') }}-${{ hashFiles('**/*.cc') }}
 
     - name: CMake
