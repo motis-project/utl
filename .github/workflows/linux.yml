@@ -17,6 +17,7 @@ jobs:
 
     env:
       CCACHE_DIR: ccache
+      CCACHE_NOHASHDIR: true
 
     strategy:
       matrix:
