@@ -1,5 +1,5 @@
 
-name: Run Tests
+name: Linux Build
 
 on:
   push:
