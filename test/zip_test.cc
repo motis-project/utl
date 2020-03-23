@@ -1,4 +1,4 @@
-#include "catch.hpp"
+#include "catch/catch.hpp"
 
 #include <map>
 #include <set>
@@ -69,19 +69,17 @@ TEST_CASE("zip") {
     std::vector<int> lhs{1, 2, 3};
     const std::vector<int> rhs{4, 5, 6};
 
-    for (auto const [a, b] : utl::zip(lhs, rhs)) {
-      static_assert(
-          !std::is_const<std::remove_reference_t<decltype(a)>>::value);
-      static_assert(std::is_const<std::remove_reference_t<decltype(b)>>::value);
-    }
+    static_assert(!std::is_const<std::remove_reference_t<decltype(
+                      std::get<0>(*utl::zip(lhs, rhs).begin()))>>::value);
+    static_assert(std::is_const<std::remove_reference_t<decltype(
+                      std::get<1>(*utl::zip(lhs, rhs).begin()))>>::value);
   }
 
   SECTION("force_const_iterator") {
     std::vector<int> vec{1, 2, 3};
 
-    for (auto const [e] : utl::czip(vec)) {
-      static_assert(std::is_const<std::remove_reference_t<decltype(e)>>::value);
-    }
+    static_assert(std::is_const<std::remove_reference_t<decltype(
+                      std::get<0>(*utl::czip(vec).begin()))>>::value);
   }
 
   SECTION("mutable") {
@@ -106,6 +104,7 @@ TEST_CASE("zip") {
       solid_stuff(solid_stuff&&) = delete;
       solid_stuff& operator=(const solid_stuff&) = delete;
       solid_stuff& operator=(solid_stuff&&) = delete;
+      ~solid_stuff() = default;
 
       int val_;
     };

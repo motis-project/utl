@@ -1,11 +1,11 @@
-#include "catch.hpp"
+#include "catch/catch.hpp"
 
 #include "utl/pairwise.h"
 
 TEST_CASE("pairwise") {
   struct obj {
     obj() = default;
-    obj(int payload) : payload_{payload} {}
+    obj(int payload) : payload_{payload} {}  // NOLINT
 
     obj(const obj&) = delete;
     obj(obj&&) = delete;
@@ -13,7 +13,7 @@ TEST_CASE("pairwise") {
     obj& operator=(obj&&) = delete;
     virtual ~obj() = default;
 
-    int payload_;
+    int payload_{};
   };
 
   auto const consume_pairwise = [](auto const& range) {
@@ -28,15 +28,15 @@ TEST_CASE("pairwise") {
   };
 
   {
-    std::array<obj, 0> sut;
-    std::string const expected = "";
+    std::array<obj, 0> sut{};
+    std::string const expected;
     auto const actual = consume_pairwise(utl::pairwise(sut));
     CHECK(expected == actual);
   }
 
   {
     std::array<obj, 1> sut{{1}};
-    std::string const expected = "";
+    std::string const expected;
     auto const actual = consume_pairwise(utl::pairwise(sut));
     CHECK(expected == actual);
   }
