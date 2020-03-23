@@ -43,10 +43,10 @@ jobs:
       uses: actions/cache@v1.1.2
       with:
         path: ccache
-        key: ccache-${{ hashFiles('**/*.h') }}-${{ hashFiles('**/*.cc') }}
+        key: ccache-${{ matrix.cxx }}-${{ matrix.mode }}-${{ hashFiles('**/*.h') }}-${{ hashFiles('**/*.cc') }}
 
     - name: CMake
-      run: cmake-ccache-${{ matrix.cxx }} -G "Ninja" -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.mode }}
+      run: cmake-ccache-${{ matrix.cxx }} -G Ninja -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.mode }}
 
     - name: Build
       run: |
