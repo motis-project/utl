@@ -30,9 +30,13 @@ jobs:
       matrix:
         cxx: [gcc-9, clang-9, clang-9-san]
         mode: [Debug, Release]
+        lint: [Off]
         exclude:
         - cxx: clang-9-san
           mode: Release
+        include:
+        - cxx: clang-9
+          lint: On
     env:
       CCACHE_DIR: ${{ github.workspace }}/.ccache
       CCACHE_NOHASHDIR: true
@@ -51,7 +55,7 @@ jobs:
         key: ccache-${{ matrix.cxx }}-${{ matrix.mode }}-${{ hashFiles('**/*.h') }}-${{ hashFiles('**/*.cc') }}
 
     - name: CMake
-      run: cmake-ccache-${{ matrix.cxx }} -G Ninja -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.mode }}
+      run: cmake-ccache-${{ matrix.cxx }} -G Ninja -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.mode }} -DUTL_LINT=${{ matrix.lint }}
 
     - name: Build
       run: |

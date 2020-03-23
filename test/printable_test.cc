@@ -1,13 +1,13 @@
-#include "catch.hpp"
+#include "catch/catch.hpp"
 
 #include "utl/struct/printable.h"
 
 struct a {
   MAKE_PRINTABLE(a)
-  int i = 1;
-  int j = 2;
-  double d = 100.0;
-  std::string s = "hello world";
+  int i_ = 1;
+  int j_ = 2;
+  double d_ = 100.0;
+  std::string s_ = "hello world";
 };
 
 TEST_CASE("printable") {

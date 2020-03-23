@@ -2103,7 +2103,7 @@ namespace Catch{
     // directly at the location of the failing check instead of breaking inside
     // raise() called from it, i.e. one stack frame below.
     #if defined(__GNUC__) && (defined(__i386) || defined(__x86_64))
-        #define CATCH_TRAP() asm volatile ("int $3")
+        #define CATCH_TRAP() asm volatile ("int $3") // NOLINT
     #else // Fall back to the generic way.
         #include <signal.h>
 
