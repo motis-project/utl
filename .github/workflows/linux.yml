@@ -25,6 +25,7 @@ jobs:
 
     env:
       CCACHE_DIR: ${{ github.workspace }}/.ccache
+      CCACHE_HASHDIR: false
 
     steps:
 
