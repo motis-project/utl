@@ -1,3 +1,5 @@
-![Run Tests](https://github.com/motis-project/utl/workflows/Run%20Tests/badge.svg)
+![Linux Build](https://github.com/motis-project/utl/workflows/Linux%20Build/badge.svg)
+![Windows Build](https://github.com/motis-project/utl/workflows/Windows%20Build/badge.svg)
+
 
 This repository contains universally useful C++ utilities.
