@@ -42,4 +42,4 @@ jobs:
       run: cmake --build build
 
     - name: Run Tests
-      run: ./utl-test
+      run: ./build/utl-test
