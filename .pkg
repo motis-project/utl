@@ -2,3 +2,7 @@
   url=git@github.com:motis-project/fmt.git
   branch=master
   commit=3eca62d66c7c9a2ca97dc8381299d911978b9fb2
+[catch]
+  url=git@github.com:motis-project/Catch2.git
+  branch=master
+  commit=e5c9a58d66ff0780e956b5447573af9d6b9b2ca3
