@@ -1,4 +1,4 @@
-#include "catch/catch.hpp"
+#include "catch2/catch.hpp"
 
 #include "utl/parser/csv.h"
 
@@ -46,7 +46,7 @@ TEST_CASE("simple_csv_semicolon_seperator_cr") {
 
   REQUIRE(entries.size() == 3);
 
-  std::array<int, 3> indices = {{0, 1, 2}};
+  std::array<unsigned, 3> indices = {{0, 1, 2}};
   std::array<double, 3> weights = {{55.2, 56.9, 57}};
   std::array<bool, 3> enabled = {{true, false, true}};
 
@@ -66,7 +66,7 @@ TEST_CASE("wrong_order_cr") {
 
   REQUIRE(entries.size() == 3);
 
-  std::array<unsigned, 3> indices = {{0, 1, 2}};
+  std::array<int, 3> indices = {{0, 1, 2}};
   std::array<double, 3> weights = {{55.2, 56.9, 57}};
   std::array<bool, 3> enabled = {{true, false, true}};
 
@@ -93,7 +93,7 @@ TEST_CASE("missing_selected_column_cr") {
 
   REQUIRE(entries.size() == 3);
 
-  std::array<unsigned, 3> indices = {{0, 0, 0}};
+  std::array<int, 3> indices = {{0, 0, 0}};
   std::array<double, 3> weights = {{55.2, 56.9, 57}};
   std::array<bool, 3> enabled = {{true, false, true}};
 
@@ -120,7 +120,7 @@ TEST_CASE("additional_column_cr") {
 
   REQUIRE(entries.size() == 3);
 
-  std::array<unsigned, 3> indices = {{0, 0, 0}};
+  std::array<int, 3> indices = {{0, 0, 0}};
   std::array<double, 3> weights = {{55.2, 56.9, 57}};
   std::array<bool, 3> enabled = {{true, false, true}};
 
@@ -147,7 +147,7 @@ TEST_CASE("missing_column_bad_format_cr") {
 
   REQUIRE(entries.size() == 3);
 
-  std::array<unsigned, 3> indices = {{0, 0, 0}};
+  std::array<int, 3> indices = {{0, 0, 0}};
   std::array<double, 3> weights = {{55.2, 56.9, 57}};
   std::array<bool, 3> enabled = {{false, false, false}};
 

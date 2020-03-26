@@ -1,4 +1,4 @@
-#include "catch/catch.hpp"
+#include "catch2/catch.hpp"
 
 #include "utl/parser/buf_reader.h"
 #include "utl/parser/csv_range.h"

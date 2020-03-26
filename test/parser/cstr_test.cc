@@ -1,4 +1,4 @@
-#include "catch/catch.hpp"
+#include "catch2/catch.hpp"
 
 #include "utl/parser/cstr.h"
 
@@ -87,7 +87,7 @@ TEST_CASE("empty_line_between") {
 
 TEST_CASE("empty_line_between_no_end") {
   int i = 0;
-  for_each_line(empty_line_between, [&](cstr line) {
+  for_each_line(empty_line_between_no_end, [&](cstr line) {
     REQUIRE(std::strncmp(line.str,  // NOLINT
                          empty_line_between_no_end_lines[i++], line.len) == 0);
   });

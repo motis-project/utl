@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iomanip>
+#include <sstream>
 
 #include "utl/const_str.h"
 #include "utl/parser/arg_parser.h"
