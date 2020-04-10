@@ -6,22 +6,25 @@
 
 namespace utl {
 
-struct to_map_t {
+template <typename Dest>
+struct emplace_t {
   template <typename T>
-  friend auto operator|(T&& t, to_map_t&&) {
+  friend auto operator|(T&& t, emplace_t&&) {
     auto&& r = make_range(std::forward<T>(t));
     auto it = r.begin();
-    using value_t = decltype(r.read(it));
-    std::map<typename value_t::first_type, typename value_t::second_type> v;
+    Dest v;
     while (r.valid(it)) {
       auto entry = r.read(it);
-      v.emplace(std::move(entry.first), std::move(entry.second));
+      v.emplace(entry);
       r.next(it);
     }
     return v;
   }
 };
 
-inline to_map_t map() { return to_map_t(); }
+template <typename Dest>
+inline emplace_t<Dest> emplace() {
+  return emplace_t<Dest>();
+}
 
 }  // namespace utl
