@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <iomanip>
+#include <iostream>
 #include <stdexcept>
 
 #include "fmt/ostream.h"
@@ -20,9 +21,9 @@ std::runtime_error fail(Msg&& msg, FmtArgs... args) {
   gmtime_r(&now, &tmp);
 #endif
 
-  fmt::print("{} [VERIFY FAIL] ", std::put_time(&tmp, "%FT%TZ"));
-  fmt::print(std::forward<Msg>(msg), std::forward<FmtArgs>(args)...);
-  fmt::print("\n");
+  fmt::print(std::clog, "{} [VERIFY FAIL] ", std::put_time(&tmp, "%FT%TZ"));
+  fmt::print(std::clog, std::forward<Msg>(msg), std::forward<FmtArgs>(args)...);
+  fmt::print(std::clog, "\n");
 
   return std::runtime_error{
       fmt::format(std::forward<Msg>(msg), std::forward<FmtArgs>(args)...)};
