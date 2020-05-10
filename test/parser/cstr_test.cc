@@ -24,6 +24,18 @@ constexpr char const* empty_line_between_lines[] = {"1", "", "2"};
 constexpr char const* empty_line_between_no_end = "1\n\n2";
 constexpr char const* empty_line_between_no_end_lines[] = {"1", "", "2"};
 
+TEST_CASE("substr overflow") {
+  cstr s = "012345678";
+
+  REQUIRE(s.substr(10, 12).len == 0U);
+  REQUIRE(s.substr(5, 10) == cstr{"5678"});
+  REQUIRE(s.substr(5, 10).len == 4);
+
+  REQUIRE(s.substr(10, size{2}).len == 0U);
+  REQUIRE(s.substr(5, size{5}) == cstr{"5678"});
+  REQUIRE(s.substr(5, size{5}).len == 4);
+}
+
 TEST_CASE("get_line") {
   cstr str = one_line;
   auto line = get_line(str);

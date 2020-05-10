@@ -73,10 +73,14 @@ struct cstr {
     len = l;
   }
   cstr substr(size_t position, size s) const {
-    return {str + position, s.size_};
+    auto const adjusted_position = std::min(position, len);
+    auto const adjusted_size = std::min(s.size_, len - adjusted_position);
+    return {str + adjusted_position, adjusted_size};
   }
   cstr substr(size_t begin, size_t end) const {
-    return {str + begin, end - begin};
+    auto const adjusted_begin = std::min(begin, len);
+    auto const adjusted_end = std::min(end, len);
+    return {str + adjusted_begin, adjusted_end - adjusted_begin};
   }
   cstr substr(size_t begin) const { return {str + begin, len - begin}; }
   cstr substr(field const& f) const {
@@ -92,16 +96,17 @@ struct cstr {
     }
     return substr(0, size(prefix.len)) == prefix;
   }
+  static bool is_space(char const c) { return c == ' '; }
   cstr skip_whitespace_front() {
     auto copy = (*this);
-    while (copy.len != 0 && std::isspace(copy[0])) {
+    while (copy.len != 0 && is_space(copy[0])) {
       ++copy;
     }
     return copy;
   }
   cstr skip_whitespace_back() {
     auto copy = (*this);
-    while (copy.len != 0 && std::isspace(copy.str[copy.len - 1])) {
+    while (copy.len != 0 && is_space(copy.str[copy.len - 1])) {
       --copy.len;
     }
     return copy;

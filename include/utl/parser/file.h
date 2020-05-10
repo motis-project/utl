@@ -44,7 +44,8 @@ inline void chunk(unsigned const chunk_size, size_t const total, Fn fn) {
 
 struct file {
   file(char const* path, char const* mode) : f_(open_file(path, mode)) {
-    verify(f_ != INVALID_HANDLE_VALUE, "unable to open file");
+    verify(f_ != INVALID_HANDLE_VALUE, "unable to open file {} (mode={})", path,
+           mode);
   }
 
   ~file() {
