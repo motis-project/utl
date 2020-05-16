@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #ifdef _MSC_VER
 #include <cstdio>
 
@@ -77,6 +79,24 @@ struct file {
     return b;
   }
 
+  std::string content_str() {
+    constexpr auto block_size = 8192u;
+    size_t const file_size = size();
+
+    auto b = std::string{};
+    b.resize(file_size);
+
+    chunk(block_size, size(), [&](size_t const from, unsigned block_size) {
+      OVERLAPPED overlapped = {0};
+      overlapped.Offset = static_cast<DWORD>(from);
+      overlapped.OffsetHigh = from >> 32u;
+      ReadFile(f_, b.data() + from, static_cast<DWORD>(block_size), nullptr,
+               &overlapped);
+    });
+
+    return b;
+  }
+
   void write(void const* buf, size_t size) {
     constexpr auto block_size = 8192u;
     chunk(block_size, size, [&](size_t const from, unsigned block_size) {
@@ -116,6 +136,15 @@ struct file {
     auto size = std::ftell(f_);
     std::rewind(f_);
     return static_cast<size_t>(size);
+  }
+
+  std::string content_str() {
+    auto file_size = size();
+    auto s = std::string{};
+    s.resize(file_size);
+    auto bytes_read = std::fread(s.data(), 1, file_size, f_);
+    verify(bytes_read == file_size, "file read error");
+    return s;
   }
 
   buffer content() {
