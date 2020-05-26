@@ -18,10 +18,10 @@ TEST_CASE("pairwise") {
 
   auto const consume_pairwise = [](auto const& range) {
     std::string result;
-    for (auto const pair : range) {
-      result.append(std::to_string(pair.first.payload_));
+    for (auto const [first, second] : range) {
+      result.append(std::to_string(first.payload_));
       result.push_back(',');
-      result.append(std::to_string(pair.second.payload_));
+      result.append(std::to_string(second.payload_));
       result.push_back(';');
     }
     return result;
