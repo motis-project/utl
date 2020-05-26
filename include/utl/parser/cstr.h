@@ -97,21 +97,21 @@ struct cstr {
     return substr(0, size(prefix.len)) == prefix;
   }
   static bool is_space(char const c) { return c == ' '; }
-  cstr skip_whitespace_front() {
+  cstr skip_whitespace_front() const {
     auto copy = (*this);
     while (copy.len != 0 && is_space(copy[0])) {
       ++copy;
     }
     return copy;
   }
-  cstr skip_whitespace_back() {
+  cstr skip_whitespace_back() const {
     auto copy = (*this);
     while (copy.len != 0 && is_space(copy.str[copy.len - 1])) {
       --copy.len;
     }
     return copy;
   }
-  cstr trim() { return skip_whitespace_front().skip_whitespace_back(); }
+  cstr trim() const { return skip_whitespace_front().skip_whitespace_back(); }
   bool empty() const { return len == 0; }
   size_t length() const { return len; }
   char const* c_str() const { return str; }
