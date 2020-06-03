@@ -233,6 +233,13 @@ global_progress_trackers& get_global_progress_trackers() {
   return singleton;
 }
 
+progress_tracker& activate_progress_tracker(progress_tracker& tracker) {
+  auto& global = get_global_progress_trackers();
+  std::lock_guard<std::mutex> lock{global.mutex_};
+  global.active_tracker_ = &tracker;
+  return tracker;
+}
+
 progress_tracker& activate_progress_tracker(std::string const& name) {
   auto& global = get_global_progress_trackers();
   std::lock_guard<std::mutex> lock{global.mutex_};

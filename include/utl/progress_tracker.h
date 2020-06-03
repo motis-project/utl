@@ -86,6 +86,7 @@ struct global_progress_trackers {
 
 global_progress_trackers& get_global_progress_trackers();
 
+progress_tracker& activate_progress_tracker(progress_tracker&);
 progress_tracker& activate_progress_tracker(std::string const&);
 progress_tracker& get_active_progress_tracker();
 
