@@ -15,7 +15,7 @@ progress_tracker::txn::~txn() {
   if (lock_.owns_lock()) {  // otherwise: moved from
     if (bounds_changed_) {
       tracker_->in_ = 0ULL;
-      tracker_->out_ = 0.F;
+      tracker_->out_ = tracker_->out_low_;
     }
     lock_.unlock();
     if (status_changed_ || bounds_changed_) {
