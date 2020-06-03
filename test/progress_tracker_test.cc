@@ -1,5 +1,9 @@
 #include "catch2/catch.hpp"
 
+#include <iostream>
+#include <sstream>
+
+#include "utl/raii.h"
 #include "utl/struct/comparable.h"
 #include "utl/struct/printable.h"
 
@@ -13,6 +17,20 @@ struct log_entry {
   float out_;
   std::string msg_;
 };
+
+template <typename Fn>
+std::string capture_cout(Fn&& fn) {
+  auto const reset =
+      utl::make_raii(std::cout.rdbuf(), [](auto* b) { std::cout.rdbuf(b); });
+
+  std::stringstream ss;
+  std::cout.rdbuf(ss.rdbuf());
+
+  fn();
+
+  std::cout << std::flush;
+  return ss.str();
+}
 
 TEST_CASE("progress_tracker") {
   SECTION("msg") {
@@ -48,5 +66,49 @@ TEST_CASE("progress_tracker") {
     for (auto i = 0; i < 11; ++i) {
       CHECK(log.at(i + 1) == log_entry{true, 30.F + 2 * i, ""});
     }
+  }
+}
+
+#define RE_ANY "(.|\r|\n)*"
+
+TEST_CASE("global_progress_tracker") {
+  SECTION("msg") {
+    auto& t1 = utl::get_global_progress_trackers().get_tracker("module_1");
+    auto& t2 = utl::get_global_progress_trackers().get_tracker("module_2");
+
+    auto const str = capture_cout([&] {
+      t1.set_msg("WAITING");
+      t2.set_msg("READY");
+    });
+
+    CHECK_THAT(str, Catch::Matches(RE_ANY "module_1.*WAITING" RE_ANY));
+    CHECK_THAT(str, Catch::Matches(RE_ANY "module_2.*READY" RE_ANY));
+  }
+
+  SECTION("silent") {
+    utl::get_global_progress_trackers().silent_ = true;
+    auto& t1 = utl::get_global_progress_trackers().get_tracker("module_1");
+
+    auto const str = capture_cout([&] { t1.set_msg("ASDF"); });
+    CHECK(str.empty());
+
+    utl::get_global_progress_trackers().silent_ = false;
+  }
+
+  SECTION("progress") {
+    auto& t1 = utl::get_global_progress_trackers().get_tracker("module_1");
+    utl::get_global_progress_trackers().get_tracker("module_2");
+
+    auto const str = capture_cout([&] { t1.update(50ULL); });
+
+    CHECK_THAT(str, Catch::Matches(RE_ANY "module_1.*50%" RE_ANY));
+    CHECK_THAT(str, Catch::Matches(RE_ANY "module_2.*0%" RE_ANY));
+  }
+
+  SECTION("clear") {
+    utl::get_global_progress_trackers().clear();
+    auto const str =
+        capture_cout([&] { utl::get_global_progress_trackers().print(); });
+    CHECK(str.empty());
   }
 }

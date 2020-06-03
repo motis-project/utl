@@ -2,6 +2,8 @@
 
 #include <atomic>
 #include <functional>
+#include <map>
+#include <mutex>
 #include <string>
 
 namespace utl {
@@ -39,5 +41,20 @@ struct progress_tracker {
   std::atomic_size_t in_{0ULL};
   std::atomic<float> out_{0.F};
 };
+
+struct global_progress_trackers {
+  progress_tracker& get_tracker(std::string const& name);
+
+  void print();
+  void clear();
+
+  std::mutex mutex_;
+  bool silent_{false};
+  unsigned last_print_height_{0U};
+  std::map<std::string, progress_tracker> trackers_;
+  progress_tracker* active_tracker_{nullptr};
+};
+
+global_progress_trackers& get_global_progress_trackers();
 
 }  // namespace utl

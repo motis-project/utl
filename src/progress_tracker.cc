@@ -1,7 +1,12 @@
 #include "utl/progress_tracker.h"
 
+#ifdef _MSC_VER
+#include "windows.h"
+#endif
+
 #include <algorithm>
 
+#include "utl/get_or_create.h"
 #include "utl/verify.h"
 
 namespace utl {
@@ -102,6 +107,105 @@ void progress_tracker::update_out() {
   if (old_out != new_out) {
     callback_(*this);
   }
+}
+
+progress_tracker& global_progress_trackers::get_tracker(
+    std::string const& name) {
+  std::lock_guard<std::mutex> lock{mutex_};
+  auto const it = trackers_.find(name);
+  if (it == end(trackers_)) {
+    return trackers_.emplace(name, [this](auto&) { print(); }).first->second;
+  } else {
+    return it->second;
+  }
+};
+
+#ifdef _MSC_VER
+
+constexpr auto const BAR = "\xDB";
+
+void move(int x, int y) {
+  auto hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+  if (!hStdout) {
+    return;
+  }
+
+  CONSOLE_SCREEN_BUFFER_INFO csbiInfo;
+  GetConsoleScreenBufferInfo(hStdout, &csbiInfo);
+
+  COORD cursor;
+  cursor.X = csbiInfo.dwCursorPosition.X + x;
+  cursor.Y = csbiInfo.dwCursorPosition.Y + y;
+  SetConsoleCursorPosition(hStdout, cursor);
+}
+
+void move_cursor_up(unsigned lines) {
+  if (lines != 0) {
+    move(0, -lines);
+  }
+}
+
+void set_vt100_mode() {
+  auto hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+  SetConsoleMode(hStdout,
+                 ENABLE_PROCESSED_OUTPUT | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
+}
+
+#else
+
+constexpr auto const BAR = "■";
+
+void set_vt100_mode() {}
+
+void move_cursor_up(unsigned lines) {
+  if (lines != 0) {
+    std::cout << "\x1b[" << lines << "A";
+  }
+}
+
+#endif
+
+void clear_line() { std::cout << "\x1b[K"; }
+
+void global_progress_trackers::print() {
+  if (silent_) {
+    return;
+  }
+  std::lock_guard<std::mutex> lock{mutex_};
+
+  set_vt100_mode();
+  move_cursor_up(last_print_height_);
+  for (auto const& [name, t] : trackers_) {
+    clear_line();
+    if (t.active_) {
+      fmt::print(std::cout, "{:>12}: [", name);
+      constexpr auto const WIDTH = 55U;
+      for (auto i = 0U; i < 55U; ++i) {
+        auto const scaled = static_cast<int>(i * 100.0 / WIDTH);
+        std::cout << (scaled <= t.out_ ? BAR : " ");
+      }
+      fmt::print(std::cout, "] {:>3.0}%", t.out_);
+      if (!t.msg_.empty()) {
+        fmt::print(std::cout, " | {}", t.msg_);
+      }
+      std::cout << "\n";
+    } else {
+      fmt::print(std::cout, "{:>12}: {}\n", name, t.msg_);
+    }
+  }
+  std::cout << std::flush;
+  last_print_height_ = trackers_.size();
+}
+
+void global_progress_trackers::clear() {
+  std::lock_guard<std::mutex> lock{mutex_};
+  trackers_.clear();
+  last_print_height_ = 0U;
+}
+
+global_progress_trackers& get_global_progress_trackers() {
+  static global_progress_trackers singleton;
+  return singleton;
 }
 
 }  // namespace utl
