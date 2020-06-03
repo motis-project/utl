@@ -10,7 +10,7 @@ namespace utl {
 
 struct progress_tracker {
   struct txn {
-    txn(progress_tracker* tracker)
+    explicit txn(progress_tracker* tracker)
         : tracker_{tracker}, lock_{tracker_->mutex_} {}
     ~txn();
 
@@ -53,7 +53,7 @@ struct progress_tracker {
 
   std::function<void(progress_tracker const&)> callback_;
 
-  std::mutex mutex_;
+  mutable std::mutex mutex_;
   std::string msg_;
   bool show_progress_{true};
   float out_low_{0.F};
@@ -66,6 +66,12 @@ struct progress_tracker {
 };
 
 struct global_progress_trackers {
+  global_progress_trackers() = default;
+  global_progress_trackers(global_progress_trackers const&) = delete;
+  global_progress_trackers& operator=(global_progress_trackers const&) = delete;
+  global_progress_trackers(global_progress_trackers&&) = delete;
+  global_progress_trackers& operator=(global_progress_trackers&&) = delete;
+
   progress_tracker& get_tracker(std::string const& name);
 
   void print();
@@ -79,5 +85,8 @@ struct global_progress_trackers {
 };
 
 global_progress_trackers& get_global_progress_trackers();
+
+progress_tracker& activate_progress_tracker(std::string const&);
+progress_tracker& get_active_progress_tracker();
 
 }  // namespace utl

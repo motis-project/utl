@@ -126,15 +126,21 @@ void progress_tracker::update_out() {
   }
 }
 
-progress_tracker& global_progress_trackers::get_tracker(
-    std::string const& name) {
-  std::lock_guard<std::mutex> lock{mutex_};
-  auto const it = trackers_.find(name);
-  if (it == end(trackers_)) {
-    return trackers_.emplace(name, [this](auto&) { print(); }).first->second;
+inline progress_tracker& get_tracker_unsafe(global_progress_trackers& global,
+                                            std::string const& name) {
+  auto const it = global.trackers_.find(name);
+  if (it == end(global.trackers_)) {
+    return global.trackers_.emplace(name, [&global](auto&) { global.print(); })
+        .first->second;
   } else {
     return it->second;
   }
+};
+
+progress_tracker& global_progress_trackers::get_tracker(
+    std::string const& name) {
+  std::lock_guard<std::mutex> lock{mutex_};
+  return get_tracker_unsafe(*this, name);
 };
 
 #ifdef _MSC_VER
@@ -188,12 +194,13 @@ void global_progress_trackers::print() {
   if (silent_) {
     return;
   }
-  std::lock_guard<std::mutex> lock{mutex_};
+  std::lock_guard<std::mutex> global_lock{mutex_};
 
   set_vt100_mode();
   move_cursor_up(last_print_height_);
   for (auto const& [name, t] : trackers_) {
     clear_line();
+    std::lock_guard<std::mutex> tracker_lock{t.mutex_};
     if (t.show_progress_) {
       fmt::print(std::cout, "{:>12}: [", name);
       constexpr auto const WIDTH = 55U;
@@ -218,11 +225,28 @@ void global_progress_trackers::clear() {
   std::lock_guard<std::mutex> lock{mutex_};
   trackers_.clear();
   last_print_height_ = 0U;
+  active_tracker_ = nullptr;
 }
 
 global_progress_trackers& get_global_progress_trackers() {
   static global_progress_trackers singleton;
   return singleton;
+}
+
+progress_tracker& activate_progress_tracker(std::string const& name) {
+  auto& global = get_global_progress_trackers();
+  std::lock_guard<std::mutex> lock{global.mutex_};
+  auto& tracker = get_tracker_unsafe(global, name);
+  global.active_tracker_ = &tracker;
+  return tracker;
+}
+
+progress_tracker& get_active_progress_tracker() {
+  auto& global = get_global_progress_trackers();
+  std::lock_guard<std::mutex> lock{global.mutex_};
+  verify(global.active_tracker_ != nullptr,
+         "get_active_progress_tracker: there is no active progress_tracker");
+  return *global.active_tracker_;
 }
 
 }  // namespace utl

@@ -112,3 +112,30 @@ TEST_CASE("global_progress_tracker") {
     CHECK(str.empty());
   }
 }
+
+TEST_CASE("active_progress_tracker") {
+  SECTION("one") {
+    auto const str = capture_cout([&] {
+      utl::activate_progress_tracker("first").msg("YEAH");
+      utl::get_active_progress_tracker().msg("ASDF");
+    });
+
+    CHECK_THAT(str, Catch::Matches(RE_ANY "first.*?YEAH" RE_ANY));
+    CHECK_THAT(str, Catch::Matches(RE_ANY "first.*?ASDF" RE_ANY));
+  }
+
+  SECTION("two") {
+    auto const str = capture_cout([&] {
+      utl::activate_progress_tracker("second");
+      utl::get_active_progress_tracker().msg("QWERTZ");
+    });
+
+    CHECK_THAT(str, Catch::Matches(RE_ANY "first.*?ASDF" RE_ANY));
+    CHECK_THAT(str, Catch::Matches(RE_ANY "second.*?QWERTZ" RE_ANY));
+  }
+
+  SECTION("clear") {
+    utl::get_global_progress_trackers().clear();
+    CHECK_THROWS(utl::get_active_progress_tracker());
+  }
+}
