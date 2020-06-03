@@ -10,14 +10,16 @@ find_package(Boost)
 
 include(cmake/pkg.cmake)
 
-add_library(utl INTERFACE)
-target_link_libraries(utl INTERFACE fmt-header-only)
-target_include_directories(utl INTERFACE include)
-target_include_directories(utl SYSTEM INTERFACE ${Boost_INCLUDE_DIR})
-target_compile_options(utl INTERFACE -D_SCL_SECURE_NO_WARNINGS=1)
-target_compile_features(utl INTERFACE cxx_std_17)
+file(GLOB_RECURSE utl-files src/*.cc)
+
+add_library(utl STATIC ${utl-files})
+target_link_libraries(utl PUBLIC fmt-header-only)
+target_include_directories(utl PUBLIC include)
+target_include_directories(utl SYSTEM PUBLIC ${Boost_INCLUDE_DIR})
+target_compile_options(utl PUBLIC -D_SCL_SECURE_NO_WARNINGS=1)
+target_compile_features(utl PUBLIC cxx_std_17)
 if (MSVC)
-  target_compile_definitions(utl INTERFACE NOMINMAX)
+  target_compile_definitions(utl PUBLIC NOMINMAX)
 endif()
 
 file(GLOB_RECURSE utl-test-files test/*.cc)
