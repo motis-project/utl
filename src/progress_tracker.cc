@@ -264,4 +264,17 @@ progress_tracker& get_active_progress_tracker() {
   return *global.active_tracker_;
 }
 
+progress_tracker& get_active_progress_tracker_or_activate(
+    std::string const& name) {
+  auto& global = get_global_progress_trackers();
+  std::lock_guard<std::mutex> lock{global.mutex_};
+  if (global.active_tracker_ != nullptr) {
+    return *global.active_tracker_;
+  } else {
+    auto& tracker = get_tracker_unsafe(global, name);
+    global.active_tracker_ = &tracker;
+    return tracker;
+  }
+}
+
 }  // namespace utl
