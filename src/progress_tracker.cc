@@ -208,7 +208,7 @@ void global_progress_trackers::print() {
         auto const scaled = static_cast<int>(i * 100.0 / WIDTH);
         std::cout << (scaled <= t.out_ ? BAR : " ");
       }
-      fmt::print(std::cout, "] {:>3.0}%", t.out_);
+      fmt::print(std::cout, " ] {:>3}%", static_cast<int>(t.out_));
       if (!t.msg_.empty()) {
         fmt::print(std::cout, " | {}", t.msg_);
       }
