@@ -61,10 +61,9 @@ TEST_CASE("progress_tracker") {
       sut.increment();
     }
 
-    REQUIRE(log.size() == 12);
-    CHECK(log.at(0) == log_entry{true, 0.F, ""});
+    REQUIRE(log.size() == 11);
     for (auto i = 0; i < 11; ++i) {
-      CHECK(log.at(i + 1) == log_entry{true, 30.F + 2 * i, ""});
+      CHECK(log.at(i) == log_entry{true, 30.F + 2 * i, ""});
     }
   }
 }
