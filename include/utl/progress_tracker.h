@@ -9,23 +9,23 @@
 namespace utl {
 
 struct progress_tracker {
-  struct txn {
-    explicit txn(progress_tracker* tracker)
+  struct tracker_update {
+    explicit tracker_update(progress_tracker* tracker)
         : tracker_{tracker}, lock_{tracker_->mutex_} {}
-    ~txn();
+    ~tracker_update();
 
-    txn(txn const&) = delete;
-    txn& operator=(txn const&) = delete;
-    txn(txn&&) = default;
-    txn& operator=(txn&&) = default;
+    tracker_update(tracker_update const&) = delete;
+    tracker_update& operator=(tracker_update const&) = delete;
+    tracker_update(tracker_update&&) = default;
+    tracker_update& operator=(tracker_update&&) = default;
 
-    txn msg(std::string const&);
-    txn show_progress(bool);
+    tracker_update status(std::string const&);
+    tracker_update show_progress(bool);
 
-    txn reset_bounds();
-    txn out_bounds(float out_low, float out_high);
-    txn out_mod(float out_mod);
-    txn in_high(size_t in_high);
+    tracker_update reset_bounds();
+    tracker_update out_bounds(float out_low, float out_high);
+    tracker_update out_mod(float out_mod);
+    tracker_update in_high(size_t in_high);
 
     progress_tracker* tracker_;
     std::unique_lock<std::mutex> lock_;
@@ -37,13 +37,13 @@ struct progress_tracker {
       std::function<void(progress_tracker const&)> callback)
       : callback_{std::move(callback)} {}
 
-  txn msg(std::string const&);
-  txn show_progress(bool);
+  tracker_update status(std::string const&);
+  tracker_update show_progress(bool);
 
-  txn reset_bounds();
-  txn out_bounds(float out_low, float out_high);
-  txn out_mod(float out_mod);
-  txn in_high(size_t in_high);
+  tracker_update reset_bounds();
+  tracker_update out_bounds(float out_low, float out_high);
+  tracker_update out_mod(float out_mod);
+  tracker_update in_high(size_t in_high);
 
   void update(size_t new_in);
   void increment(size_t inc = 1);
@@ -54,7 +54,7 @@ struct progress_tracker {
   std::function<void(progress_tracker const&)> callback_;
 
   mutable std::mutex mutex_;
-  std::string msg_;
+  std::string status_;
   bool show_progress_{true};
   float out_low_{0.F};
   float out_high_{100.F};

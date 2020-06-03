@@ -13,9 +13,9 @@ struct log_entry {
   MAKE_COMPARABLE();
   MAKE_PRINTABLE(log_entry);
 
-  bool active_;
+  bool show_progress_;
   float out_;
-  std::string msg_;
+  std::string status_;
 };
 
 template <typename Fn>
@@ -35,13 +35,13 @@ std::string capture_cout(Fn&& fn) {
 TEST_CASE("progress_tracker") {
   SECTION("msg") {
     std::vector<log_entry> log;
-    utl::progress_tracker sut{[&log](auto& t) {
-      log.push_back({t.show_progress_, t.out_, t.msg_});
+    utl::progress_tracker sut{[&](auto& t) {
+      log.push_back({t.show_progress_, t.out_, t.status_});
     }};
 
-    sut.msg("Hello World!");
-    sut.msg("GO").show_progress(true);
-    sut.msg("STOP").show_progress(false);
+    sut.status("Hello World!");
+    sut.status("GO").show_progress(true);
+    sut.status("STOP").show_progress(false);
 
     REQUIRE(log.size() == 3);
     CHECK(log.at(0) == log_entry{true, 0.F, "Hello World!"});
@@ -52,7 +52,7 @@ TEST_CASE("progress_tracker") {
   SECTION("progress") {
     std::vector<log_entry> log;
     utl::progress_tracker sut{[&log](auto& t) {
-      log.push_back({t.show_progress_, t.out_, t.msg_});
+      log.push_back({t.show_progress_, t.out_, t.status_});
     }};
 
     sut.out_bounds(30.F, 50.F).out_mod(2.F).in_high(100ULL);
@@ -76,8 +76,8 @@ TEST_CASE("global_progress_tracker") {
     auto& t2 = utl::get_global_progress_trackers().get_tracker("module_2");
 
     auto const str = capture_cout([&] {
-      t1.msg("WAITING");
-      t2.msg("READY");
+      t1.status("WAITING");
+      t2.status("READY");
     });
 
     CHECK_THAT(str, Catch::Matches(RE_ANY "module_1.*?WAITING" RE_ANY));
@@ -88,7 +88,7 @@ TEST_CASE("global_progress_tracker") {
     utl::get_global_progress_trackers().silent_ = true;
     auto& t1 = utl::get_global_progress_trackers().get_tracker("module_1");
 
-    auto const str = capture_cout([&] { t1.msg("ASDF"); });
+    auto const str = capture_cout([&] { t1.status("ASDF"); });
     CHECK(str.empty());
 
     utl::get_global_progress_trackers().silent_ = false;
@@ -115,8 +115,8 @@ TEST_CASE("global_progress_tracker") {
 TEST_CASE("active_progress_tracker") {
   SECTION("one") {
     auto const str = capture_cout([&] {
-      utl::activate_progress_tracker("first").msg("YEAH");
-      utl::get_active_progress_tracker().msg("ASDF");
+      utl::activate_progress_tracker("first").status("YEAH");
+      utl::get_active_progress_tracker().status("ASDF");
     });
 
     CHECK_THAT(str, Catch::Matches(RE_ANY "first.*?YEAH" RE_ANY));
@@ -126,7 +126,7 @@ TEST_CASE("active_progress_tracker") {
   SECTION("two") {
     auto const str = capture_cout([&] {
       utl::activate_progress_tracker("second");
-      utl::get_active_progress_tracker().msg("QWERTZ");
+      utl::get_active_progress_tracker().status("QWERTZ");
     });
 
     CHECK_THAT(str, Catch::Matches(RE_ANY "first.*?ASDF" RE_ANY));
