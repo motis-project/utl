@@ -69,7 +69,7 @@ TEST_CASE("progress_tracker") {
   }
 }
 
-#define RE_ANY "(.|\r|\n)*"
+#define RE_ANY "(?:.|\r|\n)*?"
 
 TEST_CASE("global_progress_tracker") {
   SECTION("msg") {
@@ -81,8 +81,8 @@ TEST_CASE("global_progress_tracker") {
       t2.set_msg("READY");
     });
 
-    CHECK_THAT(str, Catch::Matches(RE_ANY "module_1.*WAITING" RE_ANY));
-    CHECK_THAT(str, Catch::Matches(RE_ANY "module_2.*READY" RE_ANY));
+    CHECK_THAT(str, Catch::Matches(RE_ANY "module_1.*?WAITING" RE_ANY));
+    CHECK_THAT(str, Catch::Matches(RE_ANY "module_2.*?READY" RE_ANY));
   }
 
   SECTION("silent") {
@@ -101,8 +101,8 @@ TEST_CASE("global_progress_tracker") {
 
     auto const str = capture_cout([&] { t1.update(50ULL); });
 
-    CHECK_THAT(str, Catch::Matches(RE_ANY "module_1.*50%" RE_ANY));
-    CHECK_THAT(str, Catch::Matches(RE_ANY "module_2.*0%" RE_ANY));
+    CHECK_THAT(str, Catch::Matches(RE_ANY "module_1.*?50%" RE_ANY));
+    CHECK_THAT(str, Catch::Matches(RE_ANY "module_2.*?0%" RE_ANY));
   }
 
   SECTION("clear") {
