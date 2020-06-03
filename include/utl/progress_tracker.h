@@ -9,19 +9,41 @@
 namespace utl {
 
 struct progress_tracker {
+  struct txn {
+    txn(progress_tracker* tracker)
+        : tracker_{tracker}, lock_{tracker_->mutex_} {}
+    ~txn();
+
+    txn(txn const&) = delete;
+    txn& operator=(txn const&) = delete;
+    txn(txn&&) = default;
+    txn& operator=(txn&&) = default;
+
+    txn msg(std::string const&);
+    txn show_progress(bool);
+
+    txn reset_bounds();
+    txn out_bounds(float out_low, float out_high);
+    txn out_mod(float out_mod);
+    txn in_high(size_t in_high);
+
+    progress_tracker* tracker_;
+    std::unique_lock<std::mutex> lock_;
+    bool status_changed_{false};
+    bool bounds_changed_{false};
+  };
+
   explicit progress_tracker(
       std::function<void(progress_tracker const&)> callback)
       : callback_{std::move(callback)} {}
 
-  void set_msg(std::string const&);
-  void activate(std::string const& = "");
-  void deactivate(std::string const& = "");
+  txn msg(std::string const&);
+  txn show_progress(bool);
 
-  void set_bounds(float out_low, float out_high);
-  void set_bounds(float out_low, float out_high, size_t in_high);
-  void set_bounds(float out_low, float out_high, float out_mod, size_t in_high);
-
-  void set_in_bounds(size_t in_high);
+  txn reset_bounds();
+  txn out_bounds(float out_low, float out_high);
+  txn out_mod(float out_mod);
+  txn in_high(size_t in_high);
 
   void update(size_t new_in);
   void increment(size_t inc = 1);
@@ -31,8 +53,9 @@ struct progress_tracker {
 
   std::function<void(progress_tracker const&)> callback_;
 
+  std::mutex mutex_;
   std::string msg_;
-  bool active_{true};
+  bool show_progress_{true};
   float out_low_{0.F};
   float out_high_{100.F};
   float out_mod_{1.F};

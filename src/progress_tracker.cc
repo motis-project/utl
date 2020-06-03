@@ -11,68 +11,85 @@
 
 namespace utl {
 
-inline void update_status(progress_tracker& t, bool const active,
-                          std::string const& msg) {
-  if (t.active_ != active || t.msg_ != msg) {
-    t.active_ = active;
-    t.msg_ = msg;
-    t.callback_(t);
+progress_tracker::txn::~txn() {
+  if (lock_.owns_lock()) {  // otherwise: moved from
+    if (bounds_changed_) {
+      tracker_->in_ = 0ULL;
+      tracker_->out_ = 0.F;
+    }
+    lock_.unlock();
+    if (status_changed_ || bounds_changed_) {
+      tracker_->callback_(*tracker_);
+    }
   }
 }
 
-void progress_tracker::set_msg(std::string const& msg) {
-  update_status(*this, active_, msg);
-}
-
-void progress_tracker::activate(std::string const& msg) {
-  update_status(*this, true, msg);
-}
-
-void progress_tracker::deactivate(std::string const& msg) {
-  update_status(*this, false, msg);
-}
-
-void progress_tracker::set_bounds(float const out_low, float const out_high) {
-  set_bounds(out_low, out_high, 1.F, 100ULL);
-}
-
-void progress_tracker::set_bounds(float const out_low, float const out_high,
-                                  size_t const in_high) {
-  set_bounds(out_low, out_high, 1.F, in_high);
-}
-
-void progress_tracker::set_bounds(float const out_low, float const out_high,
-                                  float const out_mod, size_t const in_high) {
-  if (out_low_ != out_low || out_high_ != out_high || out_mod_ != out_mod ||
-      in_high_ != in_high) {
-    verify(out_low < out_high,
-           "progress_tracker::set_bounds out_low must be lower than out_high");
-    verify(out_mod_ > 0.F,
-           "progress_tracker::set_bounds out_mod must be greater than zero");
-    verify(in_high > 0ULL,
-           "progress_tracker::set_bounds in_high must be greater than zero");
-
-    in_ = 0ULL;
-    out_ = 0.F;
-
-    out_low_ = out_low;
-    out_high_ = out_high;
-    out_mod_ = out_mod;
-    in_high_ = in_high;
-
-    callback_(*this);
+template <typename T>
+void compare_and_update(bool& changed, T& old_value, T const& new_value) {
+  if (old_value != new_value) {
+    old_value = new_value;
+    changed = true;
   }
 }
 
-void progress_tracker::set_in_bounds(size_t const in_high) {
-  if (in_high_ != in_high) {
-    in_ = 0ULL;
-    out_ = 0.F;
+progress_tracker::txn progress_tracker::txn::msg(std::string const& msg) {
+  compare_and_update(status_changed_, tracker_->msg_, msg);
+  return std::move(*this);
+}
+progress_tracker::txn progress_tracker::txn::show_progress(bool const p) {
+  compare_and_update(status_changed_, tracker_->show_progress_, p);
+  return std::move(*this);
+}
 
-    in_high_ = in_high;
+progress_tracker::txn progress_tracker::txn::reset_bounds() {
+  compare_and_update(bounds_changed_, tracker_->out_low_, 0.F);
+  compare_and_update(bounds_changed_, tracker_->out_high_, 100.F);
+  compare_and_update(bounds_changed_, tracker_->out_mod_, 1.F);
+  compare_and_update<size_t>(bounds_changed_, tracker_->in_high_, 100ULL);
+  return std::move(*this);
+}
 
-    callback_(*this);
-  }
+progress_tracker::txn progress_tracker::txn::out_bounds(float const out_low,
+                                                        float const out_high) {
+  verify(out_low < out_high,
+         "progress_tracker::set_bounds out_low must be lower than out_high");
+  compare_and_update(bounds_changed_, tracker_->out_low_, out_low);
+  compare_and_update(bounds_changed_, tracker_->out_high_, out_high);
+  return std::move(*this);
+}
+progress_tracker::txn progress_tracker::txn::out_mod(float const out_mod) {
+  verify(out_mod > 0.F,
+         "progress_tracker::set_bounds out_mod must be greater than zero");
+  compare_and_update(bounds_changed_, tracker_->out_mod_, out_mod);
+  return std::move(*this);
+}
+
+progress_tracker::txn progress_tracker::txn::in_high(size_t const in_high) {
+  verify(in_high > 0ULL,
+         "progress_tracker::set_bounds in_high must be greater than zero");
+  compare_and_update(bounds_changed_, tracker_->in_high_, in_high);
+  return std::move(*this);
+}
+
+progress_tracker::txn progress_tracker::msg(std::string const& msg) {
+  return progress_tracker::txn{this}.msg(msg);
+}
+progress_tracker::txn progress_tracker::show_progress(bool const p) {
+  return progress_tracker::txn{this}.show_progress(p);
+}
+
+progress_tracker::txn progress_tracker::reset_bounds() {
+  return progress_tracker::txn{this}.reset_bounds();
+}
+progress_tracker::txn progress_tracker::out_bounds(float const out_low,
+                                                   float const out_high) {
+  return progress_tracker::txn{this}.out_bounds(out_low, out_high);
+}
+progress_tracker::txn progress_tracker::out_mod(float const out_mod) {
+  return progress_tracker::txn{this}.out_mod(out_mod);
+}
+progress_tracker::txn progress_tracker::in_high(size_t const in_high) {
+  return progress_tracker::txn{this}.in_high(in_high);
 }
 
 void progress_tracker::update(size_t const new_in) {
@@ -177,7 +194,7 @@ void global_progress_trackers::print() {
   move_cursor_up(last_print_height_);
   for (auto const& [name, t] : trackers_) {
     clear_line();
-    if (t.active_) {
+    if (t.show_progress_) {
       fmt::print(std::cout, "{:>12}: [", name);
       constexpr auto const WIDTH = 55U;
       for (auto i = 0U; i < 55U; ++i) {
