@@ -21,8 +21,17 @@ struct range {
   BeginIt begin() const { return begin_; }
   EndIt end() const { return end_; }
 
-  template <typename It>
+  template <typename It,
+            std::enable_if_t<std::is_reference_v<decltype(*std::declval<It>())>,
+                             int> = 0>
   auto&& read(It& it) const {
+    return *it;
+  }
+
+  template <typename It,
+            std::enable_if_t<
+                !std::is_reference_v<decltype(*std::declval<It>())>, int> = 0>
+  auto read(It& it) const {
     return *it;
   }
 
