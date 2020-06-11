@@ -277,4 +277,16 @@ progress_tracker& get_active_progress_tracker_or_activate(
   }
 }
 
+global_progress_bars::global_progress_bars(bool const silent) {
+  auto& gp = utl::get_global_progress_trackers();
+  old_silent_ = gp.silent_;
+  gp.silent_ = silent;
+}
+
+global_progress_bars::~global_progress_bars() {
+  auto& gp = utl::get_global_progress_trackers();
+  gp.silent_ = old_silent_;
+  gp.clear();
+}
+
 }  // namespace utl

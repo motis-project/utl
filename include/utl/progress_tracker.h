@@ -78,7 +78,7 @@ struct global_progress_trackers {
   void clear();
 
   std::mutex mutex_;
-  bool silent_{false};
+  bool silent_{true};
   unsigned last_print_height_{0U};
   std::map<std::string, progress_tracker> trackers_;
   progress_tracker* active_tracker_{nullptr};
@@ -90,5 +90,17 @@ progress_tracker& activate_progress_tracker(progress_tracker&);
 progress_tracker& activate_progress_tracker(std::string const&);
 progress_tracker& get_active_progress_tracker();
 progress_tracker& get_active_progress_tracker_or_activate(std::string const&);
+
+struct global_progress_bars {
+  explicit global_progress_bars(bool silent = false);
+  ~global_progress_bars();
+
+  global_progress_bars(global_progress_bars const&) = default;
+  global_progress_bars(global_progress_bars&&) = default;
+  global_progress_bars& operator=(global_progress_bars const&) = default;
+  global_progress_bars& operator=(global_progress_bars&&) = default;
+
+  bool old_silent_;
+};
 
 }  // namespace utl

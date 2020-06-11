@@ -76,6 +76,7 @@ TEST_CASE("global_progress_tracker") {
     auto& t2 = utl::get_global_progress_trackers().get_tracker("module_2");
 
     auto const str = capture_cout([&] {
+      auto const progress_bars = utl::global_progress_bars{};
       t1.status("WAITING");
       t2.status("READY");
     });
@@ -84,37 +85,36 @@ TEST_CASE("global_progress_tracker") {
     CHECK_THAT(str, Catch::Matches(RE_ANY "module_2.*?READY" RE_ANY));
   }
 
-  SECTION("silent") {
-    utl::get_global_progress_trackers().silent_ = true;
+  SECTION("silent and clear") {
     auto& t1 = utl::get_global_progress_trackers().get_tracker("module_1");
 
-    auto const str = capture_cout([&] { t1.status("ASDF"); });
-    CHECK(str.empty());
+    auto const str1 = capture_cout([&] { t1.status("ASDF"); });
+    CHECK(str1.empty());
 
-    utl::get_global_progress_trackers().silent_ = false;
+    utl::get_global_progress_trackers().clear();
+    auto const str2 =
+        capture_cout([&] { utl::get_global_progress_trackers().print(); });
+    CHECK(str2.empty());
   }
 
   SECTION("progress") {
     auto& t1 = utl::get_global_progress_trackers().get_tracker("module_1");
     utl::get_global_progress_trackers().get_tracker("module_2");
 
-    auto const str = capture_cout([&] { t1.update(50ULL); });
+    auto const str = capture_cout([&] {
+      auto const progress_bars = utl::global_progress_bars{};
+      t1.update(50ULL);
+    });
 
     CHECK_THAT(str, Catch::Matches(RE_ANY "module_1.*?50%" RE_ANY));
     CHECK_THAT(str, Catch::Matches(RE_ANY "module_2.*?0%" RE_ANY));
-  }
-
-  SECTION("clear") {
-    utl::get_global_progress_trackers().clear();
-    auto const str =
-        capture_cout([&] { utl::get_global_progress_trackers().print(); });
-    CHECK(str.empty());
   }
 }
 
 TEST_CASE("active_progress_tracker") {
   SECTION("one") {
     auto const str = capture_cout([&] {
+      auto const progress_bars = utl::global_progress_bars{};
       utl::activate_progress_tracker("first").status("YEAH");
       utl::get_active_progress_tracker().status("ASDF");
     });
@@ -125,15 +125,18 @@ TEST_CASE("active_progress_tracker") {
 
   SECTION("two") {
     auto const str = capture_cout([&] {
+      auto const progress_bars = utl::global_progress_bars{};
       utl::activate_progress_tracker("second");
       utl::get_active_progress_tracker().status("QWERTZ");
     });
 
-    CHECK_THAT(str, Catch::Matches(RE_ANY "first.*?ASDF" RE_ANY));
     CHECK_THAT(str, Catch::Matches(RE_ANY "second.*?QWERTZ" RE_ANY));
   }
 
   SECTION("clear") {
+    utl::activate_progress_tracker("third");
+    utl::get_active_progress_tracker().status("ASDF");
+
     utl::get_global_progress_trackers().clear();
     CHECK_THROWS(utl::get_active_progress_tracker());
   }
