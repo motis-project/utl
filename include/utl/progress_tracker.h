@@ -65,6 +65,8 @@ struct progress_tracker {
   std::atomic<float> out_{0.F};
 };
 
+using progress_tracker_ptr = std::shared_ptr<progress_tracker>;
+
 struct global_progress_trackers {
   global_progress_trackers() = default;
   global_progress_trackers(global_progress_trackers const&) = delete;
@@ -72,7 +74,7 @@ struct global_progress_trackers {
   global_progress_trackers(global_progress_trackers&&) = delete;
   global_progress_trackers& operator=(global_progress_trackers&&) = delete;
 
-  progress_tracker& get_tracker(std::string const& name);
+  progress_tracker_ptr get_tracker(std::string const& name);
 
   void print();
   void clear();
@@ -80,16 +82,17 @@ struct global_progress_trackers {
   std::mutex mutex_;
   bool silent_{true};
   unsigned last_print_height_{0U};
-  std::map<std::string, progress_tracker> trackers_;
-  progress_tracker* active_tracker_{nullptr};
+  std::map<std::string, progress_tracker_ptr> trackers_;
+  progress_tracker_ptr active_tracker_;
 };
 
 global_progress_trackers& get_global_progress_trackers();
 
-progress_tracker& activate_progress_tracker(progress_tracker&);
-progress_tracker& activate_progress_tracker(std::string const&);
-progress_tracker& get_active_progress_tracker();
-progress_tracker& get_active_progress_tracker_or_activate(std::string const&);
+progress_tracker_ptr activate_progress_tracker(progress_tracker_ptr);
+progress_tracker_ptr activate_progress_tracker(std::string const&);
+progress_tracker_ptr get_active_progress_tracker();
+progress_tracker_ptr get_active_progress_tracker_or_activate(
+    std::string const&);
 
 struct global_progress_bars {
   explicit global_progress_bars(bool silent = false);

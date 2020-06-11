@@ -134,18 +134,20 @@ void progress_tracker::update_out() {
   }
 }
 
-inline progress_tracker& get_tracker_unsafe(global_progress_trackers& global,
-                                            std::string const& name) {
+inline progress_tracker_ptr get_tracker_unsafe(global_progress_trackers& global,
+                                               std::string const& name) {
   auto const it = global.trackers_.find(name);
   if (it == end(global.trackers_)) {
-    return global.trackers_.emplace(name, [&global](auto&) { global.print(); })
+    return global.trackers_
+        .emplace(name, std::make_shared<progress_tracker>(
+                           [&global](auto&) { global.print(); }))
         .first->second;
   } else {
     return it->second;
   }
 };
 
-progress_tracker& global_progress_trackers::get_tracker(
+progress_tracker_ptr global_progress_trackers::get_tracker(
     std::string const& name) {
   std::lock_guard<std::mutex> lock{mutex_};
   return get_tracker_unsafe(*this, name);
@@ -208,21 +210,21 @@ void global_progress_trackers::print() {
   move_cursor_up(last_print_height_);
   for (auto const& [name, t] : trackers_) {
     clear_line();
-    std::lock_guard<std::mutex> tracker_lock{t.mutex_};
-    if (t.show_progress_) {
+    std::lock_guard<std::mutex> tracker_lock{t->mutex_};
+    if (t->show_progress_) {
       fmt::print(std::cout, "{:>12}: [", name);
       constexpr auto const WIDTH = 55U;
       for (auto i = 0U; i < 55U; ++i) {
         auto const scaled = static_cast<int>(i * 100.0 / WIDTH);
-        std::cout << (scaled <= t.out_ ? BAR : " ");
+        std::cout << (scaled <= t->out_ ? BAR : " ");
       }
-      fmt::print(std::cout, " ] {:>3}%", static_cast<int>(t.out_));
-      if (!t.status_.empty()) {
-        fmt::print(std::cout, " | {}", t.status_);
+      fmt::print(std::cout, " ] {:>3}%", static_cast<int>(t->out_));
+      if (!t->status_.empty()) {
+        fmt::print(std::cout, " | {}", t->status_);
       }
       std::cout << "\n";
     } else {
-      fmt::print(std::cout, "{:>12}: {}\n", name, t.status_);
+      fmt::print(std::cout, "{:>12}: {}\n", name, t->status_);
     }
   }
   std::cout << std::flush;
@@ -241,38 +243,38 @@ global_progress_trackers& get_global_progress_trackers() {
   return singleton;
 }
 
-progress_tracker& activate_progress_tracker(progress_tracker& tracker) {
+progress_tracker_ptr activate_progress_tracker(progress_tracker_ptr tracker) {
   auto& global = get_global_progress_trackers();
   std::lock_guard<std::mutex> lock{global.mutex_};
-  global.active_tracker_ = &tracker;
+  global.active_tracker_ = tracker;
   return tracker;
 }
 
-progress_tracker& activate_progress_tracker(std::string const& name) {
+progress_tracker_ptr activate_progress_tracker(std::string const& name) {
   auto& global = get_global_progress_trackers();
   std::lock_guard<std::mutex> lock{global.mutex_};
-  auto& tracker = get_tracker_unsafe(global, name);
-  global.active_tracker_ = &tracker;
+  auto tracker = get_tracker_unsafe(global, name);
+  global.active_tracker_ = tracker;
   return tracker;
 }
 
-progress_tracker& get_active_progress_tracker() {
+progress_tracker_ptr get_active_progress_tracker() {
   auto& global = get_global_progress_trackers();
   std::lock_guard<std::mutex> lock{global.mutex_};
   verify(global.active_tracker_ != nullptr,
          "get_active_progress_tracker: there is no active progress_tracker");
-  return *global.active_tracker_;
+  return global.active_tracker_;
 }
 
-progress_tracker& get_active_progress_tracker_or_activate(
+progress_tracker_ptr get_active_progress_tracker_or_activate(
     std::string const& name) {
   auto& global = get_global_progress_trackers();
   std::lock_guard<std::mutex> lock{global.mutex_};
   if (global.active_tracker_ != nullptr) {
-    return *global.active_tracker_;
+    return global.active_tracker_;
   } else {
-    auto& tracker = get_tracker_unsafe(global, name);
-    global.active_tracker_ = &tracker;
+    auto tracker = get_tracker_unsafe(global, name);
+    global.active_tracker_ = tracker;
     return tracker;
   }
 }
