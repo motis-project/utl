@@ -64,10 +64,9 @@ inline errors_t parallel_for(Container const& jobs, Fun&& func,
       jobs.size(), [&](auto const idx) { func(jobs[idx]); }, err_strat);
 }
 
-template <typename T, typename Fun>
-inline errors_t parallel_for(std::string const& desc,
-                             std::vector<T> const& jobs, size_t const mod,
-                             Fun func,
+template <typename Container, typename Fun>
+inline errors_t parallel_for(std::string const& desc, Container const& jobs,
+                             size_t const mod, Fun func,
                              parallel_error_strategy const err_strat =
                                  parallel_error_strategy::QUIT_EXEC) {
   return parallel_for_run(
