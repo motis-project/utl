@@ -85,7 +85,7 @@ TEST_CASE("progress_tracker") {
     log.clear();
 
     sut.increment();
-    CHECK(log.size() == 0);
+    CHECK(log.empty());
   }
 
   SECTION("out_range_zero") {
@@ -101,7 +101,7 @@ TEST_CASE("progress_tracker") {
     log.clear();
 
     sut.increment();
-    CHECK(log.size() == 0);
+    CHECK(log.empty());
   }
 }
 
