@@ -66,6 +66,43 @@ TEST_CASE("progress_tracker") {
       CHECK(log.at(i) == log_entry{true, 30.F + 2 * i, ""});
     }
   }
+
+  SECTION("in_high_zero") {
+    std::vector<log_entry> log;
+    utl::progress_tracker sut{[&log](auto& t) {
+      log.push_back({t.show_progress_, t.out_, t.status_});
+    }};
+
+    sut.out_bounds(30.F, 50.F).in_high(0ULL);
+
+    REQUIRE(log.size() == 1);
+    CHECK(log.at(0) == log_entry{true, 30.F, ""});
+    log.clear();
+
+    sut.increment();
+    REQUIRE(log.size() == 1);
+    CHECK(log.at(0) == log_entry{true, 50.F, ""});
+    log.clear();
+
+    sut.increment();
+    CHECK(log.size() == 0);
+  }
+
+  SECTION("out_range_zero") {
+    std::vector<log_entry> log;
+    utl::progress_tracker sut{[&log](auto& t) {
+      log.push_back({t.show_progress_, t.out_, t.status_});
+    }};
+
+    sut.out_bounds(30.F, 30.F);
+
+    REQUIRE(log.size() == 1);
+    CHECK(log.at(0) == log_entry{true, 30.F, ""});
+    log.clear();
+
+    sut.increment();
+    CHECK(log.size() == 0);
+  }
 }
 
 #define RE_ANY "(?:.|\r|\n)*?"

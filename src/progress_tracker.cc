@@ -54,7 +54,7 @@ progress_tracker::tracker_update::reset_bounds() {
 
 progress_tracker::tracker_update progress_tracker::tracker_update::out_bounds(
     float const out_low, float const out_high) {
-  verify(out_low < out_high,
+  verify(out_low <= out_high,
          "progress_tracker::set_bounds out_low must be lower than out_high");
   compare_and_update(bounds_changed_, tracker_->out_low_, out_low);
   compare_and_update(bounds_changed_, tracker_->out_high_, out_high);
@@ -70,8 +70,6 @@ progress_tracker::tracker_update progress_tracker::tracker_update::out_mod(
 
 progress_tracker::tracker_update progress_tracker::tracker_update::in_high(
     size_t const in_high) {
-  verify(in_high > 0ULL,
-         "progress_tracker::set_bounds in_high must be greater than zero");
   compare_and_update(bounds_changed_, tracker_->in_high_, in_high);
   return std::move(*this);
 }
