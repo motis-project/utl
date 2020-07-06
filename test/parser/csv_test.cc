@@ -198,3 +198,18 @@ hello:77:world)";
 
   REQUIRE(check_data == dists);
 }
+
+TEST_CASE("skip_whitespace") {
+  cstr my_file = R"(a,b,c,d,e,f
+ 1 , 2 , 3.0 , 1.5, asdfgh , true )";
+
+  using data = std::tuple<int, size_t, double, float, std::string, bool>;
+  static const utl::column_mapping<data> columns = {
+      {"a", "b", "c", "d", "e", "f"}};
+
+  std::vector<data> dat;
+  utl::read<data>(my_file, dat, columns);
+
+  REQUIRE(dat.size() == 1);
+  CHECK(dat.front() == data{1, 2, 3.0, 1.5, " asdfgh ", true});
+}

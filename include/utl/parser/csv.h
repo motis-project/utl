@@ -50,6 +50,27 @@ inline void parse_column(cstr& s, T& arg) {
                                             adjust_for_quote + adjust_for_cr));
 }
 
+template <typename IntType,
+          std::enable_if_t<std::is_integral<IntType>::value, int> = 0>
+inline void parse_value(cstr& s, IntType& arg) {
+  s = s.skip_whitespace_front();
+  parse_arg(s, arg);
+}
+inline void parse_value(cstr& s, float& arg) {
+  s = s.skip_whitespace_front();
+  parse_fp(s, arg);
+}
+inline void parse_value(cstr& s, double& arg) {
+  s = s.skip_whitespace_front();
+  parse_arg(s, arg);
+}
+inline void parse_value(cstr& s, bool& arg) {
+  s = s.skip_whitespace_front();
+  parse_arg(s, arg);
+}
+inline void parse_value(cstr& s, std::string& arg) { parse_arg(s, arg); }
+inline void parse_value(cstr& s, cstr& arg) { parse_arg(s, arg); }
+
 template <int Index, typename... Args>
 typename std::enable_if<Index == sizeof...(Args)>::type read(
     std::tuple<Args...>&, std::array<cstr, sizeof...(Args)>&) {}
@@ -57,7 +78,7 @@ typename std::enable_if<Index == sizeof...(Args)>::type read(
 template <int Index, typename... Args>
 typename std::enable_if<Index != sizeof...(Args)>::type read(
     std::tuple<Args...>& args, std::array<cstr, sizeof...(Args)>& row) {
-  parse_arg(row[Index], std::get<Index>(args));
+  parse_value(row[Index], std::get<Index>(args));
   read<Index + 1, Args...>(args, row);
 }
 
