@@ -19,12 +19,12 @@ struct buf_reader {
       auto const tmp = it_;
       it_ = last;
       return {tmp, static_cast<size_t>(num)};
+    } else {
+      auto const length = nl - start;
+      it_ = nl;
+      ++it_;
+      return {start, static_cast<size_t>(length)};
     }
-
-    auto const length = nl != nullptr ? nl - start : last - it_;
-    it_ = nl;
-    ++it_;
-    return {start, static_cast<size_t>(length)};
   }
 
   cstr s_;
