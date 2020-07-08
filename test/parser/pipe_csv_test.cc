@@ -33,7 +33,7 @@ struct quote {
 
 TEST_CASE("csv") {
   auto const avg_volume =
-      line_range<buf_reader>{buf_reader{input}}  //
+      line_range{buf_reader{input}}  //
       | csv<quote>()  //
       | remove_if([](auto&& row) { return row.open_ < 39.01; })  //
       | transform([](auto&& row) { return row.volume_; })  //

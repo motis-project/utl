@@ -29,6 +29,9 @@ struct line_range {
 };
 
 template <typename Reader>
+line_range(Reader &&) -> line_range<Reader>;
+
+template <typename Reader>
 struct is_range<line_range<Reader>> : std::true_type {};
 
 }  // namespace utl
