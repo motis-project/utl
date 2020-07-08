@@ -206,7 +206,7 @@ std::vector<Tuple> read(cstr s, column_mapping<Tuple> defined_columns) {
 template <typename Tuple, char Separator = ','>
 void read_file(const char* path, std::vector<Tuple>& entries,
                column_mapping<Tuple> defined_columns) {
-  auto buf = file(path, "ro").content();
+  auto buf = file(path, "r").content();
   cstr s(buf.data(), buf.size());
   auto column_map = read_header<Tuple, Separator>(s, defined_columns);
   auto rows = read_rows<Tuple, Separator>(s, column_map);
