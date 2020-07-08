@@ -221,6 +221,8 @@ struct lines {
   explicit lines(cstr s) : s_{s} {}
   line_iterator begin() const { return line_iterator{s_}; }
   line_iterator end() const { return line_iterator{cstr{}}; }
+  friend line_iterator begin(lines const& l) { return l.begin(); }
+  friend line_iterator end(lines const& l) { return l.end(); }
   cstr s_;
 };
 
