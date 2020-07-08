@@ -25,6 +25,7 @@ struct field {
 struct cstr {
   cstr() : str(nullptr), len(0) {}
   cstr(std::string const& s) : str(s.data()), len(s.length()) {}
+  cstr(std::string_view const& s) : str(s.data()), len(s.length()) {}
   cstr(char const* s) : str(s), len(s ? std::strlen(str) : 0) {}
   cstr(char const* s, size_t l) : str(s), len(l) {}
   cstr(unsigned char const* s, size_t l)
