@@ -26,16 +26,47 @@ auto all(BeginIt&& a, EndIt&& e) {
 }
 
 template <typename Container>
-struct holding_range : public range<typename Container::const_iterator,
-                                    typename Container::const_iterator> {
-  using parent = range<typename Container::const_iterator,
-                       typename Container::const_iterator>;
+struct holding_range {
+  using result_t =
+      clear_t<decltype(*std::declval<typename Container::const_iterator>())>;
+  using it_t = typename Container::const_iterator;
+  using begin_t = typename Container::const_iterator;
+  using end_t = typename Container::const_iterator;
 
-  explicit holding_range(Container&& c)
-      : parent{begin(c), end(c)}, c_{std::forward<Container>(c)} {}
+  explicit holding_range(Container&& c) : c_{std::forward<decltype(c)>(c)} {}
 
-  Container c_;
+  auto begin() const { return c_.begin(); }
+  auto end() const { return c_.end(); }
+
+  template <typename It,
+            std::enable_if_t<std::is_reference_v<decltype(*std::declval<It>())>,
+                             int> = 0>
+  auto&& read(It& it) const {
+    return *it;
+  }
+
+  template <typename It,
+            std::enable_if_t<
+                !std::is_reference_v<decltype(*std::declval<It>())>, int> = 0>
+  auto read(It& it) const {
+    return *it;
+  }
+
+  template <typename It>
+  void next(It& it) const {
+    ++it;
+  }
+
+  template <typename It>
+  bool valid(It& it) const {
+    return it != end();
+  }
+
+  std::decay_t<Container> c_;
 };
+
+template <typename Container>
+holding_range(Container) -> holding_range<std::decay_t<Container>>;
 
 template <typename Container>
 struct is_range<holding_range<Container>> : std::true_type {};
@@ -47,7 +78,7 @@ auto all(Container&& c) {
 
 template <typename T>
 auto all(std::initializer_list<T>&& c) {
-  return range<decltype(begin(c)), decltype(end(c))>{begin(c), end(c)};
+  return holding_range{std::forward<decltype(c)>(c)};
 }
 
 }  // namespace utl
