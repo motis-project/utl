@@ -50,9 +50,9 @@ inline void parse_fp(cstr& s, T& v) {
     return;
   }
 
-  int sign = 1;
+  auto sign = T{1.0};
   if (*s.str == '-') {
-    sign = -1;
+    sign = -1.0;
     ++s;
   }
 
