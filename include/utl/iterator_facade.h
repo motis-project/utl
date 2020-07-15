@@ -129,12 +129,12 @@ class arrow_proxy {
 public:
   explicit arrow_proxy(T&& t) : _value(t) {}
 
-  auto operator->() noexcept { return std::addressof(_value); }
-  auto operator->() const noexcept { return std::addressof(_value); }
+  auto operator-> () noexcept { return std::addressof(_value); }
+  auto operator-> () const noexcept { return std::addressof(_value); }
 };
 
 template <typename T>
-arrow_proxy(T &&) -> arrow_proxy<T>;
+arrow_proxy(T &&)->arrow_proxy<T>;
 
 /**
  * An iterator_facade fills-out the interface of an iterator based on just a few
@@ -242,7 +242,7 @@ public:
    * If the return type is a reference type, returns a pointer to the returned
    * object.
    */
-  constexpr decltype(auto) operator->() const noexcept {
+  constexpr decltype(auto) operator-> () const noexcept {
     decltype(auto) deref = **this;
     if constexpr (std::is_reference_v<decltype(deref)>) {
       // If operator*() returns a reference, just return that address
@@ -258,9 +258,10 @@ public:
    * If this is a random_access_iterator, returns the distance from the right
    * to the left, i.e. how many times to apply ++right to reach `left`.
    */
-  [[nodiscard]] constexpr friend auto operator-(const self_type& left,
-                                                const self_type& right) noexcept
-      requires detail::iter_is_random_access<self_type> {
+  [[nodiscard]] constexpr friend auto operator-(
+      const self_type& left,
+      const self_type&
+          right) noexcept requires detail::iter_is_random_access<self_type> {
     return right.distance_to(left);
   }
 
@@ -297,8 +298,8 @@ public:
     }
   }
 
-  constexpr self_type& operator--() noexcept
-      requires detail::iter_is_bidirectional<self_type> {
+  constexpr self_type&
+  operator--() noexcept requires detail::iter_is_bidirectional<self_type> {
     if constexpr (detail::iter_has_decrement_method<self_type>) {
       _self().decrement();
     } else {
@@ -307,31 +308,32 @@ public:
     return _self();
   }
 
-  constexpr self_type operator--(int) noexcept
-      requires detail::iter_is_bidirectional<self_type> {
+  constexpr self_type operator--(
+      int) noexcept requires detail::iter_is_bidirectional<self_type> {
     auto cp = _self();
     --*this;
     return cp;
   }
 
   template <detail::iter_diff<self_type> Diff>
-  [[nodiscard]] constexpr friend self_type operator+(self_type left,
-                                                     Diff off) noexcept
-      requires detail::iter_is_random_access<self_type> {
+  [[nodiscard]] constexpr friend self_type operator+(
+      self_type left,
+      Diff off) noexcept requires detail::iter_is_random_access<self_type> {
     return left += off;
   }
 
   template <detail::iter_diff<self_type> D>
   [[nodiscard]] constexpr friend self_type operator+(
-      D off, const self_type& self) noexcept
-      requires detail::iter_is_random_access<self_type> {
+      D off,
+      const self_type&
+          self) noexcept requires detail::iter_is_random_access<self_type> {
     return self + off;
   }
 
   template <detail::iter_diff<self_type> D>
-  [[nodiscard]] constexpr friend self_type operator-(const self_type& self,
-                                                     D off) noexcept
-      requires detail::iter_is_random_access<self_type> {
+  [[nodiscard]] constexpr friend self_type operator-(
+      const self_type& self,
+      D off) noexcept requires detail::iter_is_random_access<self_type> {
     using diff_type = detail::infer_difference_type_t<self_type>;
     using signed_diff_type = std::make_signed_t<diff_type>;
     return self + -static_cast<signed_diff_type>(off);
@@ -344,21 +346,23 @@ public:
   }
 
   template <detail::iter_diff<self_type> D>
-  constexpr friend self_type& operator+=(self_type& self, D off) noexcept
-      requires detail::iter_is_random_access<self_type> {
+  constexpr friend self_type& operator+=(
+      self_type& self,
+      D off) noexcept requires detail::iter_is_random_access<self_type> {
     self.advance(off);
     return self;
   }
 
   template <detail::iter_diff<self_type> D>
-  constexpr friend self_type& operator-=(self_type& self, D off) noexcept
-      requires detail::iter_is_random_access<self_type> {
+  constexpr friend self_type& operator-=(
+      self_type& self,
+      D off) noexcept requires detail::iter_is_random_access<self_type> {
     return self = self - off;
   }
 
   template <detail::iter_diff<self_type> D>
-  [[nodiscard]] constexpr decltype(auto) operator[](D pos) const noexcept
-      requires detail::iter_is_random_access<self_type> {
+  [[nodiscard]] constexpr decltype(auto) operator[](D pos) const
+      noexcept requires detail::iter_is_random_access<self_type> {
     return *(_self() + pos);
   }
 
@@ -420,30 +424,34 @@ public:
   /**
    * Less-than
    */
-  [[nodiscard]] friend constexpr bool operator<(const self_type& left,
-                                                const self_type& right) noexcept
-      requires detail::iter_is_random_access<self_type> {
+  [[nodiscard]] friend constexpr bool operator<(
+      const self_type& left,
+      const self_type&
+          right) noexcept requires detail::iter_is_random_access<self_type> {
     return (left - right) < 0;
   }
 
   [[nodiscard]] friend constexpr bool operator<=(
-      const self_type& left, const self_type& right) noexcept
-      requires detail::iter_is_random_access<self_type> {
+      const self_type& left,
+      const self_type&
+          right) noexcept requires detail::iter_is_random_access<self_type> {
     return (left - right) <= 0;
   }
 
   /**
    * Greater-than
    */
-  [[nodiscard]] friend constexpr bool operator>(const self_type& left,
-                                                const self_type& right) noexcept
-      requires detail::iter_is_random_access<self_type> {
+  [[nodiscard]] friend constexpr bool operator>(
+      const self_type& left,
+      const self_type&
+          right) noexcept requires detail::iter_is_random_access<self_type> {
     return (left - right) > 0;
   }
 
   [[nodiscard]] friend constexpr bool operator>=(
-      const self_type& left, const self_type& right) noexcept
-      requires detail::iter_is_random_access<self_type> {
+      const self_type& left,
+      const self_type&
+          right) noexcept requires detail::iter_is_random_access<self_type> {
     return (left - right) >= 0;
   }
 };  // namespace utl

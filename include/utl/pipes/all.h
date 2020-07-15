@@ -66,7 +66,7 @@ struct holding_range {
 };
 
 template <typename Container>
-holding_range(Container) -> holding_range<std::decay_t<Container>>;
+holding_range(Container)->holding_range<std::decay_t<Container>>;
 
 template <typename Container>
 struct is_range<holding_range<Container>> : std::true_type {};
