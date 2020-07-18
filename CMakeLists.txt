@@ -6,8 +6,6 @@ if(UTL_LINT)
   include(cmake/clang-tidy.cmake)
 endif()
 
-find_package(Boost)
-
 include(cmake/pkg.cmake)
 
 file(GLOB_RECURSE utl-files src/*.cc)
@@ -15,7 +13,6 @@ file(GLOB_RECURSE utl-files src/*.cc)
 add_library(utl STATIC ${utl-files})
 target_link_libraries(utl PUBLIC fmt-header-only)
 target_include_directories(utl PUBLIC include)
-target_include_directories(utl SYSTEM PUBLIC ${Boost_INCLUDE_DIR})
 target_compile_options(utl PUBLIC -D_SCL_SECURE_NO_WARNINGS=1)
 target_compile_features(utl PUBLIC cxx_std_17)
 if (MSVC)
