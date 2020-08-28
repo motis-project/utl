@@ -40,6 +40,12 @@ struct zip_iterator<std::tuple<Iterators...>> {
   using References =
       std::tuple<typename std::iterator_traits<Iterators>::reference...>;
 
+  using iterator_category = std::input_iterator_tag;
+  using value_type = References;
+  using reference = value_type;
+  using pointer = value_type*;
+  using difference_type = std::ptrdiff_t;
+
   explicit zip_iterator(std::tuple<Iterators...> its) : its_(its) {}
 
   template <std::size_t... I>

@@ -1,5 +1,6 @@
 #include "catch2/catch.hpp"
 
+#include <algorithm>
 #include <map>
 #include <set>
 #include <string>
@@ -152,5 +153,19 @@ TEST_CASE("zip") {
     CHECK(result[0] == std::make_tuple(1, 1, false, "a"));
     CHECK(result[1] == std::make_tuple(2, 3, true, "b"));
     CHECK(result[2] == std::make_tuple(3, 4, true, "c"));
+  }
+
+  SECTION("algorithm") {
+    std::vector<int> vec{1, 2, 3};
+    std::vector<int> vec2{2, 2, 1};
+
+    CHECK(std::all_of(begin(utl::zip(vec, vec2)), end(utl::zip(vec, vec2)),
+                      [](auto const& t) {
+                        return std::get<0>(t) > 0 && std::get<1>(t) > 0;
+                      }));
+    CHECK(!std::any_of(begin(utl::zip(vec, vec2)), end(utl::zip(vec, vec2)),
+                       [](auto const& t) {
+                         return std::get<0>(t) <= 0 || std::get<1>(t) <= 0;
+                       }));
   }
 }
