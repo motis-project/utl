@@ -29,4 +29,4 @@ jobs:
         cmake --build build --target utl-test
 
     - name: Run tests
-      run: build\${{ matrix.mode }}\utl-test.exe
+      run: build\utl-test.exe
