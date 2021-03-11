@@ -46,7 +46,7 @@ struct is_paren_constructible_;
 
 template <typename T, size_t... I>
 struct is_paren_constructible_<T, std::index_sequence<I...>>
-    : std::is_constructible<T, decltype(_<I>)...> {};
+    : std::is_trivially_constructible<T, decltype(_<I>)...> {};
 
 template <typename T, size_t N>
 constexpr auto is_paren_constructible()
