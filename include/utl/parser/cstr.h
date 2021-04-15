@@ -98,7 +98,7 @@ struct cstr {
     }
     return substr(0, size(prefix.len)) == prefix;
   }
-  static bool is_space(char const c) { return c == ' '; }
+  static bool is_space(char const c) { return c == ' ' || c == '\n'; }
   cstr skip_whitespace_front() const {
     auto copy = (*this);
     while (copy.len != 0 && is_space(copy[0])) {
@@ -128,6 +128,7 @@ struct cstr {
   }
   std::string to_str() const { return std::string(str, len); }
   std::string_view view() const { return {str, len}; }
+  operator std::string_view () { return view(); }
 
   char const* str;
   size_t len;
