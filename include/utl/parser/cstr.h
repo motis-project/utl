@@ -128,7 +128,7 @@ struct cstr {
   }
   std::string to_str() const { return std::string(str, len); }
   std::string_view view() const { return {str, len}; }
-  operator std::string_view () { return view(); }
+  operator std::string_view() { return view(); }
 
   char const* str;
   size_t len;
