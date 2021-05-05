@@ -2,6 +2,7 @@
 
 // source: http://reedbeta.com/blog/python-like-enumerate-in-cpp17/
 
+#include <cstddef>
 #include <tuple>
 
 namespace utl {
