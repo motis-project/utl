@@ -3,7 +3,6 @@
 #include <type_traits>
 #include <utility>
 
-#include "utl/struct/arity.h"
 #include "utl/struct/to_tuple.h"
 
 namespace utl {

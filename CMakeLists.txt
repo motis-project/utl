@@ -11,7 +11,7 @@ include(cmake/pkg.cmake)
 file(GLOB_RECURSE utl-files src/*.cc)
 
 add_library(utl STATIC ${utl-files})
-target_link_libraries(utl PUBLIC fmt-header-only)
+target_link_libraries(utl PUBLIC fmt-header-only cista)
 target_include_directories(utl PUBLIC include)
 target_compile_options(utl PUBLIC -D_SCL_SECURE_NO_WARNINGS=1)
 target_compile_features(utl PUBLIC cxx_std_17)

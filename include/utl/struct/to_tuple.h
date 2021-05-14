@@ -2,9 +2,12 @@
 
 #include <tuple>
 
-#include "utl/struct/arity.h"
+#include "cista/reflection/arity.h"
 
 namespace utl {
+
+template <size_t N>
+using field_count = std::integral_constant<size_t, N>;
 
 template <typename T>
 inline auto to_tuple(T&, field_count<0>) {
@@ -144,7 +147,7 @@ inline auto to_tuple(T& t, field_count<20>) {
 
 template <typename T>
 inline auto to_tuple(T& t) {
-  return to_tuple(t, arity(t));
+  return to_tuple(t, field_count<cista::arity<T>()>{});
 }
 
 // -----------------
