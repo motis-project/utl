@@ -4,14 +4,15 @@
 #include <sstream>
 
 #include "utl/raii.h"
-#include "utl/struct/comparable.h"
-#include "utl/struct/printable.h"
+
+#include "cista/reflection/comparable.h"
+#include "cista/reflection/printable.h"
 
 #include "utl/progress_tracker.h"
 
 struct log_entry {
-  MAKE_COMPARABLE();
-  MAKE_PRINTABLE(log_entry);
+  CISTA_COMPARABLE()
+  CISTA_PRINTABLE(log_entry);
 
   bool show_progress_;
   float out_;

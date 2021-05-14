@@ -6,7 +6,8 @@
 #include "utl/const_str.h"
 #include "utl/parser/arg_parser.h"
 #include "utl/parser/cstr.h"
-#include "utl/struct/for_each_field.h"
+
+#include "cista/reflection/for_each_field.h"
 
 namespace utl {
 
@@ -75,7 +76,7 @@ inline T parse(int argc, char const** argv) {
   };
 
   T t{};
-  utl::for_each_field(t, [&](auto& f) {
+  cista::for_each_field(t, [&](auto& f) {
     using Type = std::remove_cv_t<std::remove_reference_t<decltype(f)>>;
 
     auto found = false;
@@ -111,7 +112,7 @@ inline std::string description() {
   std::stringstream ss;
   T t{};
   auto first = true;
-  utl::for_each_field(t, [&](auto& f) {
+  cista::for_each_field(t, [&](auto& f) {
     using Type = std::remove_cv_t<std::remove_reference_t<decltype(f)>>;
 
     if (first) {
@@ -144,7 +145,7 @@ template <typename T>
 inline std::string print_flags(T const& t) {
   std::stringstream ss;
   auto first = true;
-  utl::for_each_field(t, [&](auto& f) {
+  cista::for_each_field(t, [&](auto& f) {
     using Type = std::remove_cv_t<std::remove_reference_t<decltype(f)>>;
     using ValType =
         std::remove_cv_t<std::remove_reference_t<decltype(f.val())>>;

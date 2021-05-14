@@ -1,7 +1,8 @@
 #include <string>
 
 #include "utl/const_str.h"
-#include "utl/struct/for_each_field.h"
+
+#include "cista/reflection/for_each_field.h"
 
 template <char const* str>
 struct col_name {
@@ -52,7 +53,7 @@ std::string create_table_statement(T r) {
   std::string s;
   bool first = true;
   s += "CREATE TABLE (";
-  utl::for_each_field(r, [&](auto&& col) {
+  cista::for_each_field(r, [&](auto&& col) {
     s += (first ? "\n  " : ",\n  ");
     first = false;
 
