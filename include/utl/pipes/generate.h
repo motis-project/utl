@@ -21,7 +21,11 @@ struct generator_range {
 
   generator_range(Fn&& fn) : fn_(std::forward<Fn>(fn)) {}
 
+#if __cpp_lib_is_invocable
+  auto begin() { return it<typename std::invoke_result_t<Fn>>{fn_()}; }
+#else
   auto begin() { return it<typename std::result_of<Fn()>::type>{fn_()}; }
+#endif
   end_it end() { return end_it{}; }
 
   template <typename It>

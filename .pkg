@@ -6,3 +6,8 @@
   url=git@github.com:motis-project/fmt.git
   branch=master
   commit=34d0435ad07feb55dabd64d99482dd5d28972584
+[cista]
+  url=git@github.com:felixguendling/cista.git
+  branch=master
+  commit=23875effbc4f3441304137515991dbcfbc52caed
+

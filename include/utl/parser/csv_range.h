@@ -8,7 +8,8 @@
 #include "utl/parser/csv.h"
 #include "utl/pipes/all.h"
 #include "utl/pipes/is_range.h"
-#include "utl/struct/for_each_field.h"
+
+#include "cista/reflection/for_each_field.h"
 
 namespace utl {
 
@@ -44,7 +45,7 @@ std::array<column_idx_t, MAX_COLUMNS> read_header(cstr s) {
 
     column_map[column] = NO_COLUMN_IDX;
     column_idx_t c = 0u;
-    for_each_field<T>([&](auto&& f) {
+    cista::for_each_field<T>([&](auto&& f) {
       if (header == get_name(f)) {
         column_map[column] = c;
         return;
@@ -84,7 +85,7 @@ struct csv_range : public LineRange {
     }
 
     T t{};
-    for_each_field(t, [&, i = 0u](auto& f) mutable {
+    cista::for_each_field(t, [&, i = 0u](auto& f) mutable {
       if (row[i]) {
         parse_arg(row[i], f.val());
       }
