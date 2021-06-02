@@ -34,7 +34,7 @@ TEST_CASE("unique test") {
   CHECK((all(v) | unique() | vec()) == result);
 
   int i = 0;
-  for (auto const& val : all(v) | unique() | iterable()) {
+  for (auto const val : all(v) | unique() | iterable()) {
     CHECK(val == result[i++]);
   }
 }
