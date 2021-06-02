@@ -4,14 +4,14 @@
 
 namespace utl::csv_test {
 
-static cstr csv_file =
+cstr const csv_file =
     "index,width,height,weight,comment,enabled\r\n"
     "0,77,2,55.2,\"this is real!\",true\r\n"
     "1,78,3,56.9,\"hello\",false\r\n"
     "2,78,3,57.0,\"world\",true\r\n"
     "\r\n";
 
-static cstr csv_file_semicolon =
+cstr const csv_file_semicolon =
     "index;width;height;weight;comment;enabled\r\n"
     "0;77;2;55.2;\"this is real!\";true\r\n"
     "1;78;3;56.9;\"hello\";false\r\n"

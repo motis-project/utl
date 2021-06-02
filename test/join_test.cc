@@ -36,15 +36,15 @@ struct tester {
     };
   }
 
-  bool eq_both(std::vector<std::vector<int>> const& ranges) {
+  bool eq_both(std::vector<std::vector<int>> const& ranges) const {
     return ranges_both_ == ranges;
   }
 
-  bool eq_a(std::vector<std::vector<int>> const& ranges) {
+  bool eq_a(std::vector<std::vector<int>> const& ranges) const {
     return ranges_a_ == ranges;
   }
 
-  bool eq_b(std::vector<std::vector<int>> const& ranges) {
+  bool eq_b(std::vector<std::vector<int>> const& ranges) const {
     return ranges_b_ == ranges;
   }
 

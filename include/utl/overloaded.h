@@ -29,6 +29,6 @@ struct overloaded : Ts... {
 };
 
 template <class... Ts>
-overloaded(Ts...)->overloaded<Ts...>;
+overloaded(Ts...) -> overloaded<Ts...>;
 
 }  // namespace utl

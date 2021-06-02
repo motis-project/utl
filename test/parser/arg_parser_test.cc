@@ -9,7 +9,7 @@ using namespace utl;
 
 TEST_CASE("parse_int") {
   cstr s = "33.7994;77";
-  int i;
+  int i{};
   parse_arg(s, i);
 
   REQUIRE(s.len == 8);
@@ -18,7 +18,7 @@ TEST_CASE("parse_int") {
 
 TEST_CASE("parse_int_str_end") {
   cstr s = "33";
-  int i;
+  int i{};
   parse_arg(s, i);
 
   REQUIRE(s.len == 0);
@@ -27,7 +27,7 @@ TEST_CASE("parse_int_str_end") {
 
 TEST_CASE("parse_negative_int") {
   cstr s = "-33.7994;77";
-  int i;
+  int i{};
   parse_arg(s, i);
 
   REQUIRE(s.len == 8);
@@ -36,7 +36,7 @@ TEST_CASE("parse_negative_int") {
 
 TEST_CASE("parse_int_default_default_value") {
   cstr s = "a-33.7994;77";
-  int i;
+  int i{};
   parse_arg(s, i);
 
   REQUIRE(s.len == 12);
@@ -45,7 +45,7 @@ TEST_CASE("parse_int_default_default_value") {
 
 TEST_CASE("parse_int_different_default_value") {
   cstr s = "a-33.7994;77";
-  int i;
+  int i{};
   parse_arg(s, i, -1);
 
   REQUIRE(s.len == 12);
@@ -54,7 +54,7 @@ TEST_CASE("parse_int_different_default_value") {
 
 TEST_CASE("parse_int_different_default_value_sign") {
   cstr s = "-a33.7994;77";
-  int i;
+  int i{};
   parse_arg(s, i, -1);
 
   REQUIRE(s.len == 11);
@@ -118,7 +118,7 @@ TEST_CASE("parse_string_str_missing_\"_end") {
 
 TEST_CASE("parse_float") {
   cstr s = "33.7994;77";
-  float f;
+  float f{};
   parse_arg(s, f);
   REQUIRE(s.len == 3);
   REQUIRE(*s.str == ';');
@@ -129,7 +129,7 @@ TEST_CASE("parse_float") {
 
 TEST_CASE("parse_negative_float") {
   cstr s = "-33.7894,\"";
-  float f;
+  float f{};
   parse_arg(s, f);
   REQUIRE(s.len == 2);
   REQUIRE(*s.str == ',');
@@ -140,7 +140,7 @@ TEST_CASE("parse_negative_float") {
 
 TEST_CASE("parse_float_str_end") {
   cstr s = "33.7994";
-  float f;
+  float f{};
   parse_arg(s, f);
   REQUIRE(s.len == 0);
 
@@ -150,7 +150,7 @@ TEST_CASE("parse_float_str_end") {
 
 TEST_CASE("parse_negative_float_str_end") {
   cstr s = "-33.7894";
-  float f;
+  float f{};
   parse_arg(s, f);
   REQUIRE(s.len == 0);
 
@@ -212,7 +212,7 @@ TEST_CASE("parse_bool_false_seperator") {
 
 TEST_CASE("parse_int_substr") {
   cstr s = "123456";
-  int a;
+  int a{};
   auto sub = s.substr(2, 4);
   sub >> a;
   REQUIRE(a == 34);

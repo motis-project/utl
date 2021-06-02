@@ -51,7 +51,7 @@ struct range {
 
 #if __cplusplus >= 201703L
 template <typename BeginIt, typename EndIt>
-range(BeginIt, EndIt)->range<BeginIt, EndIt>;
+range(BeginIt, EndIt) -> range<BeginIt, EndIt>;
 #endif
 
 }  // namespace utl
