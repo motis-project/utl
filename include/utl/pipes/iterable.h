@@ -24,7 +24,7 @@ struct it {
 };
 
 template <typename Range, typename BaseIt>
-it(Range, BaseIt)->it<Range, BaseIt>;
+it(Range, BaseIt) -> it<Range, BaseIt>;
 
 template <typename Range>
 struct iterable_range : public clear_t<Range> {
