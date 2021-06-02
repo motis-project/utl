@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdexcept>
 #include <type_traits>
 
 #include "utl/overloaded.h"
