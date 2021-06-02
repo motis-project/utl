@@ -106,8 +106,9 @@ void progress_tracker::update(size_t const new_in) {
 void progress_tracker::update_monotonic(size_t const new_in) {
   // see https://stackoverflow.com/a/16190791
   size_t old_in = in_;
-  while (old_in < new_in && !in_.compare_exchange_weak(old_in, new_in))
+  while (old_in < new_in && !in_.compare_exchange_weak(old_in, new_in)) {
     ;
+  }
 
   update_out();
 }

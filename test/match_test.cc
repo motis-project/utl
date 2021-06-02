@@ -3,17 +3,22 @@
 #include "utl/match.h"
 
 struct parent {
+  parent() = default;
+  parent(parent const&) = default;
+  parent(parent&&) = default;
+  parent& operator=(parent const&) = default;
+  parent& operator=(parent&&) = default;
   virtual ~parent() = default;
 };
 
 struct sub_class_1 : public parent {
-  int x_;
+  int x_{};
 };
 struct sub_class_2 : public parent {
-  int y_;
+  int y_{};
 };
 struct sub_class_3 : public parent {
-  int z_;
+  int z_{};
 };
 
 TEST_CASE("match") {

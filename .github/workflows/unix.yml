@@ -1,4 +1,4 @@
-name: Linux Build
+name: Unix Build
 
 on:
   push:
@@ -125,7 +125,7 @@ jobs:
             -UTL_LINT=${{ matrix.config.lint }}
       - name: Build
         run: |
-          cmake --build build --target motis motis-test motis-itest motis-eval motis-intermodal-eval
+          cmake --build build --target utl-test
 
       # ==== TESTS ====
       - name: Run Tests

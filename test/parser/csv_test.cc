@@ -4,13 +4,13 @@
 
 using namespace utl;
 
-static cstr csv_file = R"(index,width,height,weight,comment,enabled
+cstr const csv_file = R"(index,width,height,weight,comment,enabled
 0,77,2,55.2,"this is real!",true
 1,78,3,56.9,"hello",false
 2,78,3,57.0,"world",true
 )";
 
-static cstr csv_file_semicolon = R"(index;width;height;weight;comment;enabled
+cstr const csv_file_semicolon = R"(index;width;height;weight;comment;enabled
 0;77;2;55.2;"this is real!";true
 1;78;3;56.9;"hello";false
 2;78;3;57.0;"world";true
