@@ -21,7 +21,7 @@
   (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 
 #define uLOG(lvl)                                          \
-  utl::log() << "[" << utl::str[lvl] << "]"                \
+  utl::log() << "[" << utl::log::str[lvl] << "]"                \
              << "[" << utl::time() << "]"                  \
              << "[" << FILE_NAME << ":" << __LINE__ << "]" \
              << " "
@@ -44,12 +44,14 @@ struct log {
   }
 
   ~log() { std::clog << std::endl; }
+  
+  static constexpr const char* const str[]{"emrg", "alrt", "crit", "erro",
+                                           "warn", "note", "info", "debg"};
 };
 
 enum log_level { emrg, alrt, crit, err, warn, notice, info, debug };
 
-static const char* const str[]{"emrg", "alrt", "crit", "erro",
-                               "warn", "note", "info", "debg"};
+
 
 inline std::string time(time_t const t) {
   char buf[sizeof "2011-10-08t07:07:09z-0430"];
