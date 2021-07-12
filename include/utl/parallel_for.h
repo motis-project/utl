@@ -36,7 +36,7 @@ inline errors_t parallel_for_run(size_t const job_count, Fun func,
         try {
           func(idx);
         } catch (...) {
-          std::lock_guard lock{errors_mutex};
+          std::lock_guard<std::mutex> lock{errors_mutex};
           errors.emplace_back(std::pair{i, std::current_exception()});
           if (err_strat == parallel_error_strategy::QUIT_EXEC) {
             quit = true;
