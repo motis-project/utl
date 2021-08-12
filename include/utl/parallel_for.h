@@ -56,7 +56,6 @@ inline errors_t parallel_for_run(size_t const job_count, Fun func,
   return errors;
 }
 
-
 template <typename Container, typename Fun>
 inline errors_t parallel_for(Container const& jobs, Fun&& func,
                              parallel_error_strategy const err_strat =
