@@ -120,7 +120,7 @@ namespace utl {
 
 struct file {
   file(char const* path, char const* mode) : f_(std::fopen(path, mode)) {
-    verify(f_ != nullptr, "unable to open file");
+    verify(f_ != nullptr, "unable to open file {} (mode={})", path, mode);
   }
 
   ~file() {
