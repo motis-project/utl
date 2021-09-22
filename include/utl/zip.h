@@ -2,6 +2,7 @@
 
 #include <array>
 #include <functional>
+#include <stdexcept>
 
 namespace utl {
 namespace detail {
