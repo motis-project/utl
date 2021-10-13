@@ -65,7 +65,7 @@ inline errors_t parallel_for(Container const& jobs, Fun&& func,
       [&](auto const idx) {
         {
           using std::begin;
-          func(*std::next(begin(jobs), static_cast<int32_t>(idx)));
+          func(*std::next(begin(jobs), static_cast<ptrdiff_t>(idx)));
         }
       },
       err_strat);
