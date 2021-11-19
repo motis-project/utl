@@ -14,3 +14,4 @@
 #include "utl/pipes/transform.h"
 #include "utl/pipes/unique.h"
 #include "utl/pipes/vec.h"
+#include "utl/pipes/iota.h"
