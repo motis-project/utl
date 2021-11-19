@@ -66,8 +66,8 @@ inline errors_t parallel_for(Container const& jobs, Fun&& func,
         {
           using std::begin;
           func(*std::next(begin(jobs),
-                          static_cast<typename std::iterator_traits<decltype(
-                              begin(jobs))>::difference_type>(idx)));
+                          static_cast<typename std::iterator_traits<
+                              decltype(begin(jobs))>::difference_type>(idx)));
         }
       },
       err_strat);

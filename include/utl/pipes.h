@@ -4,6 +4,7 @@
 #include "utl/pipes/find.h"
 #include "utl/pipes/for_each.h"
 #include "utl/pipes/generate.h"
+#include "utl/pipes/iota.h"
 #include "utl/pipes/is_range.h"
 #include "utl/pipes/iterable.h"
 #include "utl/pipes/make_range.h"
@@ -14,4 +15,3 @@
 #include "utl/pipes/transform.h"
 #include "utl/pipes/unique.h"
 #include "utl/pipes/vec.h"
-#include "utl/pipes/iota.h"
