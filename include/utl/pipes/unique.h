@@ -29,7 +29,7 @@ struct unique_range : public clear_t<Range> {
     find(it);
   }
 
-  auto begin() const {
+  auto begin() {
     auto it = parent_t::begin();
     if (this->valid(it)) {
       pred_ = parent_t::read(it);

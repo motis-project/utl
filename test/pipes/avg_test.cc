@@ -19,6 +19,7 @@ TEST_CASE("vec test") {
       | take_while([](auto&& i) { return i > -5; })  //
       | transform([](auto&& i) { return std::abs(i); })  //
       | remove_if([](auto&& i) { return i > 3; })  //
+      | unique()  //
       | vec();
   CHECK(r0 == r1);
 }
