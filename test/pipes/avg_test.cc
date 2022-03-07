@@ -39,3 +39,42 @@ TEST_CASE("unique test") {
     CHECK(val == result[i++]);
   }
 }
+
+TEST_CASE("sum test default") {
+  std::vector<int> v = {1, 3, 3, 5, 7, 7, 7, 7, 9};
+  int result =
+      all(v) | unique() | remove_if([](auto&& i) { return i > 3; }) | sum();
+  CHECK(result == 4);
+}
+
+TEST_CASE("sum test template") {
+  std::vector<std::size_t> v = {1, 3, 3, 5, 7, 7, 7, 7, 9};
+  std::size_t result = all(v) | unique() |
+                       remove_if([](auto&& i) { return i > 3; }) |
+                       sum<std::size_t>();
+  CHECK(result == std::size_t{4});
+}
+
+TEST_CASE("emplace back") {
+  std::vector<int> v = {1, 2, 3, 4};
+
+  auto result = all(v) | transform([](auto&& x) { return x * x; }) |
+                emplace_back<std::list<int>>();
+  std::list<int> expected = {1, 4, 9, 16};
+
+  CHECK(result == expected);
+}
+
+TEST_CASE("insert") {
+  std::vector<int> v = {1, 2, 3, 4};
+
+  auto result =
+      all(v) |
+      transform([](auto&& x) { return std::pair(std::to_string(x), x); }) |
+      insert<std::map<std::string, int>>();
+
+  CHECK(result["1"] == 1);
+  CHECK(result["2"] == 2);
+  CHECK(result["3"] == 3);
+  CHECK(result["4"] == 4);
+}
