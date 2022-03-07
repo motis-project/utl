@@ -6,11 +6,12 @@
 
 namespace utl {
 
+template <typename Acc = int>
 struct sum {
   sum() {}
 
   template <typename T>
-  friend int operator|(T&& t, sum&& f) {
+  friend auto operator|(T&& t, sum&& f) {
     auto r = make_range(std::forward<T>(t));
     auto it = r.begin();
     while (r.valid(it)) {
@@ -20,7 +21,7 @@ struct sum {
     return f.acc_;
   }
 
-  int acc_ = 0;
+  Acc acc_ = 0;
 };
 
 }  // namespace utl

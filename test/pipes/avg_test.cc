@@ -39,3 +39,18 @@ TEST_CASE("unique test") {
     CHECK(val == result[i++]);
   }
 }
+
+TEST_CASE("sum test default") {
+  std::vector<int> v = {1, 3, 3, 5, 7, 7, 7, 7, 9};
+  int result =
+      all(v) | unique() | remove_if([](auto&& i) { return i > 3; }) | sum();
+  CHECK(result == 4);
+}
+
+TEST_CASE("sum test template") {
+  std::vector<std::size_t> v = {1, 3, 3, 5, 7, 7, 7, 7, 9};
+  std::size_t result = all(v) | unique() |
+                       remove_if([](auto&& i) { return i > 3; }) |
+                       sum<std::size_t>();
+  CHECK(result == std::size_t{4});
+}
