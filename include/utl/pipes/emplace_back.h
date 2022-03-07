@@ -23,4 +23,4 @@ inline empace_back_t<Container> emplace_back() {
   return {};
 }
 
-} // namespace utl
+}  // namespace utl

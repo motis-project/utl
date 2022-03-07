@@ -25,4 +25,4 @@ inline insert_t<Dest> insert() {
   return insert_t<Dest>();
 }
 
-} // namespace utl
+}  // namespace utl
