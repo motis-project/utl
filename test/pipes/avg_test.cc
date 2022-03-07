@@ -54,3 +54,13 @@ TEST_CASE("sum test template") {
                        sum<std::size_t>();
   CHECK(result == std::size_t{4});
 }
+
+TEST_CASE("emplace back") {
+  std::vector<int> v = {1, 2, 3, 4};
+
+  auto result = all(v) | transform([](auto&& x) { return x * x; }) |
+                emplace_back<std::list<int>>();
+  std::list<int> expected = {1, 4, 9, 16};
+
+  CHECK(result == expected);
+}
