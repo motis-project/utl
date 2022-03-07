@@ -64,3 +64,17 @@ TEST_CASE("emplace back") {
 
   CHECK(result == expected);
 }
+
+TEST_CASE("insert") {
+  std::vector<int> v = {1, 2, 3, 4};
+
+  auto result =
+      all(v) |
+      transform([](auto&& x) { return std::pair(std::to_string(x), x); }) |
+      insert<std::map<std::string, int>>();
+
+  CHECK(result["1"] == 1);
+  CHECK(result["2"] == 2);
+  CHECK(result["3"] == 3);
+  CHECK(result["4"] == 4);
+}
