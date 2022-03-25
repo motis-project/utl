@@ -5,8 +5,22 @@
 
 namespace utl {
 
+template <typename It, std::size_t... I>
+constexpr auto value_type_helper(std::index_sequence<I...>) -> std::tuple<
+    std::add_lvalue_reference_t<decltype(I, *std::declval<It>())>...> {}
+
 template <std::size_t N, typename It>
 struct nwise_iterator {
+  using indices_t = std::make_index_sequence<N>;
+
+  using iterator_category = std::forward_iterator_tag;
+
+  using difference_type = std::ptrdiff_t;
+
+  using value_type = decltype(value_type_helper<It>(indices_t{}));
+  using pointer = value_type const*;
+  using reference = value_type const&;
+
   nwise_iterator(It const begin, It const end) {
     auto curr = begin;
     for (auto& it : its_) {
@@ -23,10 +37,7 @@ struct nwise_iterator {
     return {*its_[I]...};
   }
 
-  template <typename Indices = std::make_index_sequence<N>>
-  auto operator*() {
-    return deref(Indices{});
-  }
+  auto operator*() { return deref(indices_t{}); }
 
   bool operator==(nwise_iterator const& o) const {
     return its_.back() == o.its_.back();

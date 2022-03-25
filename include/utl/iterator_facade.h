@@ -297,8 +297,8 @@ public:
     }
   }
 
-  constexpr self_type& operator--() noexcept
-      requires detail::iter_is_bidirectional<self_type> {
+  constexpr self_type& operator--() noexcept requires
+      detail::iter_is_bidirectional<self_type> {
     if constexpr (detail::iter_has_decrement_method<self_type>) {
       _self().decrement();
     } else {
@@ -307,31 +307,31 @@ public:
     return _self();
   }
 
-  constexpr self_type operator--(int) noexcept
-      requires detail::iter_is_bidirectional<self_type> {
+  constexpr self_type operator--(
+      int) noexcept requires detail::iter_is_bidirectional<self_type> {
     auto cp = _self();
     --*this;
     return cp;
   }
 
   template <detail::iter_diff<self_type> Diff>
-  [[nodiscard]] constexpr friend self_type operator+(self_type left,
-                                                     Diff off) noexcept
-      requires detail::iter_is_random_access<self_type> {
+  [[nodiscard]] constexpr friend self_type operator+(
+      self_type left,
+      Diff off) noexcept requires detail::iter_is_random_access<self_type> {
     return left += off;
   }
 
   template <detail::iter_diff<self_type> D>
   [[nodiscard]] constexpr friend self_type operator+(
-      D off, const self_type& self) noexcept
-      requires detail::iter_is_random_access<self_type> {
+      D off, const self_type& self) noexcept requires
+      detail::iter_is_random_access<self_type> {
     return self + off;
   }
 
   template <detail::iter_diff<self_type> D>
-  [[nodiscard]] constexpr friend self_type operator-(const self_type& self,
-                                                     D off) noexcept
-      requires detail::iter_is_random_access<self_type> {
+  [[nodiscard]] constexpr friend self_type operator-(
+      const self_type& self,
+      D off) noexcept requires detail::iter_is_random_access<self_type> {
     using diff_type = detail::infer_difference_type_t<self_type>;
     using signed_diff_type = std::make_signed_t<diff_type>;
     return self + -static_cast<signed_diff_type>(off);
@@ -357,8 +357,8 @@ public:
   }
 
   template <detail::iter_diff<self_type> D>
-  [[nodiscard]] constexpr decltype(auto) operator[](D pos) const noexcept
-      requires detail::iter_is_random_access<self_type> {
+  [[nodiscard]] constexpr decltype(auto) operator[](
+      D pos) const noexcept requires detail::iter_is_random_access<self_type> {
     return *(_self() + pos);
   }
 
@@ -427,8 +427,8 @@ public:
   }
 
   [[nodiscard]] friend constexpr bool operator<=(
-      const self_type& left, const self_type& right) noexcept
-      requires detail::iter_is_random_access<self_type> {
+      const self_type& left, const self_type& right) noexcept requires
+      detail::iter_is_random_access<self_type> {
     return (left - right) <= 0;
   }
 
@@ -442,8 +442,8 @@ public:
   }
 
   [[nodiscard]] friend constexpr bool operator>=(
-      const self_type& left, const self_type& right) noexcept
-      requires detail::iter_is_random_access<self_type> {
+      const self_type& left, const self_type& right) noexcept requires
+      detail::iter_is_random_access<self_type> {
     return (left - right) >= 0;
   }
 };  // namespace utl
@@ -486,7 +486,7 @@ namespace std {
 template <typename Derived>
 requires std::is_base_of_v<utl::detail::iterator_facade_base,
                            Derived>  //
-    struct iterator_traits<Derived> {
+struct iterator_traits<Derived> {
   static const Derived& _const_it;
   using reference = decltype(*_const_it);
   using pointer = decltype(_const_it.operator->());

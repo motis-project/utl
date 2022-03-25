@@ -70,17 +70,17 @@ TEST_CASE("zip") {
     std::vector<int> lhs{1, 2, 3};
     const std::vector<int> rhs{4, 5, 6};
 
-    static_assert(!std::is_const<std::remove_reference_t<decltype(
-                      std::get<0>(*utl::zip(lhs, rhs).begin()))>>::value);
-    static_assert(std::is_const<std::remove_reference_t<decltype(
-                      std::get<1>(*utl::zip(lhs, rhs).begin()))>>::value);
+    static_assert(!std::is_const<std::remove_reference_t<decltype(std::get<0>(
+                      *utl::zip(lhs, rhs).begin()))>>::value);
+    static_assert(std::is_const<std::remove_reference_t<decltype(std::get<1>(
+                      *utl::zip(lhs, rhs).begin()))>>::value);
   }
 
   SECTION("force_const_iterator") {
     std::vector<int> vec{1, 2, 3};
 
-    static_assert(std::is_const<std::remove_reference_t<decltype(
-                      std::get<0>(*utl::czip(vec).begin()))>>::value);
+    static_assert(std::is_const<std::remove_reference_t<decltype(std::get<0>(
+                      *utl::czip(vec).begin()))>>::value);
   }
 
   SECTION("mutable") {
