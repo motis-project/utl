@@ -11,20 +11,32 @@ template <typename T, typename TIter = decltype(std::begin(std::declval<T>())),
           typename = decltype(std::end(std::declval<T>()))>
 constexpr auto enumerate(T&& iterable) {
   struct iterator {
-    size_t i;
-    TIter iter;
-    bool operator!=(const iterator& other) const { return iter != other.iter; }
+    bool operator!=(iterator const& o) const { return iter_ != o.iter_; }
+
     void operator++() {
-      ++i;
-      ++iter;
+      ++i_;
+      ++iter_;
     }
-    auto operator*() const { return std::tie(i, *iter); }
+
+    auto operator*() const {
+      using Type = std::decay_t<decltype(*iter_)>;
+      if constexpr (std::is_pointer_v<std::decay_t<Type>>) {
+        return std::make_tuple(i_, &(**iter_));
+      } else {
+        return std::tie(i_, *iter_);
+      }
+    }
+
+    size_t i_;
+    TIter iter_;
   };
+
   struct iterable_wrapper {
-    T iterable;
-    auto begin() { return iterator{0, std::begin(iterable)}; }
-    auto end() { return iterator{0, std::end(iterable)}; }
+    auto begin() { return iterator{0U, std::begin(iterable_)}; }
+    auto end() { return iterator{0U, std::end(iterable_)}; }
+    T iterable_;
   };
+
   return iterable_wrapper{std::forward<T>(iterable)};
 }
 
