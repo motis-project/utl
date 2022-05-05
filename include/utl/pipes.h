@@ -11,6 +11,7 @@
 #include "utl/pipes/iterable.h"
 #include "utl/pipes/make_range.h"
 #include "utl/pipes/map.h"
+#include "utl/pipes/max.h"
 #include "utl/pipes/remove_if.h"
 #include "utl/pipes/sum.h"
 #include "utl/pipes/take_while.h"
