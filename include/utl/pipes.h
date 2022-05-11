@@ -1,6 +1,7 @@
 #include "utl/pipes/accumulate.h"
 #include "utl/pipes/all.h"
 #include "utl/pipes/avg.h"
+#include "utl/pipes/count.h"
 #include "utl/pipes/emplace_back.h"
 #include "utl/pipes/find.h"
 #include "utl/pipes/for_each.h"
