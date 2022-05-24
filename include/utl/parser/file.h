@@ -45,7 +45,8 @@ inline void chunk(unsigned const chunk_size, size_t const total, Fn fn) {
 }
 
 struct file {
-  file(char const* path, char const* mode) : f_(open_file(path, mode)) {
+  file(char const* path, char const* mode)
+      : f_{open_file(path, mode)}, filename_{path} {
     verify(f_ != INVALID_HANDLE_VALUE, "unable to open file {} (mode={})", path,
            mode);
   }
@@ -58,7 +59,7 @@ struct file {
 
   size_t size() {
     LARGE_INTEGER filesize;
-    GetFileSizeEx(f_, &filesize);
+    check(GetFileSizeEx(f_, &filesize), "get file size error");
     return filesize.QuadPart;
   }
 
@@ -72,8 +73,9 @@ struct file {
       OVERLAPPED overlapped = {0};
       overlapped.Offset = static_cast<DWORD>(from);
       overlapped.OffsetHigh = from >> 32u;
-      ReadFile(f_, b.data() + from, static_cast<DWORD>(block_size), nullptr,
-               &overlapped);
+      check(ReadFile(f_, b.data() + from, static_cast<DWORD>(block_size),
+                     nullptr, &overlapped),
+            "file read error");
     });
 
     return b;
@@ -90,8 +92,9 @@ struct file {
       OVERLAPPED overlapped = {0};
       overlapped.Offset = static_cast<DWORD>(from);
       overlapped.OffsetHigh = from >> 32u;
-      ReadFile(f_, b.data() + from, static_cast<DWORD>(block_size), nullptr,
-               &overlapped);
+      check(ReadFile(f_, b.data() + from, static_cast<DWORD>(block_size),
+                     nullptr, &overlapped),
+            "file read error");
     });
 
     return b;
@@ -103,12 +106,29 @@ struct file {
       OVERLAPPED overlapped = {0};
       overlapped.Offset = static_cast<DWORD>(from);
       overlapped.OffsetHigh = from >> 32u;
-      WriteFile(f_, static_cast<unsigned char const*>(buf) + from, block_size,
-                nullptr, &overlapped);
+      check(WriteFile(f_, static_cast<unsigned char const*>(buf) + from,
+                      block_size, nullptr, &overlapped),
+            "file write error");
     });
   }
 
+  void check(BOOL const ok, char const* msg) {
+    if (ok == FALSE) {
+      auto const err_code = GetLastError();
+      char err_msg[2048];
+      if (FormatMessageA(
+              FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS |
+                  FORMAT_MESSAGE_MAX_WIDTH_MASK,
+              nullptr, err_code, 0, err_msg, sizeof(err_msg), nullptr) != 0) {
+        throw fail("{}: {}: {} ({})", msg, filename_, err_msg, err_code);
+      } else {
+        throw fail("{}: {}: {}", msg, filename_, err_code);
+      }
+    }
+  }
+
   HANDLE f_;
+  std::string filename_;
 };
 #else
 #include <cstdio>
@@ -119,7 +139,8 @@ struct file {
 namespace utl {
 
 struct file {
-  file(char const* path, char const* mode) : f_(std::fopen(path, mode)) {
+  file(char const* path, char const* mode)
+      : f_{std::fopen(path, mode)}, filename_{path} {
     verify(f_ != nullptr, "unable to open file {} (mode={})", path, mode);
   }
 
@@ -132,7 +153,7 @@ struct file {
 
   size_t size() {
     auto err = std::fseek(f_, 0, SEEK_END);
-    verify(!err, "fseek to SEEK_END error");
+    verify(!err, "fseek to SEEK_END error: {}", filename_);
     auto size = std::ftell(f_);
     std::rewind(f_);
     return static_cast<size_t>(size);
@@ -143,7 +164,7 @@ struct file {
     auto s = std::string{};
     s.resize(file_size);
     auto bytes_read = std::fread(s.data(), 1, file_size, f_);
-    verify(bytes_read == file_size, "file read error");
+    verify(bytes_read == file_size, "file read error: {}", filename_);
     return s;
   }
 
@@ -151,18 +172,19 @@ struct file {
     auto file_size = size();
     auto b = buffer(file_size);
     auto bytes_read = std::fread(b.data(), 1, file_size, f_);
-    verify(bytes_read == file_size, "file read error");
+    verify(bytes_read == file_size, "file read error: {}", filename_);
     return b;
   }
 
   void write(void const* buf, size_t size) {
     auto bytes_written = std::fwrite(buf, 1, size, f_);
-    verify(bytes_written == size, "file write error");
+    verify(bytes_written == size, "file write error: {}", filename_);
   }
 
   operator FILE*() { return f_; }
 
   FILE* f_;
+  std::string filename_;
 };
 #endif
 
