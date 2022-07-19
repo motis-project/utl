@@ -5,11 +5,12 @@
 #include <string>
 
 #include "utl/parser/cstr.h"
+#include "utl/verify.h"
 
 namespace utl {
 
 template <typename IntType>
-inline void parse_arg(
+inline bool parse_arg(
     cstr& s, IntType& arg,
     typename std::enable_if<std::is_integral<IntType>::value, IntType>::type
         default_value = 0) {
@@ -42,13 +43,15 @@ inline void parse_arg(
   } else {
     arg *= sign;
   }
+
+  return value_okay && s.empty();
 }
 
 template <typename T>
-inline void parse_fp(cstr& s, T& v) {
+inline bool parse_fp(cstr& s, T& v) {
   if (!s) {
     v = {};
-    return;
+    return false;
   }
 
   auto sign = T{1.0};
@@ -62,19 +65,21 @@ inline void parse_fp(cstr& s, T& v) {
   v = static_cast<T>(pre_point);
   if (s.len == 0) {
     v *= sign;
-    return;
+    return true;
   }
 
   if (*s.str != '.') {
     v *= sign;
-    return;
+    return false;
   }
   ++s;
 
+  auto is_good = true;
   T multiplier = static_cast<T>(0.1);
   while (s) {
     char c = *s.str;
     if (c > '9' || c < '0') {
+      is_good = false;
       break;
     }
     v += multiplier * (c - '0');
@@ -84,28 +89,42 @@ inline void parse_fp(cstr& s, T& v) {
     }
   }
   v *= sign;
+
+  return is_good;
 }
 
-inline void parse_arg(cstr& s, float& arg) { parse_fp(s, arg); }
+inline bool parse_arg(cstr& s, float& arg) { return parse_fp(s, arg); }
 
-inline void parse_arg(cstr& s, double& arg) { parse_fp(s, arg); }
+inline bool parse_arg(cstr& s, double& arg) { return parse_fp(s, arg); }
 
-inline void parse_arg(cstr& s, bool& b) {
+inline bool parse_arg(cstr& s, bool& b) {
   b = false;
 
   if (!s) {
-    return;
+    return false;
   }
 
   auto const c = std::tolower(*s.str);
   if (c == 't') {
     b = true;
+    auto const ret = s.len == 4 &&  //
+                     std::tolower(s[1]) == 'r' &&  //
+                     std::tolower(s[2]) == 'u' &&  //
+                     std::tolower(s[3]) == 'e';
     for (int i = 0; i < 4 && s; ++i, ++s)
       ;
+    return ret;
   } else if (c == 'f') {
+    auto const ret = s.len == 5 &&  //
+                     std::tolower(s[1]) == 'a' &&  //
+                     std::tolower(s[2]) == 'l' &&  //
+                     std::tolower(s[3]) == 's' &&  //
+                     std::tolower(s[4]) == 'e';
     for (int i = 0; i < 5 && s; ++i, ++s)
       ;
+    return ret;
   }
+  return false;
 }
 
 inline void parse_arg(cstr& s, std::string& arg) { arg.assign(s.str, s.len); }
@@ -118,6 +137,16 @@ template <typename T>
 inline T parse(cstr s) {
   T value;
   parse_arg(s, value);
+  return value;
+}
+
+template <typename T>
+inline T parse_verify(cstr s) {
+  T value;
+  auto const initial = s;
+  auto const is_successful = parse_arg(s, value);
+  utl::verify(is_successful, "could not read \"{}\" as {}", initial.view(),
+              typeid(std::decay_t<T>).name());
   return value;
 }
 

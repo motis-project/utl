@@ -10,8 +10,9 @@ using namespace utl;
 TEST_CASE("parse_int") {
   cstr s = "33.7994;77";
   int i{};
-  parse_arg(s, i);
+  bool ok = parse_arg(s, i);
 
+  REQUIRE(!ok);
   REQUIRE(s.len == 8);
   REQUIRE(i == 33);
 }
@@ -19,8 +20,9 @@ TEST_CASE("parse_int") {
 TEST_CASE("parse_int_str_end") {
   cstr s = "33";
   int i{};
-  parse_arg(s, i);
+  bool ok = parse_arg(s, i);
 
+  REQUIRE(ok);
   REQUIRE(s.len == 0);
   REQUIRE(i == 33);
 }
@@ -37,8 +39,9 @@ TEST_CASE("parse_negative_int") {
 TEST_CASE("parse_int_default_default_value") {
   cstr s = "a-33.7994;77";
   int i{};
-  parse_arg(s, i);
+  bool ok = parse_arg(s, i);
 
+  REQUIRE(!ok);
   REQUIRE(s.len == 12);
   REQUIRE(i == 0);
 }
@@ -46,8 +49,9 @@ TEST_CASE("parse_int_default_default_value") {
 TEST_CASE("parse_int_different_default_value") {
   cstr s = "a-33.7994;77";
   int i{};
-  parse_arg(s, i, -1);
+  bool ok = parse_arg(s, i, -1);
 
+  REQUIRE(!ok);
   REQUIRE(s.len == 12);
   REQUIRE(i == -1);
 }
@@ -186,8 +190,9 @@ TEST_CASE("parse_bool_falsy") {
 TEST_CASE("parse_bool_truey") {
   cstr s = "t..";
   bool b = false;
-  parse_arg(s, b);
+  auto ok = parse_arg(s, b);
 
+  REQUIRE(!ok);
   REQUIRE(b);
   REQUIRE(s.len == 0);
 }
@@ -195,8 +200,9 @@ TEST_CASE("parse_bool_truey") {
 TEST_CASE("parse_bool_true_seperator") {
   cstr s = "true,next";
   bool b = false;
-  parse_arg(s, b);
+  auto ok = parse_arg(s, b);
 
+  REQUIRE(!ok);
   REQUIRE(b);
   REQUIRE(s.len == 5);
 }
@@ -208,6 +214,20 @@ TEST_CASE("parse_bool_false_seperator") {
 
   REQUIRE(!b);
   REQUIRE(s.len == 5);
+}
+
+TEST_CASE("parse_bool_exact_true") {
+  bool x = false;
+  auto s = cstr{"true"};
+  REQUIRE(parse_arg(s, x));
+  REQUIRE(x == true);
+}
+
+TEST_CASE("parse_bool_exact_false") {
+  bool x = false;
+  auto s = cstr{"false"};
+  REQUIRE(parse_arg(s, x));
+  REQUIRE(x == false);
 }
 
 TEST_CASE("parse_int_substr") {
