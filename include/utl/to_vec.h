@@ -16,7 +16,7 @@ inline auto to_vec(It s, It e, UnaryOperation&& op)
 }
 
 template <typename Container, typename UnaryOperation>
-inline auto to_vec(Container const& c, UnaryOperation&& op)
+inline auto to_vec(Container&& c, UnaryOperation&& op)
     -> std::vector<decltype(op(*std::begin(c)))> {
   std::vector<decltype(op(*std::begin(c)))> v;
   v.reserve(
@@ -27,8 +27,7 @@ inline auto to_vec(Container const& c, UnaryOperation&& op)
 }
 
 template <typename Container>
-inline auto to_vec(Container const& c)
-    -> std::vector<decltype(*std::begin(c))> {
+inline auto to_vec(Container&& c) -> std::vector<decltype(*std::begin(c))> {
   std::vector<decltype(*std::begin(c))> v;
   v.reserve(
       static_cast<std::size_t>(std::distance(std::begin(c), std::end(c))));
