@@ -1,4 +1,5 @@
-#include "catch2/catch.hpp"
+#include "catch2/catch_all.hpp"
+
 #include "utl/enumerate.h"
 #include "utl/parser/cstr.h"
 

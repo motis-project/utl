@@ -74,7 +74,7 @@ struct zip_iterator<std::tuple<Iterators...>> {
   std::tuple<Iterators...> its_;
 };
 
-template <bool ForceConst, typename... Containers>
+template <typename... Containers>
 struct zip_range {
   using Iterator = zip_iterator<std::tuple<std::conditional_t<
       std::is_const<std::remove_reference_t<Containers>>::value,
@@ -84,14 +84,13 @@ struct zip_range {
   using ConstIterator = zip_iterator<std::tuple<
       typename std::remove_reference_t<Containers>::const_iterator...>>;
 
-  explicit zip_range(std::tuple<Containers...> tup) : tup_(tup) {}
+  explicit zip_range(std::tuple<Containers...> tup) : tup_(std::move(tup)) {}
 
   ConstIterator begin() const {
     return ConstIterator{map_tup(tup_, [](auto&& c) { return std::begin(c); })};
   }
 
-  template <bool Enabled = !ForceConst>
-  auto begin() -> typename std::enable_if_t<Enabled, Iterator> {
+  auto begin() -> Iterator {
     return Iterator{map_tup(tup_, [](auto&& c) { return std::begin(c); })};
   }
 
@@ -99,8 +98,7 @@ struct zip_range {
     return ConstIterator{map_tup(tup_, [](auto&& c) { return std::end(c); })};
   }
 
-  template <bool Enabled = !ForceConst>
-  auto end() -> typename std::enable_if_t<Enabled, Iterator> {
+  auto end() -> Iterator {
     return Iterator{map_tup(tup_, [](auto&& c) { return std::end(c); })};
   }
 
@@ -118,21 +116,53 @@ inline void check_dimensions(Containers&&... containers) {
   }
 }
 
+template <typename... Ts>
+auto tuple_forward(Ts&&... t) {
+  return std::tuple<Ts&&...>{std::forward<Ts>(t)...};
+}
+
+template <typename T, typename Enable = void>
+struct add_const_s;
+
+template <typename T>
+struct add_const_s<T, std::enable_if_t<std::is_lvalue_reference_v<T>>> {
+  using value_t =
+      std::add_lvalue_reference_t<std::add_const_t<std::remove_reference_t<T>>>;
+};
+
+template <typename T>
+struct add_const_s<T, std::enable_if_t<std::is_rvalue_reference_v<T>>> {
+  using value_t =
+      std::add_rvalue_reference_t<std::add_const_t<std::remove_reference_t<T>>>;
+};
+
+template <typename T>
+struct add_const_s<T, std::enable_if_t<!std::is_reference_v<T>>> {
+  using value_t = std::add_const_t<T>;
+};
+
+template <typename T>
+using add_const = typename add_const_s<T>::value_t;
+
+template <typename... Ts>
+auto tuple_const_forward(Ts&&... t) {
+  return std::tuple<add_const<Ts&&>...>{std::forward<Ts&&>(t)...};
+}
+
 }  // namespace detail
 
 template <typename... Containers>
-detail::zip_range<false, Containers&...> zip(Containers&&... containers) {
+auto zip(Containers&&... containers) {
   detail::check_dimensions(containers...);
-  return detail::zip_range<false, Containers&...>{
-      std::forward_as_tuple(containers...)};
-};
+  return detail::zip_range{
+      detail::tuple_forward(std::forward<Containers&&>(containers)...)};
+}
 
 template <typename... Containers>
-detail::zip_range<true, Containers&...> czip(Containers&&... containers) {
+auto czip(Containers&&... containers) {
   detail::check_dimensions(containers...);
-
-  return detail::zip_range<true, Containers&&...>{
-      std::forward_as_tuple(containers...)};
-};
+  return detail::zip_range{
+      detail::tuple_const_forward(std::forward<Containers&&>(containers)...)};
+}
 
 }  // namespace utl

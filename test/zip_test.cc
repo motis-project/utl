@@ -1,4 +1,4 @@
-#include "catch2/catch.hpp"
+#include "catch2/catch_all.hpp"
 
 #include <algorithm>
 #include <map>
@@ -78,7 +78,6 @@ TEST_CASE("zip") {
 
   SECTION("force_const_iterator") {
     std::vector<int> vec{1, 2, 3};
-
     static_assert(std::is_const<std::remove_reference_t<decltype(std::get<0>(
                       *utl::czip(vec).begin()))>>::value);
   }
