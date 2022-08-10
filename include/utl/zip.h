@@ -108,7 +108,7 @@ struct zip_range {
 };
 
 template <typename... Containers>
-inline void check_dimensions(Containers&... containers) {
+inline void check_dimensions(Containers&&... containers) {
   static_assert(sizeof...(Containers) > 0, "cannot zip nothing ;)");
   std::array<size_t, sizeof...(Containers)> sizes{{containers.size()...}};
   for (auto const& size : sizes) {
@@ -121,17 +121,17 @@ inline void check_dimensions(Containers&... containers) {
 }  // namespace detail
 
 template <typename... Containers>
-detail::zip_range<false, Containers&...> zip(Containers&... containers) {
+detail::zip_range<false, Containers&...> zip(Containers&&... containers) {
   detail::check_dimensions(containers...);
   return detail::zip_range<false, Containers&...>{
       std::forward_as_tuple(containers...)};
 };
 
 template <typename... Containers>
-detail::zip_range<true, Containers&...> czip(Containers&... containers) {
+detail::zip_range<true, Containers&...> czip(Containers&&... containers) {
   detail::check_dimensions(containers...);
 
-  return detail::zip_range<true, Containers&...>{
+  return detail::zip_range<true, Containers&&...>{
       std::forward_as_tuple(containers...)};
 };
 
