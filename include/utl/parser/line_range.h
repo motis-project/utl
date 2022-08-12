@@ -22,7 +22,7 @@ struct line_range {
 
   template <typename It>
   bool valid(It& it) {
-    return it;
+    return it.valid();
   }
 
   Reader r_;
