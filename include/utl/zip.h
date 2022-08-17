@@ -14,7 +14,7 @@ auto map_tup(std::index_sequence<I...>, Tuple& tuple, Func&& func) {
 
 template <typename Tuple, typename Func>
 auto map_tup(Tuple& tuple, Func&& func) {
-  using Sequence = std::make_index_sequence<std::tuple_size<Tuple>::value>;
+  using Sequence = std::make_index_sequence<std::tuple_size_v<Tuple>>;
   return map_tup(Sequence(), tuple, func);
 }
 
@@ -27,7 +27,7 @@ void each_tup(std::index_sequence<I...>, Tuple& tuple, Func&& func) {
 
 template <typename Tuple, typename Func>
 void each_tup(Tuple& tuple, Func&& func) {
-  using Sequence = std::make_index_sequence<std::tuple_size<Tuple>::value>;
+  using Sequence = std::make_index_sequence<std::tuple_size_v<Tuple>>;
   each_tup(Sequence(), tuple, func);
 }
 
@@ -77,7 +77,7 @@ struct zip_iterator<std::tuple<Iterators...>> {
 template <typename... Containers>
 struct zip_range {
   using Iterator = zip_iterator<std::tuple<std::conditional_t<
-      std::is_const<std::remove_reference_t<Containers>>::value,
+      std::is_const_v<std::remove_reference_t<Containers>>,
       typename std::remove_reference_t<Containers>::const_iterator,
       typename std::remove_reference_t<Containers>::iterator>...>>;
 
@@ -153,8 +153,7 @@ struct add_const_s<T, std::enable_if_t<std::is_lvalue_reference_v<T>>> {
 
 template <typename T>
 struct add_const_s<T, std::enable_if_t<std::is_rvalue_reference_v<T>>> {
-  using value_t =
-      std::add_rvalue_reference_t<std::add_const_t<std::remove_reference_t<T>>>;
+  using value_t = std::add_const_t<std::remove_reference_t<T>>;
 };
 
 template <typename T>
