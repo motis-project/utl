@@ -1,4 +1,4 @@
-#include "catch2/catch.hpp"
+#include "catch2/catch_all.hpp"
 
 #include <iostream>
 #include <sstream>
@@ -119,8 +119,9 @@ TEST_CASE("global_progress_tracker") {
       t2->status("READY");
     });
 
-    CHECK_THAT(str, Catch::Matches(RE_ANY "module_1.*?WAITING" RE_ANY));
-    CHECK_THAT(str, Catch::Matches(RE_ANY "module_2.*?READY" RE_ANY));
+    CHECK_THAT(str,
+               Catch::Matchers::Matches(RE_ANY "module_1.*?WAITING" RE_ANY));
+    CHECK_THAT(str, Catch::Matchers::Matches(RE_ANY "module_2.*?READY" RE_ANY));
   }
 
   SECTION("silent and clear") {
@@ -144,8 +145,8 @@ TEST_CASE("global_progress_tracker") {
       t1->update(50ULL);
     });
 
-    CHECK_THAT(str, Catch::Matches(RE_ANY "module_1.*?50%" RE_ANY));
-    CHECK_THAT(str, Catch::Matches(RE_ANY "module_2.*?0%" RE_ANY));
+    CHECK_THAT(str, Catch::Matchers::Matches(RE_ANY "module_1.*?50%" RE_ANY));
+    CHECK_THAT(str, Catch::Matchers::Matches(RE_ANY "module_2.*?0%" RE_ANY));
   }
 }
 
@@ -157,8 +158,8 @@ TEST_CASE("active_progress_tracker") {
       utl::get_active_progress_tracker()->status("ASDF");
     });
 
-    CHECK_THAT(str, Catch::Matches(RE_ANY "first.*?YEAH" RE_ANY));
-    CHECK_THAT(str, Catch::Matches(RE_ANY "first.*?ASDF" RE_ANY));
+    CHECK_THAT(str, Catch::Matchers::Matches(RE_ANY "first.*?YEAH" RE_ANY));
+    CHECK_THAT(str, Catch::Matchers::Matches(RE_ANY "first.*?ASDF" RE_ANY));
   }
 
   SECTION("two") {
@@ -168,7 +169,7 @@ TEST_CASE("active_progress_tracker") {
       utl::get_active_progress_tracker()->status("QWERTZ");
     });
 
-    CHECK_THAT(str, Catch::Matches(RE_ANY "second.*?QWERTZ" RE_ANY));
+    CHECK_THAT(str, Catch::Matchers::Matches(RE_ANY "second.*?QWERTZ" RE_ANY));
   }
 
   SECTION("clear") {

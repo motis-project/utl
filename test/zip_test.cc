@@ -1,4 +1,4 @@
-#include "catch2/catch.hpp"
+#include "catch2/catch_all.hpp"
 
 #include <algorithm>
 #include <map>
@@ -66,6 +66,14 @@ TEST_CASE("zip") {
     CHECK(result[2] == 27);
   }
 
+  SECTION("move_types_vs_ref_types") {
+    auto ref = std::vector<int>{};
+    static_assert(std::is_lvalue_reference_v<decltype(std::get<0>(
+                      utl::zip(ref, std::vector<int>{}).tup_))>);
+    static_assert(std::is_rvalue_reference_v<decltype(std::get<1>(
+                      utl::zip(ref, std::vector<int>{}).tup_))>);
+  }
+
   SECTION("const_input") {
     std::vector<int> lhs{1, 2, 3};
     const std::vector<int> rhs{4, 5, 6};
@@ -78,7 +86,6 @@ TEST_CASE("zip") {
 
   SECTION("force_const_iterator") {
     std::vector<int> vec{1, 2, 3};
-
     static_assert(std::is_const<std::remove_reference_t<decltype(std::get<0>(
                       *utl::czip(vec).begin()))>>::value);
   }

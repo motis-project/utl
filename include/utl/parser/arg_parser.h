@@ -145,7 +145,8 @@ inline T parse_verify(cstr s) {
   T value;
   auto const initial = s;
   auto const is_successful = parse_arg(s, value);
-  utl::verify(is_successful, "could not read {}", initial.view());
+  utl::verify(is_successful, "could not read \"{}\" as {}", initial.view(),
+              typeid(std::decay_t<T>).name());
   return value;
 }
 

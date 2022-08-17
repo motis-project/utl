@@ -37,7 +37,7 @@ struct unique_range : public clear_t<Range> {
     return it;
   }
 
-  mutable typename parent_t::result_t pred_;
+  mutable typename parent_t::result_t pred_{};
 };
 
 struct unique_t {

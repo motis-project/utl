@@ -119,7 +119,7 @@ std::array<column_idx_t, MAX_COLUMNS> read_header(
       }
     }
 
-    if (s && (*s.str == '\r' || *s.str == '\n')) {
+    if ((s && (*s.str == '\r' || *s.str == '\n')) || !s) {
       break;
     }
   }

@@ -64,7 +64,7 @@ struct cstr {
     return std::lexicographical_compare(str, str + len, s.str, s.str + s.len);
   }
   char operator[](size_t i) const { return str[i]; }
-  operator bool() const { return valid(); }
+  explicit operator bool() const { return valid(); }
   bool valid() const { return len != 0 && str != nullptr; }
   char const* begin() const { return str; }
   char const* end() const { return str + len; }
@@ -174,7 +174,7 @@ struct line_iterator {
   line_iterator() = default;
   explicit line_iterator(cstr s) : s_{s} { ++*this; }
 
-  explicit operator bool() const { return s_; }
+  explicit operator bool() const { return s_.valid(); }
 
   bool operator==(line_iterator const& i) const {
     return line_.data() == i.line_.data() && s_ == i.s_;
