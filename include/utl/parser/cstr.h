@@ -168,8 +168,9 @@ struct line_iterator {
   using iterator_category = std::input_iterator_tag;
   using value_type = cstr;
   using difference_type = std::ptrdiff_t;
-  using pointer = cstr;
-  using reference = cstr;
+  using pointer = cstr*;
+  using reference = cstr&;
+  using const_reference = cstr const&;
 
   line_iterator() = default;
   explicit line_iterator(cstr s) : s_{s} { ++*this; }
@@ -211,14 +212,16 @@ struct line_iterator {
   }
 
   reference operator*() { return line_; }
-  reference const& operator*() const { return line_; }
-  pointer* operator->() { return &line_; }
+  const_reference operator*() const { return line_; }
+  pointer operator->() { return &line_; }
 
   cstr s_;
   cstr line_;
 };
 
 struct lines {
+  using iterator = line_iterator;
+  using const_iterator = line_iterator;
   explicit lines(cstr s) : s_{s} {}
   line_iterator begin() const { return line_iterator{s_}; }
   line_iterator end() const { return line_iterator{cstr{}}; }
