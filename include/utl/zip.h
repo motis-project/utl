@@ -106,6 +106,9 @@ struct zip_range {
 };
 
 template <typename... Containers>
+zip_range(std::tuple<Containers...>) -> zip_range<Containers...>;
+
+template <typename... Containers>
 inline void check_dimensions(Containers&&... containers) {
   static_assert(sizeof...(Containers) > 0, "cannot zip nothing ;)");
   std::array<size_t, sizeof...(Containers)> sizes{{containers.size()...}};
