@@ -243,8 +243,8 @@ void for_each_line(cstr s, Function&& f) {
 
 template <typename Function>
 void for_each_line_numbered(cstr s, Function&& f) {
-  int line_number = 0;
-  for_each_line(s, [&line_number, &f](cstr line) { f(line, ++line_number); });
+  auto line_number = 0U;
+  for_each_line(s, [&](cstr line) { f(line, ++line_number); });
 }
 
 template <typename Predicate>
