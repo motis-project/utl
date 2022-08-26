@@ -60,6 +60,7 @@ struct cstr {
       return strncmp(str, s.str, len) == 0;
     }
   }
+  bool operator!=(cstr const& s) const { return !operator==(s); }
   bool operator<(cstr const& s) const {
     return std::lexicographical_compare(str, str + len, s.str, s.str + s.len);
   }
