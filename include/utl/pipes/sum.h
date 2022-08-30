@@ -6,7 +6,6 @@
 
 namespace utl {
 
-template <typename Acc = int>
 struct sum {
   sum() {}
 
@@ -21,7 +20,7 @@ struct sum {
     return f.acc_;
   }
 
-  Acc acc_ = 0;
+  std::size_t acc_ = 0;
 };
 
 }  // namespace utl
