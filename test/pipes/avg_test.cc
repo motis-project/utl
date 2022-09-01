@@ -49,9 +49,8 @@ TEST_CASE("sum test default") {
 
 TEST_CASE("sum test template") {
   std::vector<std::size_t> v = {1, 3, 3, 5, 7, 7, 7, 7, 9};
-  std::size_t result = all(v) | unique() |
-                       remove_if([](auto&& i) { return i > 3; }) |
-                       sum<std::size_t>();
+  std::size_t result =
+      all(v) | unique() | remove_if([](auto&& i) { return i > 3; }) | sum();
   CHECK(result == std::size_t{4});
 }
 
