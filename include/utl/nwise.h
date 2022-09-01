@@ -6,8 +6,8 @@
 namespace utl {
 
 template <typename It, std::size_t... I>
-constexpr auto value_type_helper(std::index_sequence<I...>) -> std::tuple<
-    std::add_lvalue_reference_t<decltype(I, *std::declval<It>())>...> {}
+constexpr auto value_type_helper(std::index_sequence<I...>)
+    -> std::tuple<decltype(I, *std::declval<It>())...> {}
 
 template <std::size_t N, typename It>
 struct nwise_iterator {
@@ -32,8 +32,7 @@ struct nwise_iterator {
   }
 
   template <std::size_t... I>
-  auto deref(std::index_sequence<I...>) -> std::tuple<
-      std::add_lvalue_reference_t<decltype(I, *std::declval<It>())>...> {
+  auto deref(std::index_sequence<I...>) -> value_type {
     return {*its_[I]...};
   }
 
@@ -64,9 +63,30 @@ struct nwise_range {
   It begin_, end_;
 };
 
+template <std::size_t N, typename T>
+struct owning_nwise_range {
+  owning_nwise_range(T&& t) : t_{std::move(t)} {}
+  auto begin() const {
+    using std::begin;
+    using std::end;
+    return nwise_iterator<N, decltype(begin(t_))>{begin(t_), end(t_)};
+  }
+  auto end() const {
+    using std::begin;
+    using std::end;
+    return nwise_iterator<N, decltype(begin(t_))>{end(t_), end(t_)};
+  }
+  T t_;
+};
+
 template <std::size_t N, typename Container>
 auto nwise(Container& c) -> nwise_range<N, decltype(begin(c))> {
   return {c.begin(), c.end()};
+}
+
+template <std::size_t N, typename Container>
+auto nwise(Container&& c) -> owning_nwise_range<N, Container> {
+  return {std::forward<Container>(c)};
 }
 
 }  // namespace utl

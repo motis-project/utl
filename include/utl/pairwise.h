@@ -5,8 +5,8 @@
 namespace utl {
 
 template <typename Container>
-auto pairwise(Container& c) -> nwise_range<2, decltype(begin(c))> {
-  return {c.begin(), c.end()};
+auto pairwise(Container&& c) {
+  return nwise<2>(std::forward<Container&&>(c));
 }
 
 template <typename Container>
