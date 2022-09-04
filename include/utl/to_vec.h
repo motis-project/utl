@@ -35,4 +35,14 @@ inline auto to_vec(Container&& c) -> std::vector<decltype(*std::begin(c))> {
   return v;
 }
 
+template <typename Output, typename Container, typename UnaryOperation>
+inline auto to(Container&& c, UnaryOperation&& op) -> Output {
+  Output v;
+  v.reserve(
+      static_cast<std::size_t>(std::distance(std::begin(c), std::end(c))));
+  std::transform(std::begin(c), std::end(c), std::back_inserter(v),
+                 std::forward<UnaryOperation>(op));
+  return v;
+}
+
 }  // namespace utl
