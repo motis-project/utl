@@ -161,6 +161,9 @@ std::tuple<Ts...> split(cstr s) {
         auto col = cstr{};
         parse_column<cstr, Separator>(s, col);
         parse_arg(col, std::get<I>(ret));
+        if (s) {
+          ++s;
+        }
       };
   auto const parse_tuple = [&]<std::size_t... I>(std::index_sequence<I...>) {
     (parse_col(std::integral_constant<std::size_t, I>{}), ...);
