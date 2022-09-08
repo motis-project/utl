@@ -5,6 +5,8 @@
 #include <cstddef>
 #include <tuple>
 
+#include "utl/forward_type.h"
+
 namespace utl {
 
 template <typename T, typename TIter = decltype(std::begin(std::declval<T>())),
@@ -23,11 +25,12 @@ constexpr auto enumerate(T&& iterable) {
       if constexpr (std::is_pointer_v<std::decay_t<Type>>) {
         return std::make_tuple(i_, &(**iter_));
       } else {
-        return std::tie(i_, *iter_);
+        return std::tuple<std::size_t, forward_type_t<decltype(*iter_)>>{
+            i_, *iter_};
       }
     }
 
-    size_t i_;
+    std::size_t i_;
     TIter iter_;
   };
 

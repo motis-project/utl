@@ -4,6 +4,8 @@
 #include <functional>
 #include <stdexcept>
 
+#include "utl/forward_type.h"
+
 namespace utl {
 namespace detail {
 
@@ -119,30 +121,9 @@ inline void check_dimensions(Containers&&... containers) {
   }
 }
 
-template <typename T, typename Enable = void>
-struct forward_type_s;
-
-template <typename T>
-struct forward_type_s<T, std::enable_if_t<std::is_lvalue_reference_v<T>>> {
-  using value_t = T;
-};
-
-template <typename T>
-struct forward_type_s<T, std::enable_if_t<std::is_rvalue_reference_v<T>>> {
-  using value_t = std::remove_reference_t<T>;
-};
-
-template <typename T>
-struct forward_type_s<T, std::enable_if_t<!std::is_reference_v<T>>> {
-  using value_t = T;
-};
-
-template <typename T>
-using forward_type = typename forward_type_s<T>::value_t;
-
 template <typename... Ts>
 auto tuple_forward(Ts&&... t) {
-  return std::tuple<forward_type<Ts&&>...>{std::forward<Ts&&>(t)...};
+  return std::tuple<forward_type_t<Ts&&>...>{std::forward<Ts&&>(t)...};
 }
 
 template <typename T, typename Enable = void>
