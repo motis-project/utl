@@ -7,8 +7,10 @@ struct const_str {
   static constexpr char const s[sizeof...(Chars) + 1] = {Chars..., 0};
 };
 
+#if __cplusplus < 201703L
 template <char... Chars>
 constexpr char const const_str<Chars...>::s[sizeof...(Chars) + 1];
+#endif
 
 #define STRING_LITERAL_24(str) \
   STRING_LITERAL_23(str), ((TERMINATED_23(str)) ? (str[23]) : ('\0'))
