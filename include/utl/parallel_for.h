@@ -57,6 +57,23 @@ inline errors_t parallel_for_run(size_t const job_count, Fun func,
 }
 
 template <typename Container, typename Fun>
+inline errors_t parallel_for(Container& jobs, Fun&& func,
+                             parallel_error_strategy const err_strat =
+                                 parallel_error_strategy::QUIT_EXEC) {
+  return parallel_for_run(
+      jobs.size(),
+      [&](auto const idx) {
+        {
+          using std::begin;
+          func(*std::next(begin(jobs),
+                          static_cast<typename std::iterator_traits<
+                              decltype(begin(jobs))>::difference_type>(idx)));
+        }
+      },
+      err_strat);
+}
+
+template <typename Container, typename Fun>
 inline errors_t parallel_for(Container const& jobs, Fun&& func,
                              parallel_error_strategy const err_strat =
                                  parallel_error_strategy::QUIT_EXEC) {
