@@ -23,9 +23,9 @@ struct to_vec_t {
 inline to_vec_t vec() { return to_vec_t(); }
 
 template <typename Container>
-struct to_t {
+struct emplace_to_t {
   template <typename T>
-  friend auto operator|(T&& r, to_t&&) {
+  friend auto operator|(T&& r, emplace_to_t&&) {
     auto it = r.begin();
     Container c;
     while (r.valid(it)) {
@@ -37,7 +37,26 @@ struct to_t {
 };
 
 template <typename Container>
-inline to_t<Container> to() {
+inline emplace_to_t<Container> to() {
+  return {};
+}
+
+template <typename Container>
+struct emplace_back_to_t {
+  template <typename T>
+  friend auto operator|(T&& r, emplace_back_to_t&&) {
+    auto it = r.begin();
+    Container c;
+    while (r.valid(it)) {
+      c.emplace_back(r.read(it));
+      r.next(it);
+    }
+    return c;
+  }
+};
+
+template <typename Container>
+inline emplace_back_to_t<Container> emplace_back_to() {
   return {};
 }
 
