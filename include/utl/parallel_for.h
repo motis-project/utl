@@ -16,10 +16,16 @@ enum class parallel_error_strategy { CONTINUE_EXEC, QUIT_EXEC };
 
 using errors_t = std::vector<std::pair<size_t, std::exception_ptr>>;
 
-template <typename Fun>
-inline errors_t parallel_for_run(size_t const job_count, Fun func,
-                                 parallel_error_strategy const err_strat =
-                                     parallel_error_strategy::QUIT_EXEC) {
+struct noop_progress_update {
+  void operator()(std::size_t) {}
+};
+
+template <typename Fun, typename ProgressUpdateFn = noop_progress_update>
+inline errors_t parallel_for_run(
+    size_t const job_count, Fun func,
+    ProgressUpdateFn&& progress_update = ProgressUpdateFn{},
+    parallel_error_strategy const err_strat =
+        parallel_error_strategy::QUIT_EXEC) {
   errors_t errors;
   std::mutex errors_mutex;
   std::atomic<size_t> counter(0);
@@ -35,6 +41,7 @@ inline errors_t parallel_for_run(size_t const job_count, Fun func,
 
         try {
           func(idx);
+          progress_update(idx);
         } catch (...) {
           std::lock_guard<std::mutex> lock{errors_mutex};
           errors.emplace_back(std::pair{i, std::current_exception()});
@@ -56,10 +63,13 @@ inline errors_t parallel_for_run(size_t const job_count, Fun func,
   return errors;
 }
 
-template <typename Container, typename Fun>
-inline errors_t parallel_for(Container& jobs, Fun&& func,
-                             parallel_error_strategy const err_strat =
-                                 parallel_error_strategy::QUIT_EXEC) {
+template <typename Container, typename Fun,
+          typename ProgressUpdateFn = noop_progress_update>
+inline errors_t parallel_for(
+    Container& jobs, Fun&& func,
+    ProgressUpdateFn&& progress_update = ProgressUpdateFn{},
+    parallel_error_strategy const err_strat =
+        parallel_error_strategy::QUIT_EXEC) {
   return parallel_for_run(
       jobs.size(),
       [&](auto const idx) {
@@ -70,13 +80,16 @@ inline errors_t parallel_for(Container& jobs, Fun&& func,
                               decltype(begin(jobs))>::difference_type>(idx)));
         }
       },
-      err_strat);
+      std::forward<ProgressUpdateFn>(progress_update), err_strat);
 }
 
-template <typename Container, typename Fun>
-inline errors_t parallel_for(Container const& jobs, Fun&& func,
-                             parallel_error_strategy const err_strat =
-                                 parallel_error_strategy::QUIT_EXEC) {
+template <typename Container, typename Fun,
+          typename ProgressUpdateFn = noop_progress_update>
+inline errors_t parallel_for(
+    Container const& jobs, Fun&& func,
+    ProgressUpdateFn&& progress_update = ProgressUpdateFn{},
+    parallel_error_strategy const err_strat =
+        parallel_error_strategy::QUIT_EXEC) {
   return parallel_for_run(
       jobs.size(),
       [&](auto const idx) {
@@ -87,7 +100,7 @@ inline errors_t parallel_for(Container const& jobs, Fun&& func,
                               decltype(begin(jobs))>::difference_type>(idx)));
         }
       },
-      err_strat);
+      std::forward<ProgressUpdateFn>(progress_update), err_strat);
 }
 
 template <typename Container, typename Fun>
