@@ -103,11 +103,13 @@ inline errors_t parallel_for(
       std::forward<ProgressUpdateFn>(progress_update), err_strat);
 }
 
-template <typename Container, typename Fun>
-inline errors_t parallel_for(std::string const& desc, Container const& jobs,
-                             size_t const mod, Fun func,
-                             parallel_error_strategy const err_strat =
-                                 parallel_error_strategy::QUIT_EXEC) {
+template <typename Container, typename Fun,
+          typename ProgressUpdateFn = noop_progress_update>
+inline errors_t parallel_for(
+    std::string const& desc, Container const& jobs, size_t const mod, Fun func,
+    ProgressUpdateFn&& progress_update = ProgressUpdateFn{},
+    parallel_error_strategy const err_strat =
+        parallel_error_strategy::QUIT_EXEC) {
   return parallel_for_run(
       jobs.size(),
       [&](auto const idx) {
@@ -116,7 +118,7 @@ inline errors_t parallel_for(std::string const& desc, Container const& jobs,
         }
         func(jobs[idx]);
       },
-      err_strat);
+      std::forward<ProgressUpdateFn>(progress_update), err_strat);
 }
 
 }  // namespace utl
