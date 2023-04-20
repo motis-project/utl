@@ -11,7 +11,7 @@ struct noop_progress_consumer {
 template <typename ProgressConsumer = noop_progress_consumer>
 struct buf_reader {
   explicit buf_reader(cstr s) : s_{s}, it_{s_.c_str()} {}
-  buf_reader(cstr s, ProgressConsumer consumer)
+  buf_reader(cstr s, ProgressConsumer&& consumer)
       : s_{s}, it_{s_.c_str()}, progress_consumer_{std::move(consumer)} {}
 
   cstr read_line() {
@@ -35,12 +35,17 @@ struct buf_reader {
     }
   }
 
-  void update_progress() { progress_consumer_(it_ - s_.c_str()); }
+  void update_progress() {
+    progress_consumer_(static_cast<std::size_t>(it_ - s_.c_str()));
+  }
 
   cstr s_;
   char const* it_;
   ProgressConsumer progress_consumer_;
 };
+
+template <typename ProgressConsumer>
+buf_reader(ProgressConsumer&&) -> buf_reader<ProgressConsumer>;
 
 template <typename ProgressConsumer = noop_progress_consumer>
 buf_reader<ProgressConsumer> make_buf_reader(
