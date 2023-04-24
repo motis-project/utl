@@ -7,6 +7,13 @@
 
 #include "fmt/ostream.h"
 
+#define utl_verify(condition, fmt_str, ...)                 \
+  {                                                         \
+    if (!(condition)) {                                     \
+      [[unlikely]] throw ::utl::fail(fmt_str, __VA_ARGS__); \
+    }                                                       \
+  }
+
 namespace utl {
 
 template <typename Msg, typename... FmtArgs>
@@ -32,14 +39,15 @@ std::runtime_error fail(Msg&& msg, FmtArgs... args) {
 template <typename Msg, typename... FmtArgs>
 void verify(bool condition, Msg&& msg, FmtArgs... args) {
   if (!condition) {
-    throw fail(std::forward<Msg>(msg), std::forward<FmtArgs>(args)...);
+    [[unlikely]] throw fail(std::forward<Msg>(msg),
+                            std::forward<FmtArgs>(args)...);
   }
 }
 
 template <typename Msg, typename... FmtArgs>
 void verify_silent(bool condition, Msg&& msg, FmtArgs... args) {
   if (!condition) {
-    throw std::runtime_error{
+    [[unlikely]] throw std::runtime_error{
         fmt::format(std::forward<Msg>(msg), std::forward<FmtArgs>(args)...)};
   }
 }
@@ -47,7 +55,7 @@ void verify_silent(bool condition, Msg&& msg, FmtArgs... args) {
 template <typename Exception>
 void verify_ex(bool condition, Exception&& ex) {
   if (!condition) {
-    throw ex;
+    [[unlikely]] throw ex;
   }
 }
 
