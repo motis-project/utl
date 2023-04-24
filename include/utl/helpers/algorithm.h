@@ -40,4 +40,18 @@ auto count_if(Collection&& c, Predicate&& p) {
   return std::count_if(begin(c), end(c), std::forward<Predicate>(p));
 }
 
+template <typename Collection, typename Predicate>
+void sort(Collection&& c, Predicate&& p) {
+  using std::begin;
+  using std::end;
+  std::sort(begin(c), end(c), std::forward<Predicate>(p));
+}
+
+template <typename Collection, typename Predicate>
+bool is_sorted(Collection&& c, Predicate&& p) {
+  using std::begin;
+  using std::end;
+  return std::is_sorted(begin(c), end(c), std::forward<Predicate>(p));
+}
+
 }  // namespace utl
