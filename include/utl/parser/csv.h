@@ -15,6 +15,9 @@ namespace utl {
 
 template <typename T, char Separator = ','>
 inline void parse_column(cstr& s, T& arg) {
+  if (!s) {
+    return;
+  }
   char end = Separator;
   if (*s.str == '"') {
     end = '"';
