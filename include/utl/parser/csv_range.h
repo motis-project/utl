@@ -38,6 +38,11 @@ constexpr auto get_name(T) {
 
 template <typename T, char Separator = ','>
 std::array<column_idx_t, MAX_COLUMNS> read_header(cstr s) {
+  if (s.starts_with("\xEF\xBB\xBF")) {
+    // skip utf-8 byte order mark (otherwise the first column is ignored)
+    s = s.substr(3);
+  }
+
   std::array<column_idx_t, MAX_COLUMNS> column_map;
   column_map.fill(NO_COLUMN_IDX);
 
