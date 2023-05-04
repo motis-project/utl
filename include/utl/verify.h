@@ -7,10 +7,20 @@
 
 #include "fmt/ostream.h"
 
+#ifdef __has_cpp_attribute
+#  if __has_cpp_attribute(unlikely)
+#    define UTL_UNLIKELY [[unlikely]]
+#  else
+#    define UTL_UNLIKELY
+#  endif
+#else
+#  define UTL_UNLIKELY
+#endif
+
 #define utl_verify(condition, fmt_str, ...)                 \
   {                                                         \
     if (!(condition)) {                                     \
-      [[unlikely]] throw ::utl::fail(fmt_str, __VA_ARGS__); \
+      UTL_UNLIKELY throw ::utl::fail(fmt_str, __VA_ARGS__); \
     }                                                       \
   }
 
@@ -39,7 +49,7 @@ std::runtime_error fail(Msg&& msg, FmtArgs... args) {
 template <typename Msg, typename... FmtArgs>
 void verify(bool condition, Msg&& msg, FmtArgs... args) {
   if (!condition) {
-    [[unlikely]] throw fail(std::forward<Msg>(msg),
+    UTL_UNLIKELY throw fail(std::forward<Msg>(msg),
                             std::forward<FmtArgs>(args)...);
   }
 }
@@ -47,7 +57,7 @@ void verify(bool condition, Msg&& msg, FmtArgs... args) {
 template <typename Msg, typename... FmtArgs>
 void verify_silent(bool condition, Msg&& msg, FmtArgs... args) {
   if (!condition) {
-    [[unlikely]] throw std::runtime_error{
+    UTL_UNLIKELY throw std::runtime_error{
         fmt::format(std::forward<Msg>(msg), std::forward<FmtArgs>(args)...)};
   }
 }
@@ -55,7 +65,7 @@ void verify_silent(bool condition, Msg&& msg, FmtArgs... args) {
 template <typename Exception>
 void verify_ex(bool condition, Exception&& ex) {
   if (!condition) {
-    [[unlikely]] throw ex;
+    UTL_UNLIKELY throw ex;
   }
 }
 
