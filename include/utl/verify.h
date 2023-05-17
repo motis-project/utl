@@ -8,21 +8,21 @@
 #include "fmt/ostream.h"
 
 #ifdef __has_cpp_attribute
-#  if __has_cpp_attribute(unlikely)
-#    define UTL_UNLIKELY [[unlikely]]
-#  else
-#    define UTL_UNLIKELY
-#  endif
+#if __has_cpp_attribute(unlikely)
+#define UTL_UNLIKELY [[unlikely]]
 #else
-#  define UTL_UNLIKELY
+#define UTL_UNLIKELY
+#endif
+#else
+#define UTL_UNLIKELY
 #endif
 
 #define utl_verify(condition, fmt_str, ...)                 \
-  {                                                         \
+  [&]() {                                                   \
     if (!(condition)) {                                     \
       UTL_UNLIKELY throw ::utl::fail(fmt_str, __VA_ARGS__); \
     }                                                       \
-  }
+  }()
 
 namespace utl {
 
