@@ -13,8 +13,9 @@ struct remove_if_range : public clear_t<Range> {
   using parent_t = clear_t<Range>;
   using result_t = typename parent_t::result_t;
 
-  remove_if_range(Range&& r, RemoveIf&& remove_if)
-      : parent_t(std::forward<parent_t>(r)),
+  template <typename T>
+  remove_if_range(T&& r, RemoveIf&& remove_if)
+      : parent_t(std::forward<T>(r)),
         remove_if_(std::forward<RemoveIf>(remove_if)) {}
 
   template <typename It>

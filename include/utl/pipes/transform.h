@@ -13,8 +13,9 @@ struct transform_range : public clear_t<Range> {
   using result_t = clear_t<decltype(std::declval<Transform>().fn_(
       std::declval<typename parent_t::result_t>()))>;
 
-  transform_range(Range&& r, Transform&& transform)
-      : parent_t(std::forward<parent_t>(r)),
+  template <typename T>
+  transform_range(T&& r, Transform&& transform)
+      : parent_t(std::forward<T>(r)),
         transform_(std::forward<Transform>(transform)) {}
 
   template <typename It>
