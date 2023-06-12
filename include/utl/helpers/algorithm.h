@@ -59,4 +59,9 @@ constexpr void fill(Collection&& c, T const& value) {
   std::fill(begin(c), end(c), value);
 }
 
+template <typename Collection1, typename Collection2>
+constexpr bool equal(Collection1&& c1, Collection2&& c2) {
+  return std::equal(begin(c1), end(c1), begin(c2), end(c2));
+}
+
 }  // namespace utl
