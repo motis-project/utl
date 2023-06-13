@@ -53,7 +53,7 @@ struct zip_iterator<std::tuple<Iterators...>> {
 
   template <std::size_t... I>
   auto deref_helper(std::index_sequence<I...>) {
-    return std::forward_as_tuple(*std::get<I>(its_)...);
+    return References{*std::get<I>(its_)...};
   }
 
   References operator*() {
