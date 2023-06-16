@@ -33,7 +33,7 @@ struct transform_t {
   template <typename T>
   friend auto operator|(T&& r, transform_t&& f) {
     return transform_range<decltype(make_range(r)), transform_t>(
-        make_range(std::forward<T>(r)), std::move(f));
+        std::forward<T>(r), std::move(f));
   }
 
   Fn fn_;

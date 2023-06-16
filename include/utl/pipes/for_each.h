@@ -11,8 +11,7 @@ struct for_each_t {
   for_each_t(ForEachFn&& f) : fn_(std::forward<ForEachFn>(f)) {}
 
   template <typename T>
-  friend void operator|(T&& t, for_each_t&& f) {
-    auto r = make_range(std::forward<T>(t));
+  friend void operator|(T&& r, for_each_t&& f) {
     auto it = r.begin();
     while (r.valid(it)) {
       f.fn_(r.read(it));

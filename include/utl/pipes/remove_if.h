@@ -46,8 +46,8 @@ struct remove_if_t {
 
   template <typename T>
   friend auto operator|(T&& r, remove_if_t&& f) {
-    return remove_if_range<decltype(make_range(r)), remove_if_t>(
-        make_range(std::forward<T>(r)), std::move(f));
+    return remove_if_range<decltype(r), remove_if_t>(std::forward<T>(r),
+                                                     std::move(f));
   }
 
   Fn fn_;
