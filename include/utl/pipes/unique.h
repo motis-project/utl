@@ -43,8 +43,7 @@ struct unique_range : public clear_t<Range> {
 struct unique_t {
   template <typename T>
   friend auto operator|(T&& r, unique_t&&) {
-    return unique_range<decltype(make_range(r))>(
-        make_range(std::forward<T>(r)));
+    return unique_range<T>(make_range(std::forward<T>(r)));
   }
 };
 

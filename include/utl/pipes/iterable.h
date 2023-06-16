@@ -40,8 +40,7 @@ struct iterable_range : public clear_t<Range> {
 struct iterable_t {
   template <typename T>
   friend auto operator|(T&& r, iterable_t&&) {
-    return iterable_range<decltype(make_range(r))>(
-        make_range(std::forward<T>(r)));
+    return iterable_range<T>(std::forward<T>(r));
   }
 };
 
