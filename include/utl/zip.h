@@ -76,32 +76,76 @@ struct zip_iterator<std::tuple<Iterators...>> {
   std::tuple<Iterators...> its_;
 };
 
+template <class T, class R = void>
+struct enable_if_type {
+  using type = R;
+};
+
+template <typename T, typename = void>
+struct has_const_iterator : std::false_type {};
+
+template <typename T>
+struct has_const_iterator<
+    T, typename enable_if_type<typename T::const_iterator>::type>
+    : std::true_type {};
+
+template <typename T>
+inline constexpr bool has_const_iterator_v = has_const_iterator<T>::value;
+
+template <typename Container, typename Enable = void>
+struct iterator {
+  using type = typename Container::iterator;
+};
+
+template <typename Container>
+struct iterator<
+    Container,
+    std::enable_if_t<std::is_const_v<std::remove_reference_t<Container>> &&
+                     has_const_iterator_v<Container>>> {
+  using type = typename Container::const_iterator;
+};
+
+template <typename T>
+using iterator_t = typename iterator<T>::type;
+
+template <typename Container, typename Enable = void>
+struct const_iterator {
+  using type = typename Container::iterator;
+};
+
+template <typename Container>
+struct const_iterator<Container,
+                      std::enable_if_t<has_const_iterator_v<Container>>> {
+  using type = typename Container::const_iterator;
+};
+
+template <typename T>
+using const_iterator_t = typename const_iterator<T>::type;
+
 template <typename... Containers>
 struct zip_range {
-  using Iterator = zip_iterator<std::tuple<std::conditional_t<
-      std::is_const_v<std::remove_reference_t<Containers>>,
-      typename std::remove_reference_t<Containers>::const_iterator,
-      typename std::remove_reference_t<Containers>::iterator>...>>;
-
-  using ConstIterator = zip_iterator<std::tuple<
-      typename std::remove_reference_t<Containers>::const_iterator...>>;
+  using iterator = zip_iterator<
+      std::tuple<iterator_t<typename std::remove_reference_t<Containers>>...>>;
+  using const_iterator = zip_iterator<std::tuple<
+      const_iterator_t<typename std::remove_reference_t<Containers>>...>>;
 
   explicit zip_range(std::tuple<Containers...> tup) : tup_(std::move(tup)) {}
 
-  ConstIterator begin() const {
-    return ConstIterator{map_tup(tup_, [](auto&& c) { return std::begin(c); })};
+  const_iterator begin() const {
+    return const_iterator{
+        map_tup(tup_, [](auto&& c) { return std::begin(c); })};
   }
 
-  auto begin() -> Iterator {
-    return Iterator{map_tup(tup_, [](auto&& c) { return std::begin(c); })};
+  auto begin() -> iterator {
+    return iterator{map_tup(tup_, [](auto&& c) { return std::begin(c); })};
   }
 
-  ConstIterator end() const {
-    return ConstIterator{map_tup(tup_, [](auto&& c) { return std::end(c); })};
+  const_iterator end() const {
+    return const_iterator{map_tup(tup_, [](auto&& c) { return std::end(c); })};
   }
 
-  auto end() -> Iterator {
-    return Iterator{map_tup(tup_, [](auto&& c) { return std::end(c); })};
+  auto end() -> iterator {
+    return iterator{map_tup(tup_, [](auto&& c) { return std::end(c); })};
   }
 
   std::tuple<Containers...> tup_;
