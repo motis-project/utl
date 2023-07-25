@@ -47,7 +47,10 @@ struct progress_tracker {
   tracker_update in_high(size_t in_high);
 
   auto update_fn() {
-    return [this](size_t new_in) { update(new_in); };
+    return [this](size_t new_in) { update_monotonic(new_in); };
+  }
+  auto increment_fn() {
+    return [this]() { increment(); };
   }
   void update(size_t new_in);
   void increment(size_t inc = 1);
