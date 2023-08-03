@@ -17,7 +17,7 @@ enum class parallel_error_strategy { CONTINUE_EXEC, QUIT_EXEC };
 using errors_t = std::vector<std::pair<size_t, std::exception_ptr>>;
 
 struct noop_progress_update {
-  void operator()(std::size_t) {}
+  void operator()() {}
 };
 
 template <typename Fun, typename ProgressUpdateFn = noop_progress_update>
