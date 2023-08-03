@@ -56,7 +56,17 @@ struct zip_iterator<std::tuple<Iterators...>> {
     return References{*std::get<I>(its_)...};
   }
 
+  template <std::size_t... I>
+  auto deref_helper(std::index_sequence<I...>) const {
+    return References{*std::get<I>(its_)...};
+  }
+
   References operator*() {
+    using Sequence = std::make_index_sequence<sizeof...(Iterators)>;
+    return deref_helper(Sequence());
+  }
+
+  References operator*() const {
     using Sequence = std::make_index_sequence<sizeof...(Iterators)>;
     return deref_helper(Sequence());
   }

@@ -36,7 +36,13 @@ struct nwise_iterator {
     return {*its_[I]...};
   }
 
+  template <std::size_t... I>
+  auto deref(std::index_sequence<I...>) const -> value_type {
+    return {*its_[I]...};
+  }
+
   auto operator*() { return deref(indices_t{}); }
+  auto operator*() const { return deref(indices_t{}); }
 
   bool operator==(nwise_iterator const& o) const {
     return its_.back() == o.its_.back();
