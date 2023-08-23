@@ -54,6 +54,13 @@ constexpr void sort(Collection&& c, Predicate&& p) {
   std::sort(begin(c), end(c), std::forward<Predicate>(p));
 }
 
+template <typename Collection>
+constexpr void sort(Collection&& c) {
+  using std::begin;
+  using std::end;
+  std::sort(begin(c), end(c));
+}
+
 template <typename Collection, typename Predicate>
 constexpr bool is_sorted(Collection&& c, Predicate&& p) {
   using std::begin;
