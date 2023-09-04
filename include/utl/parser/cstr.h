@@ -152,11 +152,30 @@ inline cstr strip_cr(cstr s) {
 
 inline cstr get_line(cstr s) { return strip_cr(get_until(s, '\n')); }
 
+enum class continue_t { kContinue, kBreak };
+
 template <typename Function>
-void for_each_token(cstr s, char separator, Function&& f) {
+auto for_each_token(cstr s, char separator, Function&& f)
+    -> std::enable_if_t<std::is_same_v<decltype(f(cstr{})), void>> {
   while (s.len > 0) {
     cstr token = get_until(s, separator);
     f(token);
+    s += token.len;
+    // skip separator
+    if (s.len != 0) {
+      ++s;
+    }
+  }
+}
+
+template <typename Function>
+auto for_each_token(cstr s, char separator, Function&& f)
+    -> std::enable_if_t<std::is_same_v<decltype(f(cstr{})), continue_t>> {
+  while (s.len > 0) {
+    cstr token = get_until(s, separator);
+    if (f(token) == continue_t::kBreak) {
+      break;
+    }
     s += token.len;
     // skip separator
     if (s.len != 0) {
