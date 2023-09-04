@@ -21,9 +21,10 @@ std::pair<typename std::decay_t<Collection>::iterator, bool> insert_sorted(
 
 template <typename Collection>
 std::pair<typename std::decay_t<Collection>::iterator, bool> insert_sorted(
-    Collection&& v, typename Collection::value_type el) {
-  return insert_sorted(std::forward<Collection>(v), std::move(el),
-                       std::less<typename Collection::value_type>{});
+    Collection&& v, typename std::decay_t<Collection>::value_type el) {
+  return insert_sorted(
+      std::forward<decltype(v)>(v), std::move(el),
+      std::less<typename std::decay_t<Collection>::value_type>{});
 }
 
 }  // namespace utl
