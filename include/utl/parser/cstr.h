@@ -152,7 +152,7 @@ inline cstr strip_cr(cstr s) {
 
 inline cstr get_line(cstr s) { return strip_cr(get_until(s, '\n')); }
 
-enum class continue_t { kContinue, kBreak };
+enum class continue_t : std::uint8_t { kContinue, kBreak };
 
 template <typename Function>
 auto for_each_token(cstr s, char separator, Function&& f)
