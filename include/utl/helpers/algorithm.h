@@ -61,6 +61,17 @@ constexpr void sort(Collection&& c) {
   std::sort(begin(c), end(c));
 }
 
+template <
+    typename Collection,
+    typename Cmp = std::less<typename std::decay_t<Collection>::value_type>>
+constexpr void nth_element(
+    Collection&& c, typename std::decay_t<Collection>::size_type const size,
+    Cmp cmp = {}) {
+  using std::begin;
+  using std::end;
+  std::nth_element(begin(c), begin(c) + size, end(c), std::forward<Cmp>(cmp));
+}
+
 template <typename Collection, typename Predicate>
 constexpr bool is_sorted(Collection&& c, Predicate&& p) {
   using std::begin;
