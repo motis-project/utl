@@ -26,8 +26,8 @@
 
 namespace utl {
 
-template <typename Msg, typename... FmtArgs>
-std::runtime_error fail(Msg&& msg, FmtArgs... args) {
+template <typename... FmtArgs>
+std::runtime_error fail(fmt::format_string<FmtArgs...> msg, FmtArgs... args) {
   using clock = std::chrono::system_clock;
 
   auto const now = clock::to_time_t(clock::now());
@@ -38,27 +38,31 @@ std::runtime_error fail(Msg&& msg, FmtArgs... args) {
   gmtime_r(&now, &tmp);
 #endif
 
-  fmt::print(std::clog, "{} [VERIFY FAIL] ", std::put_time(&tmp, "%FT%TZ"));
-  fmt::print(std::clog, std::forward<Msg>(msg), std::forward<FmtArgs>(args)...);
+  fmt::print(std::clog, "{} [VERIFY FAIL] ",
+             fmt::streamed(std::put_time(&tmp, "%FT%TZ")));
+  fmt::print(std::clog, std::forward<decltype(msg)>(msg),
+             std::forward<FmtArgs>(args)...);
   fmt::print(std::clog, "\n");
 
-  return std::runtime_error{
-      fmt::format(std::forward<Msg>(msg), std::forward<FmtArgs>(args)...)};
+  return std::runtime_error{fmt::format(std::forward<decltype(msg)>(msg),
+                                        std::forward<FmtArgs>(args)...)};
 }
 
-template <typename Msg, typename... FmtArgs>
-void verify(bool condition, Msg&& msg, FmtArgs... args) {
+template <typename... FmtArgs>
+void verify(bool condition, fmt::format_string<FmtArgs...> msg,
+            FmtArgs... args) {
   if (!condition) {
-    UTL_UNLIKELY throw fail(std::forward<Msg>(msg),
+    UTL_UNLIKELY throw fail(std::forward<decltype(msg)>(msg),
                             std::forward<FmtArgs>(args)...);
   }
 }
 
-template <typename Msg, typename... FmtArgs>
-void verify_silent(bool condition, Msg&& msg, FmtArgs... args) {
+template <typename... FmtArgs>
+void verify_silent(bool condition, fmt::format_string<FmtArgs...> msg,
+                   FmtArgs... args) {
   if (!condition) {
-    UTL_UNLIKELY throw std::runtime_error{
-        fmt::format(std::forward<Msg>(msg), std::forward<FmtArgs>(args)...)};
+    UTL_UNLIKELY throw std::runtime_error{fmt::format(
+        std::forward<decltype(msg)>(msg), std::forward<FmtArgs>(args)...)};
   }
 }
 
