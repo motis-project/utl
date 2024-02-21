@@ -17,7 +17,7 @@ enum class parallel_error_strategy { CONTINUE_EXEC, QUIT_EXEC };
 using errors_t = std::vector<std::pair<size_t, std::exception_ptr>>;
 
 struct noop_progress_update {
-  void operator()() {}
+  void operator()(size_t const) {}
 };
 
 template <typename ThreadLocal, typename Fun,
@@ -87,7 +87,7 @@ inline errors_t parallel_for_run(
 
         try {
           func(idx);
-          progress_update();
+          progress_update(idx);
         } catch (...) {
           std::lock_guard<std::mutex> lock{errors_mutex};
           errors.emplace_back(std::pair{i, std::current_exception()});
