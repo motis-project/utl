@@ -44,7 +44,7 @@ inline errors_t parallel_for_run_threadlocal(
 
         try {
           func(threadlocal, idx);
-          progress_update();
+          progress_update(idx);
         } catch (...) {
           std::lock_guard<std::mutex> lock{errors_mutex};
           errors.emplace_back(std::pair{i, std::current_exception()});
