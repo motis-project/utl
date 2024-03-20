@@ -63,14 +63,21 @@ struct nwise_iterator {
 
 template <std::size_t N, typename It>
 struct nwise_range {
+  using iterator = It;
+  using const_iterator = It;
   nwise_range(It begin, It end) : begin_{begin}, end_{end} {}
   nwise_iterator<N, It> begin() const { return {begin_, end_}; }
   nwise_iterator<N, It> end() const { return {end_, end_}; }
+  std::size_t size() const {
+    return static_cast<std::size_t>(std::distance(begin(), end()));
+  }
   It begin_, end_;
 };
 
 template <std::size_t N, typename T>
 struct owning_nwise_range {
+  using iterator = nwise_iterator<N, decltype(begin(std::declval<T>()))>;
+  using const_iterator = nwise_iterator<N, decltype(begin(std::declval<T>()))>;
   owning_nwise_range(T&& t) : t_{std::move(t)} {}
   auto begin() const {
     using std::begin;
@@ -81,6 +88,11 @@ struct owning_nwise_range {
     using std::begin;
     using std::end;
     return nwise_iterator<N, decltype(begin(t_))>{end(t_), end(t_)};
+  }
+  std::size_t size() const {
+    using std::begin;
+    using std::end;
+    return static_cast<std::size_t>(std::distance(this->begin(), this->end()));
   }
   T t_;
 };

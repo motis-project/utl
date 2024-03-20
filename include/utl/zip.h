@@ -170,7 +170,8 @@ inline void check_dimensions(Containers&&... containers) {
   std::array<size_t, sizeof...(Containers)> sizes{{containers.size()...}};
   for (auto const& size : sizes) {
     if (size != sizes[0]) {
-      throw std::runtime_error("utl::zip container size mismatch");
+      throw utl::fail("utl::zip container size mismatch {} vs {}", size,
+                      sizes[0]);
     }
   }
 }
