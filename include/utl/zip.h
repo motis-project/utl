@@ -158,6 +158,11 @@ struct zip_range {
     return iterator{map_tup(tup_, [](auto&& c) { return std::end(c); })};
   }
 
+  friend auto begin(zip_range const& zr) { return zr.begin(); }
+  friend auto end(zip_range const& zr) { return zr.end(); }
+  friend auto begin(zip_range& zr) { return zr.begin(); }
+  friend auto end(zip_range& zr) { return zr.end(); }
+
   std::tuple<Containers...> tup_;
 };
 
