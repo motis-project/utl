@@ -76,6 +76,11 @@ struct zip_iterator<std::tuple<Iterators...>> {
     return *this;
   }
 
+  SelfType& operator--() {
+    each_tup(its_, [](auto&& it) { --it; });
+    return *this;
+  }
+
   bool operator==(SelfType const& rhs) const { return its_ == rhs.its_; }
   bool operator!=(SelfType const& rhs) const { return its_ != rhs.its_; }
   bool operator>(SelfType const& rhs) const { return its_ > rhs.its_; }
@@ -140,6 +145,18 @@ struct zip_range {
       const_iterator_t<typename std::remove_reference_t<Containers>>...>>;
 
   explicit zip_range(std::tuple<Containers...> tup) : tup_(std::move(tup)) {}
+
+  typename const_iterator::References operator[](std::size_t const i) const {
+    return *std::next(begin(),
+                      static_cast<typename iterator::difference_type>(i));
+  }
+
+  typename iterator::References operator[](std::size_t const i) {
+    return *std::next(begin(),
+                      static_cast<typename iterator::difference_type>(i));
+  }
+
+  std::size_t size() const { return std::get<0>(tup_).size(); }
 
   const_iterator begin() const {
     return const_iterator{
