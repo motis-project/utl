@@ -258,4 +258,16 @@ auto czip(Containers&&... containers) {
       detail::tuple_const_forward(std::forward<Containers&&>(containers)...)};
 }
 
+template <typename... Containers>
+auto zip_unchecked(Containers&&... containers) {
+  return detail::zip_range{
+      detail::tuple_forward(std::forward<Containers&&>(containers)...)};
+}
+
+template <typename... Containers>
+auto czip_unchecked(Containers&&... containers) {
+  return detail::zip_range{
+      detail::tuple_const_forward(std::forward<Containers&&>(containers)...)};
+}
+
 }  // namespace utl
