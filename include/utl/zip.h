@@ -5,6 +5,7 @@
 #include <stdexcept>
 
 #include "utl/forward_type.h"
+#include "utl/verify.h"
 
 namespace utl {
 namespace detail {
