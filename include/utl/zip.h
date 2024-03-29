@@ -44,7 +44,7 @@ struct zip_iterator<std::tuple<Iterators...>> {
   using References =
       std::tuple<typename std::iterator_traits<Iterators>::reference...>;
 
-  using iterator_category = std::input_iterator_tag;
+  using iterator_category = std::bidirectional_iterator_tag;
   using value_type = References;
   using reference = value_type;
   using pointer = value_type*;
