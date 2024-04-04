@@ -1,239 +1,239 @@
 #include <cmath>
 
-#include "catch2/catch_all.hpp"
+#include "gtest/gtest.h"
 
 #include "utl/parser/arg_parser.h"
 #include "utl/parser/csv.h"
 
 using namespace utl;
 
-TEST_CASE("parse_int") {
+TEST(arg_parser, parse_int) {
   cstr s = "33.7994;77";
   int i{};
   bool ok = parse_arg(s, i);
 
-  REQUIRE(!ok);
-  REQUIRE(s.len == 8);
-  REQUIRE(i == 33);
+  ASSERT_TRUE(!ok);
+  ASSERT_TRUE(s.len == 8);
+  ASSERT_TRUE(i == 33);
 }
 
-TEST_CASE("parse_int_str_end") {
+TEST(arg_parser, parse_int_str_end) {
   cstr s = "33";
   int i{};
   bool ok = parse_arg(s, i);
 
-  REQUIRE(ok);
-  REQUIRE(s.len == 0);
-  REQUIRE(i == 33);
+  ASSERT_TRUE(ok);
+  ASSERT_TRUE(s.len == 0);
+  ASSERT_TRUE(i == 33);
 }
 
-TEST_CASE("parse_negative_int") {
+TEST(arg_parser, parse_negative_int) {
   cstr s = "-33.7994;77";
   int i{};
   parse_arg(s, i);
 
-  REQUIRE(s.len == 8);
-  REQUIRE(i == -33);
+  ASSERT_TRUE(s.len == 8);
+  ASSERT_TRUE(i == -33);
 }
 
-TEST_CASE("parse_int_default_default_value") {
+TEST(arg_parser, parse_int_default_default_value) {
   cstr s = "a-33.7994;77";
   int i{};
   bool ok = parse_arg(s, i);
 
-  REQUIRE(!ok);
-  REQUIRE(s.len == 12);
-  REQUIRE(i == 0);
+  ASSERT_TRUE(!ok);
+  ASSERT_TRUE(s.len == 12);
+  ASSERT_TRUE(i == 0);
 }
 
-TEST_CASE("parse_int_different_default_value") {
+TEST(arg_parser, parse_int_different_default_value) {
   cstr s = "a-33.7994;77";
   int i{};
   bool ok = parse_arg(s, i, -1);
 
-  REQUIRE(!ok);
-  REQUIRE(s.len == 12);
-  REQUIRE(i == -1);
+  ASSERT_TRUE(!ok);
+  ASSERT_TRUE(s.len == 12);
+  ASSERT_TRUE(i == -1);
 }
 
-TEST_CASE("parse_int_different_default_value_sign") {
+TEST(arg_parser, parse_int_different_default_value_sign) {
   cstr s = "-a33.7994;77";
   int i{};
   parse_arg(s, i, -1);
 
-  REQUIRE(s.len == 11);
-  REQUIRE(i == -1);
+  ASSERT_TRUE(s.len == 11);
+  ASSERT_TRUE(i == -1);
 }
 
-TEST_CASE("parse_string") {
+TEST(arg_parser, parse_string) {
   cstr s = "hello,world";
   std::string string1;
   std::string string2;
   parse_column(s, string1);
-  REQUIRE(s.len == 6);
+  ASSERT_TRUE(s.len == 6);
   ++s;
-  REQUIRE(s.len == 5);
+  ASSERT_TRUE(s.len == 5);
   parse_column(s, string2);
 
-  REQUIRE(string1 == "hello");
-  REQUIRE(string2 == "world");
+  ASSERT_TRUE(string1 == "hello");
+  ASSERT_TRUE(string2 == "world");
 }
 
-TEST_CASE("parse_string_str_end") {
+TEST(arg_parser, parse_string_str_end) {
   cstr s = "hello";
   std::string string;
   parse_column(s, string);
 
-  REQUIRE(s.len == 0);
-  REQUIRE(string == "hello");
+  ASSERT_TRUE(s.len == 0);
+  ASSERT_TRUE(string == "hello");
 }
 
-TEST_CASE("parse_string_\"") {
+TEST(arg_parser, parse_string_quote) {
   cstr s = R"("hello","world")";
   std::string string1;
   std::string string2;
   parse_column(s, string1);
-  REQUIRE(s.len == 8);
-  REQUIRE(*s.str == ',');
+  ASSERT_TRUE(s.len == 8);
+  ASSERT_TRUE(*s.str == ',');
   ++s;
-  REQUIRE(s.len == 7);
+  ASSERT_TRUE(s.len == 7);
   parse_column(s, string2);
 
-  REQUIRE(string1 == "hello");
-  REQUIRE(string2 == "world");
+  ASSERT_TRUE(string1 == "hello");
+  ASSERT_TRUE(string2 == "world");
 }
 
-TEST_CASE("parse_string_str_\"_end") {
+TEST(arg_parser, parse_string_str_quote_end) {
   cstr s = "\"hello\"";
   std::string string;
   parse_column(s, string);
 
-  REQUIRE(s.len == 0);
-  REQUIRE(string == "hello");
+  ASSERT_TRUE(s.len == 0);
+  ASSERT_TRUE(string == "hello");
 }
 
-TEST_CASE("parse_string_str_missing_\"_end") {
+TEST(arg_parser, parse_string_str_missing_quote_end) {
   cstr s = "\"hello";
   std::string string;
   parse_column(s, string);
 
-  REQUIRE(s.len == 0);
+  ASSERT_TRUE(s.len == 0);
 }
 
-TEST_CASE("parse_float") {
+TEST(arg_parser, parse_float) {
   cstr s = "33.7994;77";
   float f{};
   parse_arg(s, f);
-  REQUIRE(s.len == 3);
-  REQUIRE(*s.str == ';');
+  ASSERT_TRUE(s.len == 3);
+  ASSERT_TRUE(*s.str == ';');
 
   float target = 33.7994F;
-  REQUIRE(std::abs(f - target) < 0.001);
+  ASSERT_TRUE(std::abs(f - target) < 0.001);
 }
 
-TEST_CASE("parse_negative_float") {
+TEST(arg_parser, parse_negative_float) {
   cstr s = "-33.7894,\"";
   float f{};
   parse_arg(s, f);
-  REQUIRE(s.len == 2);
-  REQUIRE(*s.str == ',');
+  ASSERT_TRUE(s.len == 2);
+  ASSERT_TRUE(*s.str == ',');
 
   float target = -33.7894F;
-  REQUIRE(std::abs(f - target) < 0.001);
+  ASSERT_TRUE(std::abs(f - target) < 0.001);
 }
 
-TEST_CASE("parse_float_str_end") {
+TEST(arg_parser, parse_float_str_end) {
   cstr s = "33.7994";
   float f{};
   parse_arg(s, f);
-  REQUIRE(s.len == 0);
+  ASSERT_TRUE(s.len == 0);
 
   float target = 33.7994F;
-  REQUIRE(std::abs(f - target) < 0.001);
+  ASSERT_TRUE(std::abs(f - target) < 0.001);
 }
 
-TEST_CASE("parse_negative_float_str_end") {
+TEST(arg_parser, parse_negative_float_str_end) {
   cstr s = "-33.7894";
   float f{};
   parse_arg(s, f);
-  REQUIRE(s.len == 0);
+  ASSERT_TRUE(s.len == 0);
 
   float target = -33.7894F;
-  REQUIRE(std::abs(f - target) < 0.001);
+  ASSERT_TRUE(std::abs(f - target) < 0.001);
 }
 
-TEST_CASE("parse_bool_false") {
+TEST(arg_parser, parse_bool_false) {
   cstr s = "false";
   bool b = true;
   parse_arg(s, b);
 
-  REQUIRE(!b);
+  ASSERT_TRUE(!b);
 }
 
-TEST_CASE("parse_bool_true") {
+TEST(arg_parser, parse_bool_true) {
   cstr s = "true";
   bool b = false;
   parse_arg(s, b);
 
-  REQUIRE(b);
+  ASSERT_TRUE(b);
 }
 
-TEST_CASE("parse_bool_falsy") {
+TEST(arg_parser, parse_bool_falsy) {
   cstr s = "f..";
   bool b = true;
   parse_arg(s, b);
 
-  REQUIRE(!b);
-  REQUIRE(s.len == 0);
+  ASSERT_TRUE(!b);
+  ASSERT_TRUE(s.len == 0);
 }
 
-TEST_CASE("parse_bool_truey") {
+TEST(arg_parser, parse_bool_truey) {
   cstr s = "t..";
   bool b = false;
   auto ok = parse_arg(s, b);
 
-  REQUIRE(!ok);
-  REQUIRE(b);
-  REQUIRE(s.len == 0);
+  ASSERT_TRUE(!ok);
+  ASSERT_TRUE(b);
+  ASSERT_TRUE(s.len == 0);
 }
 
-TEST_CASE("parse_bool_true_seperator") {
+TEST(arg_parser, parse_bool_true_seperator) {
   cstr s = "true,next";
   bool b = false;
   auto ok = parse_arg(s, b);
 
-  REQUIRE(!ok);
-  REQUIRE(b);
-  REQUIRE(s.len == 5);
+  ASSERT_TRUE(!ok);
+  ASSERT_TRUE(b);
+  ASSERT_TRUE(s.len == 5);
 }
 
-TEST_CASE("parse_bool_false_seperator") {
+TEST(arg_parser, parse_bool_false_seperator) {
   cstr s = "false,next";
   bool b = true;
   parse_arg(s, b);
 
-  REQUIRE(!b);
-  REQUIRE(s.len == 5);
+  ASSERT_TRUE(!b);
+  ASSERT_TRUE(s.len == 5);
 }
 
-TEST_CASE("parse_bool_exact_true") {
+TEST(arg_parser, parse_bool_exact_true) {
   bool x = false;
   auto s = cstr{"true"};
-  REQUIRE(parse_arg(s, x));
-  REQUIRE(x == true);
+  ASSERT_TRUE(parse_arg(s, x));
+  ASSERT_TRUE(x == true);
 }
 
-TEST_CASE("parse_bool_exact_false") {
+TEST(arg_parser, parse_bool_exact_false) {
   bool x = false;
   auto s = cstr{"false"};
-  REQUIRE(parse_arg(s, x));
-  REQUIRE(x == false);
+  ASSERT_TRUE(parse_arg(s, x));
+  ASSERT_TRUE(x == false);
 }
 
-TEST_CASE("parse_int_substr") {
+TEST(arg_parser, parse_int_substr) {
   cstr s = "123456";
   int a{};
   auto sub = s.substr(2, 4);
   sub >> a;
-  REQUIRE(a == 34);
+  ASSERT_TRUE(a == 34);
 }

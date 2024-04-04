@@ -1,4 +1,4 @@
-#include "catch2/catch_all.hpp"
+#include "gtest/gtest.h"
 
 #include <sstream>
 
@@ -6,12 +6,12 @@
 
 PRINTABLE_ENUM(color, RED, GREEN, BLUE);
 
-TEST_CASE("printable_enum") {
-  CHECK(as_string(color::RED) == "RED");
-  CHECK(as_string(color::GREEN) == "GREEN");
-  CHECK(as_string(color::BLUE) == "BLUE");
+TEST(printable_enum, print) {
+  EXPECT_TRUE(as_string(color::RED) == "RED");
+  EXPECT_TRUE(as_string(color::GREEN) == "GREEN");
+  EXPECT_TRUE(as_string(color::BLUE) == "BLUE");
 
   std::stringstream ss;
   ss << color::RED << color::GREEN << color::BLUE;
-  CHECK(ss.str() == "REDGREENBLUE");
+  EXPECT_TRUE(ss.str() == "REDGREENBLUE");
 }

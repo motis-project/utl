@@ -1,4 +1,4 @@
-#include "catch2/catch_all.hpp"
+#include "gtest/gtest.h"
 
 #include "utl/cmd_line_parser.h"
 
@@ -20,17 +20,17 @@ constexpr auto const expected_description =
           --file       * target file
    --num_threads         thread pool size)";
 
-TEST_CASE("cmd_line_flag_test") {
+TEST(cmd, cmd_line_flag_test) {
   char const* args[] = {"./exe", "-c", "--file", "test", "--num_threads", "8"};
   auto c = parse<config>(sizeof(args) / sizeof(char const*), args);
 
-  CHECK(c.capture_.val());
-  CHECK(c.file_.val() == "test");
-  CHECK(c.num_threads_.val() == 8);
-  CHECK(description<config>() == expected_description);
+  EXPECT_TRUE(c.capture_.val());
+  EXPECT_TRUE(c.file_.val() == "test");
+  EXPECT_TRUE(c.num_threads_.val() == 8);
+  EXPECT_TRUE(description<config>() == expected_description);
 }
 
-TEST_CASE("cmd_line_flag_required_test") {
+TEST(cmd, cmd_line_flag_required_test) {
   char const* args[] = {"./exe", "-c", "--num_threads", "8"};
 
   bool thrown = false;
@@ -39,5 +39,5 @@ TEST_CASE("cmd_line_flag_required_test") {
   } catch (...) {
     thrown = true;
   }
-  CHECK(thrown);
+  EXPECT_TRUE(thrown);
 }

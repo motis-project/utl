@@ -1,8 +1,8 @@
-#include "catch2/catch_all.hpp"
+#include "gtest/gtest.h"
 
 #include "utl/pairwise.h"
 
-TEST_CASE("pairwise") {
+TEST(pairwise, pairwise) {
   struct obj {
     obj() = default;
     obj(int payload) : payload_{payload} {}  // NOLINT
@@ -31,34 +31,34 @@ TEST_CASE("pairwise") {
     std::array<obj, 0> sut{};
     std::string const expected;
     auto const actual = consume_pairwise(utl::pairwise(sut));
-    CHECK(expected == actual);
+    EXPECT_TRUE(expected == actual);
   }
 
   {
     std::array<obj, 1> sut{{1}};
     std::string const expected;
     auto const actual = consume_pairwise(utl::pairwise(sut));
-    CHECK(expected == actual);
+    EXPECT_TRUE(expected == actual);
   }
 
   {
     std::array<obj, 2> sut{{1, 2}};
     std::string const expected = "1,2;";
     auto const actual = consume_pairwise(utl::pairwise(sut));
-    CHECK(expected == actual);
+    EXPECT_TRUE(expected == actual);
   }
 
   {
     std::array<obj, 3> sut{{1, 2, 3}};
     std::string const expected = "1,2;2,3;";
     auto const actual = consume_pairwise(utl::pairwise(sut));
-    CHECK(expected == actual);
+    EXPECT_TRUE(expected == actual);
   }
 
   {
     std::array<obj, 4> sut{{1, 2, 3, 4}};
     std::string const expected = "1,2;2,3;3,4;";
     auto const actual = consume_pairwise(utl::pairwise(sut));
-    CHECK(expected == actual);
+    EXPECT_TRUE(expected == actual);
   }
 }

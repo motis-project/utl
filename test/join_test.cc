@@ -1,4 +1,4 @@
-#include "catch2/catch_all.hpp"
+#include "gtest/gtest.h"
 
 #include "utl/join.h"
 
@@ -53,131 +53,131 @@ struct tester {
   std::vector<std::vector<int>> ranges_both_, ranges_a_, ranges_b_;
 };
 
-TEST_CASE("inner_join") {
+TEST(join, inner_join) {
   {
     tester t{{}, {}};
     utl::inner_join(t.a_, t.b_, t.cb_both());
-    CHECK(t.eq_both({}));
+    EXPECT_TRUE(t.eq_both({}));
   }
 
   {
     tester t{{0}, {0}};
     utl::inner_join(t.a_, t.b_, t.cb_both());
-    CHECK(t.eq_both({{0, 1, 0, 1}}));
+    EXPECT_TRUE(t.eq_both({{0, 1, 0, 1}}));
   }
   {
     tester t{{1, 1}, {1, 1}};
     utl::inner_join(t.a_, t.b_, t.cb_both());
-    CHECK(t.eq_both({{0, 2, 0, 2}}));
+    EXPECT_TRUE(t.eq_both({{0, 2, 0, 2}}));
   }
   {
     tester t{{1}, {1, 1}};
     utl::inner_join(t.a_, t.b_, t.cb_both());
-    CHECK(t.eq_both({{0, 1, 0, 2}}));
+    EXPECT_TRUE(t.eq_both({{0, 1, 0, 2}}));
   }
   {
     tester t{{1, 1}, {1}};
     utl::inner_join(t.a_, t.b_, t.cb_both());
-    CHECK(t.eq_both({{0, 2, 0, 1}}));
+    EXPECT_TRUE(t.eq_both({{0, 2, 0, 1}}));
   }
 
   {
     tester t{{0, 1}, {1}};
     utl::inner_join(t.a_, t.b_, t.cb_both());
-    CHECK(t.eq_both({{1, 2, 0, 1}}));
+    EXPECT_TRUE(t.eq_both({{1, 2, 0, 1}}));
   }
   {
     tester t{{1}, {0, 1}};
     utl::inner_join(t.a_, t.b_, t.cb_both());
-    CHECK(t.eq_both({{0, 1, 1, 2}}));
+    EXPECT_TRUE(t.eq_both({{0, 1, 1, 2}}));
   }
   {
     tester t{{1, 2}, {1}};
     utl::inner_join(t.a_, t.b_, t.cb_both());
-    CHECK(t.eq_both({{0, 1, 0, 1}}));
+    EXPECT_TRUE(t.eq_both({{0, 1, 0, 1}}));
   }
   {
     tester t{{1}, {1, 2}};
     utl::inner_join(t.a_, t.b_, t.cb_both());
-    CHECK(t.eq_both({{0, 1, 0, 1}}));
+    EXPECT_TRUE(t.eq_both({{0, 1, 0, 1}}));
   }
 
   {
     tester t{{1, 1, 3}, {1, 1, 3}};
     utl::inner_join(t.a_, t.b_, t.cb_both());
-    CHECK(t.eq_both({{0, 2, 0, 2}, {2, 3, 2, 3}}));
+    EXPECT_TRUE(t.eq_both({{0, 2, 0, 2}, {2, 3, 2, 3}}));
   }
   {
     tester t{{1, 1, 2, 3}, {1, 1, 3}};
     utl::inner_join(t.a_, t.b_, t.cb_both());
-    CHECK(t.eq_both({{0, 2, 0, 2}, {3, 4, 2, 3}}));
+    EXPECT_TRUE(t.eq_both({{0, 2, 0, 2}, {3, 4, 2, 3}}));
   }
   {
     tester t{{1, 1, 3}, {1, 1, 2, 3}};
     utl::inner_join(t.a_, t.b_, t.cb_both());
-    CHECK(t.eq_both({{0, 2, 0, 2}, {2, 3, 3, 4}}));
+    EXPECT_TRUE(t.eq_both({{0, 2, 0, 2}, {2, 3, 3, 4}}));
   }
 }
 
-TEST_CASE("inner_join_reverse") {
+TEST(join, inner_join_reverse) {
   {
     tester t{{1, 1}, {1, 1}};
     utl::inner_join(
         t.a_, t.b_, [](auto const& lhs, auto const& rhs) { return lhs > rhs; },
         t.cb_both());
-    CHECK(t.eq_both({{0, 2, 0, 2}}));
+    EXPECT_TRUE(t.eq_both({{0, 2, 0, 2}}));
   }
   {
     tester t{{2, 1}, {2, 1}};
     utl::inner_join(
         t.a_, t.b_, [](auto const& lhs, auto const& rhs) { return lhs > rhs; },
         t.cb_both());
-    CHECK(t.eq_both({{0, 1, 0, 1}, {1, 2, 1, 2}}));
+    EXPECT_TRUE(t.eq_both({{0, 1, 0, 1}, {1, 2, 1, 2}}));
   }
 }
 
-TEST_CASE("left_join") {
+TEST(join, left_join) {
   {
     tester t{{}, {}};
     utl::left_join(t.a_, t.b_, t.cb_both(), t.cb_a());
-    CHECK(t.eq_a({}));
-    CHECK(t.eq_both({}));
+    EXPECT_TRUE(t.eq_a({}));
+    EXPECT_TRUE(t.eq_both({}));
   }
   {
     tester t{{1}, {1}};
     utl::left_join(t.a_, t.b_, t.cb_both(), t.cb_a());
-    CHECK(t.eq_a({}));
-    CHECK(t.eq_both({{0, 1, 0, 1}}));
+    EXPECT_TRUE(t.eq_a({}));
+    EXPECT_TRUE(t.eq_both({{0, 1, 0, 1}}));
   }
   {
     tester t{{0, 1}, {1}};
     utl::left_join(t.a_, t.b_, t.cb_both(), t.cb_a());
-    CHECK(t.eq_a({{0, 1}}));
-    CHECK(t.eq_both({{1, 2, 0, 1}}));
+    EXPECT_TRUE(t.eq_a({{0, 1}}));
+    EXPECT_TRUE(t.eq_both({{1, 2, 0, 1}}));
   }
   {
     tester t{{0, 1, 2}, {2}};
     utl::left_join(t.a_, t.b_, t.cb_both(), t.cb_a());
-    CHECK(t.eq_a({{0, 1}, {1, 2}}));
-    CHECK(t.eq_both({{2, 3, 0, 1}}));
+    EXPECT_TRUE(t.eq_a({{0, 1}, {1, 2}}));
+    EXPECT_TRUE(t.eq_both({{2, 3, 0, 1}}));
   }
   {
     tester t{{1, 2, 3, 4}, {1}};
     utl::left_join(t.a_, t.b_, t.cb_both(), t.cb_a());
-    CHECK(t.eq_a({{1, 2}, {2, 3}, {3, 4}}));
-    CHECK(t.eq_both({{0, 1, 0, 1}}));
+    EXPECT_TRUE(t.eq_a({{1, 2}, {2, 3}, {3, 4}}));
+    EXPECT_TRUE(t.eq_both({{0, 1, 0, 1}}));
   }
   {
     tester t{{1, 2, 2, 3, 5}, {1, 5}};
     utl::left_join(t.a_, t.b_, t.cb_both(), t.cb_a());
-    CHECK(t.eq_a({{1, 3}, {3, 4}}));
-    CHECK(t.eq_both({{0, 1, 0, 1}, {4, 5, 1, 2}}));
+    EXPECT_TRUE(t.eq_a({{1, 3}, {3, 4}}));
+    EXPECT_TRUE(t.eq_both({{0, 1, 0, 1}, {4, 5, 1, 2}}));
   }
   {
     tester t{{3}, {2}};
     utl::left_join(t.a_, t.b_, t.cb_both(), t.cb_a());
-    CHECK(t.eq_a({{0, 1}}));
-    CHECK(t.eq_both({}));
+    EXPECT_TRUE(t.eq_a({{0, 1}}));
+    EXPECT_TRUE(t.eq_both({}));
   }
 
   {
@@ -185,89 +185,89 @@ TEST_CASE("left_join") {
     utl::left_join(
         t.a_, t.b_, [](auto const& lhs, auto const& rhs) { return lhs > rhs; },
         t.cb_both(), t.cb_a());
-    CHECK(t.eq_a({{0, 1}}));
-    CHECK(t.eq_both({}));
+    EXPECT_TRUE(t.eq_a({{0, 1}}));
+    EXPECT_TRUE(t.eq_both({}));
   }
 }
 
-TEST_CASE("full_join") {
+TEST(join, full_join) {
   {
     tester t{{}, {}};
     utl::full_join(t.a_, t.b_, t.cb_both(), t.cb_a(), t.cb_b());
-    CHECK(t.eq_a({}));
-    CHECK(t.eq_b({}));
-    CHECK(t.eq_both({}));
+    EXPECT_TRUE(t.eq_a({}));
+    EXPECT_TRUE(t.eq_b({}));
+    EXPECT_TRUE(t.eq_both({}));
   }
   {
     tester t{{1}, {1}};
     utl::full_join(t.a_, t.b_, t.cb_both(), t.cb_a(), t.cb_b());
-    CHECK(t.eq_a({}));
-    CHECK(t.eq_b({}));
-    CHECK(t.eq_both({{0, 1, 0, 1}}));
+    EXPECT_TRUE(t.eq_a({}));
+    EXPECT_TRUE(t.eq_b({}));
+    EXPECT_TRUE(t.eq_both({{0, 1, 0, 1}}));
   }
   {
     tester t{{2}, {3}};
     utl::full_join(t.a_, t.b_, t.cb_both(), t.cb_a(), t.cb_b());
-    CHECK(t.eq_a({{0, 1}}));
-    CHECK(t.eq_b({{0, 1}}));
-    CHECK(t.eq_both({}));
+    EXPECT_TRUE(t.eq_a({{0, 1}}));
+    EXPECT_TRUE(t.eq_b({{0, 1}}));
+    EXPECT_TRUE(t.eq_both({}));
   }
   {
     tester t{{1}, {}};
     utl::full_join(t.a_, t.b_, t.cb_both(), t.cb_a(), t.cb_b());
-    CHECK(t.eq_a({{0, 1}}));
-    CHECK(t.eq_b({}));
-    CHECK(t.eq_both({}));
+    EXPECT_TRUE(t.eq_a({{0, 1}}));
+    EXPECT_TRUE(t.eq_b({}));
+    EXPECT_TRUE(t.eq_both({}));
   }
   {
     tester t{{}, {1}};
     utl::full_join(t.a_, t.b_, t.cb_both(), t.cb_a(), t.cb_b());
-    CHECK(t.eq_a({}));
-    CHECK(t.eq_b({{0, 1}}));
-    CHECK(t.eq_both({}));
+    EXPECT_TRUE(t.eq_a({}));
+    EXPECT_TRUE(t.eq_b({{0, 1}}));
+    EXPECT_TRUE(t.eq_both({}));
   }
   {
     tester t{{}, {1, 2}};
     utl::full_join(t.a_, t.b_, t.cb_both(), t.cb_a(), t.cb_b());
-    CHECK(t.eq_a({}));
-    CHECK(t.eq_b({{0, 1}, {1, 2}}));
-    CHECK(t.eq_both({}));
+    EXPECT_TRUE(t.eq_a({}));
+    EXPECT_TRUE(t.eq_b({{0, 1}, {1, 2}}));
+    EXPECT_TRUE(t.eq_both({}));
   }
   {
     tester t{{}, {1, 2, 2}};
     utl::full_join(t.a_, t.b_, t.cb_both(), t.cb_a(), t.cb_b());
-    CHECK(t.eq_a({}));
-    CHECK(t.eq_b({{0, 1}, {1, 3}}));
-    CHECK(t.eq_both({}));
+    EXPECT_TRUE(t.eq_a({}));
+    EXPECT_TRUE(t.eq_b({{0, 1}, {1, 3}}));
+    EXPECT_TRUE(t.eq_both({}));
   }
   {
     tester t{{3}, {1, 2}};
     utl::full_join(t.a_, t.b_, t.cb_both(), t.cb_a(), t.cb_b());
-    CHECK(t.eq_a({{0, 1}}));
-    CHECK(t.eq_b({{0, 1}, {1, 2}}));
-    CHECK(t.eq_both({}));
+    EXPECT_TRUE(t.eq_a({{0, 1}}));
+    EXPECT_TRUE(t.eq_b({{0, 1}, {1, 2}}));
+    EXPECT_TRUE(t.eq_both({}));
   }
   {
     tester t{{3}, {1, 1, 2}};
     utl::full_join(t.a_, t.b_, t.cb_both(), t.cb_a(), t.cb_b());
-    CHECK(t.eq_a({{0, 1}}));
-    CHECK(t.eq_b({{0, 2}, {2, 3}}));
-    CHECK(t.eq_both({}));
+    EXPECT_TRUE(t.eq_a({{0, 1}}));
+    EXPECT_TRUE(t.eq_b({{0, 2}, {2, 3}}));
+    EXPECT_TRUE(t.eq_both({}));
   }
 
   {
     tester t{{2, 4}, {1, 3, 5}};
     utl::full_join(t.a_, t.b_, t.cb_both(), t.cb_a(), t.cb_b());
-    CHECK(t.eq_a({{0, 1}, {1, 2}}));
-    CHECK(t.eq_b({{0, 1}, {1, 2}, {2, 3}}));
-    CHECK(t.eq_both({}));
+    EXPECT_TRUE(t.eq_a({{0, 1}, {1, 2}}));
+    EXPECT_TRUE(t.eq_b({{0, 1}, {1, 2}, {2, 3}}));
+    EXPECT_TRUE(t.eq_both({}));
   }
   {
     tester t{{2, 8}, {1, 3, 3, 4, 4, 5}};
     utl::full_join(t.a_, t.b_, t.cb_both(), t.cb_a(), t.cb_b());
-    CHECK(t.eq_a({{0, 1}, {1, 2}}));
-    CHECK(t.eq_b({{0, 1}, {1, 3}, {3, 5}, {5, 6}}));
-    CHECK(t.eq_both({}));
+    EXPECT_TRUE(t.eq_a({{0, 1}, {1, 2}}));
+    EXPECT_TRUE(t.eq_b({{0, 1}, {1, 3}, {3, 5}, {5, 6}}));
+    EXPECT_TRUE(t.eq_both({}));
   }
 
   {
@@ -275,8 +275,8 @@ TEST_CASE("full_join") {
     utl::full_join(
         t.a_, t.b_, [](auto const& lhs, auto const& rhs) { return lhs > rhs; },
         t.cb_both(), t.cb_a(), t.cb_b());
-    CHECK(t.eq_a({{0, 1}}));
-    CHECK(t.eq_b({{0, 1}}));
-    CHECK(t.eq_both({}));
+    EXPECT_TRUE(t.eq_a({{0, 1}}));
+    EXPECT_TRUE(t.eq_b({{0, 1}}));
+    EXPECT_TRUE(t.eq_both({}));
   }
 }

@@ -6,21 +6,21 @@
 
 namespace utl {
 
-struct avg {
+struct avg_t {
   template <typename T>
-  friend double operator|(T&& t, avg&& f) {
-    auto r = make_range(std::forward<T>(t));
+  friend double operator|(T&& r, avg_t) {
+    auto sum = std::size_t{0};
+    auto count = std::size_t{0};
     auto it = r.begin();
     while (r.valid(it)) {
-      f.sum_ += r.read(it);
-      ++f.count_;
+      sum += r.read(it);
+      ++count;
       r.next(it);
     }
-    return f.sum_ / static_cast<double>(f.count_);
+    return sum / static_cast<double>(count);
   }
-
-  int sum_ = 0;
-  int count_ = 0;
 };
+
+inline avg_t avg() { return {}; }
 
 }  // namespace utl

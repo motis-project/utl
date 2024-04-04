@@ -1,4 +1,4 @@
-#include "catch2/catch_all.hpp"
+#include "gtest/gtest.h"
 
 #include "utl/parser/csv.h"
 
@@ -18,12 +18,12 @@ cstr const csv_file_semicolon =
     "2;78;3;57.0;\"world\";true\r\n"
     "\r\n";
 
-TEST_CASE("simple_csv_cr") {
+TEST(csv_cr_test, simple_csv_cr) {
   using entry = std::tuple<unsigned, double, bool>;
   std::vector<entry> entries;
   read(csv_file, entries, {{"index", "weight", "enabled"}});
 
-  REQUIRE(entries.size() == 3);
+  ASSERT_TRUE(entries.size() == 3);
 
   std::array<unsigned, 3> indices = {{0, 1, 2}};
   std::array<double, 3> weights = {{55.2, 56.9, 57}};
@@ -31,20 +31,20 @@ TEST_CASE("simple_csv_cr") {
 
   auto i = 0U;
   for (auto const& r : entries) {
-    REQUIRE(std::get<0>(r) == indices[i]);
-    REQUIRE(std::abs(std::get<1>(r) - weights[i]) < 0.001);
-    REQUIRE(std::get<2>(r) == enabled[i]);
+    ASSERT_TRUE(std::get<0>(r) == indices[i]);
+    ASSERT_TRUE(std::abs(std::get<1>(r) - weights[i]) < 0.001);
+    ASSERT_TRUE(std::get<2>(r) == enabled[i]);
     ++i;
   }
 }
 
-TEST_CASE("simple_csv_semicolon_seperator_cr") {
+TEST(csv_cr_test, simple_csv_semicolon_seperator_cr) {
   using entry = std::tuple<unsigned, double, bool>;
   std::vector<entry> entries;
   read<entry, ';'>(csv_file_semicolon, entries,
                    {{"index", "weight", "enabled"}});
 
-  REQUIRE(entries.size() == 3);
+  ASSERT_TRUE(entries.size() == 3);
 
   std::array<unsigned, 3> indices = {{0, 1, 2}};
   std::array<double, 3> weights = {{55.2, 56.9, 57}};
@@ -52,19 +52,19 @@ TEST_CASE("simple_csv_semicolon_seperator_cr") {
 
   auto i = 0U;
   for (auto const& r : entries) {
-    REQUIRE(std::get<0>(r) == indices[i]);
-    REQUIRE(std::abs(std::get<1>(r) - weights[i]) < 0.001);
-    REQUIRE(std::get<2>(r) == enabled[i]);
+    ASSERT_TRUE(std::get<0>(r) == indices[i]);
+    ASSERT_TRUE(std::abs(std::get<1>(r) - weights[i]) < 0.001);
+    ASSERT_TRUE(std::get<2>(r) == enabled[i]);
     ++i;
   }
 }
 
-TEST_CASE("wrong_order_cr") {
+TEST(csv_cr_test, wrong_order_cr) {
   using entry = std::tuple<bool, double, int>;
   std::vector<entry> entries;
   read(csv_file, entries, {{"enabled", "weight", "index"}});
 
-  REQUIRE(entries.size() == 3);
+  ASSERT_TRUE(entries.size() == 3);
 
   std::array<int, 3> indices = {{0, 1, 2}};
   std::array<double, 3> weights = {{55.2, 56.9, 57}};
@@ -72,14 +72,14 @@ TEST_CASE("wrong_order_cr") {
 
   auto i = 0U;
   for (auto const& r : entries) {
-    REQUIRE(std::get<2>(r) == indices[i]);
-    REQUIRE(std::abs(std::get<1>(r) - weights[i]) < 0.001);
-    REQUIRE(std::get<0>(r) == enabled[i]);
+    ASSERT_TRUE(std::get<2>(r) == indices[i]);
+    ASSERT_TRUE(std::abs(std::get<1>(r) - weights[i]) < 0.001);
+    ASSERT_TRUE(std::get<0>(r) == enabled[i]);
     ++i;
   }
 }
 
-TEST_CASE("missing_selected_column_cr") {
+TEST(csv_cr_test, missing_selected_column_cr) {
   cstr my_file =
       "width,height,weight,comment,enabled\r\n"
       "77,2,55.2,\"this is real!\",true\r\n"
@@ -91,7 +91,7 @@ TEST_CASE("missing_selected_column_cr") {
   std::vector<entry> entries;
   read(my_file, entries, {{"enabled", "weight", "index"}});
 
-  REQUIRE(entries.size() == 3);
+  ASSERT_TRUE(entries.size() == 3);
 
   std::array<int, 3> indices = {{0, 0, 0}};
   std::array<double, 3> weights = {{55.2, 56.9, 57}};
@@ -99,14 +99,14 @@ TEST_CASE("missing_selected_column_cr") {
 
   auto i = 0U;
   for (auto const& r : entries) {
-    REQUIRE(std::get<2>(r) == indices[i]);
-    REQUIRE(std::abs(std::get<1>(r) - weights[i]) < 0.001);
-    REQUIRE(std::get<0>(r) == enabled[i]);
+    ASSERT_TRUE(std::get<2>(r) == indices[i]);
+    ASSERT_TRUE(std::abs(std::get<1>(r) - weights[i]) < 0.001);
+    ASSERT_TRUE(std::get<0>(r) == enabled[i]);
     ++i;
   }
 }
 
-TEST_CASE("additional_column_cr") {
+TEST(csv_cr_test, additional_column_cr) {
   cstr my_file =
       "width,height,weight,comment,enabled\r\n"
       "77,2,55.2,\"this is real!\",true,123\r\n"
@@ -118,7 +118,7 @@ TEST_CASE("additional_column_cr") {
   std::vector<entry> entries;
   read(my_file, entries, {{"enabled", "weight", "index"}});
 
-  REQUIRE(entries.size() == 3);
+  ASSERT_TRUE(entries.size() == 3);
 
   std::array<int, 3> indices = {{0, 0, 0}};
   std::array<double, 3> weights = {{55.2, 56.9, 57}};
@@ -126,14 +126,14 @@ TEST_CASE("additional_column_cr") {
 
   auto i = 0U;
   for (auto const& r : entries) {
-    REQUIRE(std::get<2>(r) == indices[i]);
-    REQUIRE(std::abs(std::get<1>(r) - weights[i]) < 0.001);
-    REQUIRE(std::get<0>(r) == enabled[i]);
+    ASSERT_TRUE(std::get<2>(r) == indices[i]);
+    ASSERT_TRUE(std::abs(std::get<1>(r) - weights[i]) < 0.001);
+    ASSERT_TRUE(std::get<0>(r) == enabled[i]);
     ++i;
   }
 }
 
-TEST_CASE("missing_column_bad_format_cr") {
+TEST(csv_cr_test, missing_column_bad_format_cr) {
   cstr my_file =
       "width,height,weight,comment,enabled\r\n"
       "77,2,55.2,\"this is real!\"\r\n"
@@ -145,7 +145,7 @@ TEST_CASE("missing_column_bad_format_cr") {
   std::vector<entry> entries;
   read(my_file, entries, {{"enabled", "weight", "index"}});
 
-  REQUIRE(entries.size() == 3);
+  ASSERT_TRUE(entries.size() == 3);
 
   std::array<int, 3> indices = {{0, 0, 0}};
   std::array<double, 3> weights = {{55.2, 56.9, 57}};
@@ -153,14 +153,14 @@ TEST_CASE("missing_column_bad_format_cr") {
 
   auto i = 0U;
   for (auto const& r : entries) {
-    REQUIRE(std::get<2>(r) == indices[i]);
-    REQUIRE(std::abs(std::get<1>(r) - weights[i]) < 0.001);
-    REQUIRE(std::get<0>(r) == enabled[i]);
+    ASSERT_TRUE(std::get<2>(r) == indices[i]);
+    ASSERT_TRUE(std::abs(std::get<1>(r) - weights[i]) < 0.001);
+    ASSERT_TRUE(std::get<0>(r) == enabled[i]);
     ++i;
   }
 }
 
-TEST_CASE("doubles_cr") {
+TEST(csv_cr_test, doubles_cr) {
   cstr my_file =
       "SENDER;RECEIVER_ID;TIME\r\n"
       "V1;0;0.9\r\n"
@@ -181,10 +181,10 @@ TEST_CASE("doubles_cr") {
                                     dist{"V3", 1, 0.1}, dist{"V4", 0, 0.2},
                                     dist{"V5", 3, 0.1}, dist{"V6", 1, 0.1}}};
 
-  REQUIRE(check_dists == dists);
+  ASSERT_TRUE(check_dists == dists);
 }
 
-TEST_CASE("empty_cr") {
+TEST(csv_cr_test, empty_cr) {
   cstr my_file =
       "A:B:C\r\n"
       "::\r\n"
@@ -203,7 +203,7 @@ TEST_CASE("empty_cr") {
                                    data{"", 0, ""}, data{"1", 2, "3"},
                                    data{"hello", 77, "world"}}};
 
-  REQUIRE(check_data == dists);
+  ASSERT_TRUE(check_data == dists);
 }
 
 }  // namespace utl::csv_test

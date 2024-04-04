@@ -1,7 +1,7 @@
-[Catch2]
-  url=git@github.com:motis-project/Catch2.git
+[googletest]
+  url=git@github.com:motis-project/googletest.git
   branch=master
-  commit=47d56f28a9801911c048d011b375e5631dbb658f
+  commit=34a46558609e05865c197f0260ab36daa7cbbb6e
 [fmt]
   url=git@github.com:motis-project/fmt.git
   branch=master
@@ -9,5 +9,5 @@
 [cista]
   url=git@github.com:felixguendling/cista.git
   branch=master
-  commit=23875effbc4f3441304137515991dbcfbc52caed
+  commit=251a73b51768bea0a23c538e3aa7f47648411a87
 

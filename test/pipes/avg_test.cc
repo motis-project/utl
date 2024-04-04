@@ -1,4 +1,4 @@
-#include "catch2/catch_all.hpp"
+#include "gtest/gtest.h"
 
 #include <list>
 
@@ -8,7 +8,7 @@
 
 using namespace utl;
 
-TEST_CASE("vec test") {
+TEST(pipes, avg_vec_test) {
   std::list<int> v = {1, 2, 3, 4};
   auto r0 = all(v)  //
             | transform([](auto&& i) { return i * i; })  //
@@ -21,50 +21,50 @@ TEST_CASE("vec test") {
       | remove_if([](auto&& i) { return i > 3; })  //
       | unique()  //
       | vec();
-  CHECK(r0 == r1);
+  EXPECT_TRUE(r0 == r1);
 }
 
-TEST_CASE("find test") {
+TEST(pipes, avg_find_test) {
   std::vector<int> v = {1, 3, 5, 7, 9};
-  CHECK(*(all(v) | find([](auto&& i) { return i == 7; })) == 7);
+  EXPECT_TRUE(*(all(v) | find([](auto&& i) { return i == 7; })) == 7);
 }
 
-TEST_CASE("unique test") {
+TEST(pipes, avg_unique_test) {
   std::vector<int> v = {1, 3, 3, 5, 7, 7, 7, 7, 9};
   std::vector<int> result = {1, 3, 5, 7, 9};
-  CHECK((all(v) | unique() | vec()) == result);
+  EXPECT_TRUE((all(v) | unique() | vec()) == result);
 
   int i = 0;
   for (auto const val : all(v) | unique() | iterable()) {
-    CHECK(val == result[i++]);
+    EXPECT_TRUE(val == result[i++]);
   }
 }
 
-TEST_CASE("sum test default") {
+TEST(pipes, avg_sum_test_default) {
   std::vector<int> v = {1, 3, 3, 5, 7, 7, 7, 7, 9};
   int result =
       all(v) | unique() | remove_if([](auto&& i) { return i > 3; }) | sum();
-  CHECK(result == 4);
+  EXPECT_TRUE(result == 4);
 }
 
-TEST_CASE("sum test template") {
+TEST(pipes, avg_sum_test_template) {
   std::vector<std::size_t> v = {1, 3, 3, 5, 7, 7, 7, 7, 9};
   std::size_t result =
       all(v) | unique() | remove_if([](auto&& i) { return i > 3; }) | sum();
-  CHECK(result == std::size_t{4});
+  EXPECT_TRUE(result == std::size_t{4});
 }
 
-TEST_CASE("emplace back") {
+TEST(pipes, avg_emplace_back) {
   std::vector<int> v = {1, 2, 3, 4};
 
   auto result = all(v) | transform([](auto&& x) { return x * x; }) |
                 emplace_back<std::list<int>>();
   std::list<int> expected = {1, 4, 9, 16};
 
-  CHECK(result == expected);
+  EXPECT_TRUE(result == expected);
 }
 
-TEST_CASE("insert") {
+TEST(pipes, avg_insert) {
   std::vector<int> v = {1, 2, 3, 4};
 
   auto result =
@@ -72,8 +72,8 @@ TEST_CASE("insert") {
       transform([](auto&& x) { return std::pair(std::to_string(x), x); }) |
       insert<std::map<std::string, int>>();
 
-  CHECK(result["1"] == 1);
-  CHECK(result["2"] == 2);
-  CHECK(result["3"] == 3);
-  CHECK(result["4"] == 4);
+  EXPECT_TRUE(result["1"] == 1);
+  EXPECT_TRUE(result["2"] == 2);
+  EXPECT_TRUE(result["3"] == 3);
+  EXPECT_TRUE(result["4"] == 4);
 }

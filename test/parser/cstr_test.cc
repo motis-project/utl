@@ -1,4 +1,4 @@
-#include "catch2/catch_all.hpp"
+#include "gtest/gtest.h"
 
 #include "utl/parser/cstr.h"
 
@@ -24,114 +24,118 @@ constexpr char const* empty_line_between_lines[] = {"1", "", "2"};
 constexpr char const* empty_line_between_no_end = "1\n\n2";
 constexpr char const* empty_line_between_no_end_lines[] = {"1", "", "2"};
 
-TEST_CASE("substr overflow") {
+TEST(cstr_test, substr_overflow) {
   cstr s = "012345678";
 
-  REQUIRE(s.substr(10, 12).len == 0U);
-  REQUIRE(s.substr(5, 10) == cstr{"5678"});
-  REQUIRE(s.substr(5, 10).len == 4);
+  ASSERT_TRUE(s.substr(10, 12).len == 0U);
+  ASSERT_TRUE(s.substr(5, 10) == cstr{"5678"});
+  ASSERT_TRUE(s.substr(5, 10).len == 4);
 
-  REQUIRE(s.substr(10, size{2}).len == 0U);
-  REQUIRE(s.substr(5, size{5}) == cstr{"5678"});
-  REQUIRE(s.substr(5, size{5}).len == 4);
+  ASSERT_TRUE(s.substr(10, size{2}).len == 0U);
+  ASSERT_TRUE(s.substr(5, size{5}) == cstr{"5678"});
+  ASSERT_TRUE(s.substr(5, size{5}).len == 4);
 }
 
-TEST_CASE("get_line") {
+TEST(cstr_test, get_line) {
   cstr str = one_line;
   auto line = get_line(str);
-  REQUIRE(line.len == 1);
-  REQUIRE(std::strncmp(line.str, "1", 1) == 0);
-  REQUIRE(std::strlen(line.str) == 2);
+  ASSERT_TRUE(line.len == 1);
+  ASSERT_TRUE(std::strncmp(line.str, "1", 1) == 0);
+  ASSERT_TRUE(std::strlen(line.str) == 2);
 }
 
-TEST_CASE("one_line") {
+TEST(cstr_test, one_line) {
   int i = 0;
   for_each_line(one_line, [&](cstr line) {
-    REQUIRE(i < 2);
-    REQUIRE(std::strncmp(line.str, one_line_lines[i++], line.len) ==  // NOLINT
-            0);
+    ASSERT_TRUE(i < 2);
+    ASSERT_TRUE(
+        std::strncmp(line.str, one_line_lines[i++], line.len) ==  // NOLINT
+        0);
   });
-  REQUIRE(i == 1);
+  ASSERT_TRUE(i == 1);
 }
 
-TEST_CASE("one_line_no_end") {
+TEST(cstr_test, one_line_no_end) {
   int i = 0;
   for_each_line(one_line_no_end, [&](cstr line) {
-    REQUIRE(
+    ASSERT_TRUE(
         std::strncmp(line.str, one_line_no_end_lines[i++], line.len)  // NOLINT
         == 0);
   });
-  REQUIRE(i == 1);
+  ASSERT_TRUE(i == 1);
 }
 
-TEST_CASE("two_lines") {
+TEST(cstr_test, two_lines) {
   int i = 0;
   for_each_line(two_lines, [&](cstr line) {
-    REQUIRE(std::strncmp(line.str, two_lines_lines[i++], line.len)  // NOLINT
-            == 0);
+    ASSERT_TRUE(
+        std::strncmp(line.str, two_lines_lines[i++], line.len)  // NOLINT
+        == 0);
   });
-  REQUIRE(i == 2);
+  ASSERT_TRUE(i == 2);
 }
 
-TEST_CASE("empty_line") {
+TEST(cstr_test, empty_line) {
   int i = 0;
   for_each_line(empty_line, [&](cstr line) {
-    REQUIRE(std::strncmp(line.str, empty_line_lines[i++], line.len)  // NOLINT
-            == 0);
+    ASSERT_TRUE(
+        std::strncmp(line.str, empty_line_lines[i++], line.len)  // NOLINT
+        == 0);
   });
-  REQUIRE(i == 1);
+  ASSERT_TRUE(i == 1);
 }
 
-TEST_CASE("empty_string") {
+TEST(cstr_test, empty_string) {
   int i = 0;
   for_each_line(empty_string, [&](cstr) { ++i; });
-  REQUIRE(i == 0);
+  ASSERT_TRUE(i == 0);
 }
 
-TEST_CASE("empty_line_between") {
+TEST(cstr_test, empty_line_between) {
   int i = 0;
   for_each_line(empty_line_between, [&](cstr line) {
-    REQUIRE(std::strncmp(line.str, empty_line_between_lines[i++],  // NOLINT
-                         line.len) == 0);
+    ASSERT_TRUE(std::strncmp(line.str, empty_line_between_lines[i++],  // NOLINT
+                             line.len) == 0);
   });
-  REQUIRE(i == 3);
+  ASSERT_TRUE(i == 3);
 }
 
-TEST_CASE("empty_line_between_no_end") {
+TEST(cstr_test, empty_line_between_no_end) {
   int i = 0;
   for_each_line(empty_line_between_no_end, [&](cstr line) {
-    REQUIRE(std::strncmp(line.str,  // NOLINT
-                         empty_line_between_no_end_lines[i++], line.len) == 0);
+    ASSERT_TRUE(std::strncmp(line.str,  // NOLINT
+                             empty_line_between_no_end_lines[i++],
+                             line.len) == 0);
   });
-  REQUIRE(i == 3);
+  ASSERT_TRUE(i == 3);
 }
 
-TEST_CASE("substr_len_begin") {
+TEST(cstr_test, substr_len_begin) {
   cstr s = "abc";
-  REQUIRE(s.substr(0, size(2)) == "ab");
-  REQUIRE(s.substr(0, size(2)).len == 2);
-  REQUIRE(s.substr(0, size(2)).str == s.str);
+  ASSERT_TRUE(s.substr(0, size(2)) == "ab");
+  ASSERT_TRUE(s.substr(0, size(2)).len == 2);
+  ASSERT_TRUE(s.substr(0, size(2)).str == s.str);
 }
 
-TEST_CASE("substr_len_middle") {
+TEST(cstr_test, substr_len_middle) {
   cstr s = "abc";
-  REQUIRE(s.substr(1, size(1)) == "b");
-  REQUIRE(s.substr(1, size(1)).len == 1);
-  REQUIRE(s.substr(1, size(1)).str == s.str + 1);
+  ASSERT_TRUE(s.substr(1, size(1)) == "b");
+  ASSERT_TRUE(s.substr(1, size(1)).len == 1);
+  ASSERT_TRUE(s.substr(1, size(1)).str == s.str + 1);
 }
 
-TEST_CASE("sbustr_pos_begin") {
+TEST(cstr_test, sbustr_pos_begin) {
   cstr s = "abc";
-  REQUIRE(s.substr(0, 2) == "ab");
-  REQUIRE(s.substr(0, 2).len == 2);
-  REQUIRE(s.substr(0, 2).str == s.str);
+  ASSERT_TRUE(s.substr(0, 2) == "ab");
+  ASSERT_TRUE(s.substr(0, 2).len == 2);
+  ASSERT_TRUE(s.substr(0, 2).str == s.str);
 }
 
-TEST_CASE("sbustr_pos_middle") {
+TEST(cstr_test, sbustr_pos_middle) {
   cstr s = "abc";
-  REQUIRE(s.substr(1, 2) == "b");
-  REQUIRE(s.substr(1, 2).len == 1);
-  REQUIRE(s.substr(1, 2).str == s.str + 1);
+  ASSERT_TRUE(s.substr(1, 2) == "b");
+  ASSERT_TRUE(s.substr(1, 2).len == 1);
+  ASSERT_TRUE(s.substr(1, 2).str == s.str + 1);
 }
 
 }  // namespace utl::cstr_test

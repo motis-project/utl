@@ -1,20 +1,20 @@
-#include "catch2/catch_all.hpp"
+#include "gtest/gtest.h"
 
 #include "utl/pipes.h"
 
 using namespace utl;
 
-TEST_CASE("max test int") {
+TEST(pipes, max_int) {
   std::vector<int> v = {1, 3, 5, 7, 9};
-  CHECK((all(v) | max<int>()) == 9);
+  EXPECT_TRUE((all(v) | max<int>()) == 9);
 }
 
-TEST_CASE("max test int 2") {
+TEST(pipes, max_int_2) {
   std::vector<int> v = {5, 7, 9, 1, 4};
-  CHECK((all(v) | max<int>()) == 9);
+  EXPECT_TRUE((all(v) | max<int>()) == 9);
 }
 
-TEST_CASE("max test float") {
+TEST(pipes, max_float) {
   std::vector<double> v = {1.2, 3.5, 5.5, 7.3, 9.8};
-  CHECK((all(v) | max<double>()) == 9.8);
+  EXPECT_TRUE((all(v) | max<double>()) == 9.8);
 }

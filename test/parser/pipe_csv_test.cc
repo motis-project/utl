@@ -1,4 +1,4 @@
-#include "catch2/catch_all.hpp"
+#include "gtest/gtest.h"
 
 #include "utl/parser/buf_reader.h"
 #include "utl/parser/csv_range.h"
@@ -31,18 +31,18 @@ struct quote {
   csv_col<cstr, UTL_NAME("time")> time_;
 };
 
-TEST_CASE("csv") {
+TEST(pipe_csv, csv) {
   auto const avg_volume =
-      line_range{buf_reader{input}}  //
+      line_range{buf_reader{input, {}}}  //
       | csv<quote>()  //
       | remove_if([](auto&& row) { return row.open_ < 39.01; })  //
       | transform([](auto&& row) { return row.volume_; })  //
       | avg();
-  CHECK(avg_volume <= 65844.5);
-  CHECK(avg_volume >= 65844.3);
+  EXPECT_TRUE(avg_volume <= 65844.5);
+  EXPECT_TRUE(avg_volume >= 65844.3);
 }
 
-TEST_CASE("csv_no_rows") {
+TEST(pipe_csv, csv_no_rows) {
   struct baz {
     csv_col<int, UTL_NAME("FOO")> foo_;
     csv_col<int, UTL_NAME("BAR")> bar_;
@@ -50,25 +50,25 @@ TEST_CASE("csv_no_rows") {
 
   {
     constexpr auto const no_rows_input = R"(FOO,BAR)";
-    auto const result = line_range<buf_reader>{buf_reader{no_rows_input}}  //
+    auto const result = line_range{make_buf_reader(no_rows_input, {})}  //
                         | csv<baz>()  //
                         | vec();
 
-    CHECK(result.empty() == true);
+    EXPECT_TRUE(result.empty() == true);
   }
   {
     constexpr auto const no_rows_input = R"(FOO,BAR
 
 )";
-    auto const result = line_range<buf_reader>{buf_reader{no_rows_input}}  //
+    auto const result = line_range{make_buf_reader(no_rows_input, {})}  //
                         | csv<baz>()  //
                         | vec();
 
-    CHECK(result.empty() == true);
+    EXPECT_TRUE(result.empty() == true);
   }
 }
 
-TEST_CASE("csv_separator") {
+TEST(pipe_csv, csv_separator) {
   struct baz {
     csv_col<int, UTL_NAME("FOO")> foo_;
     csv_col<int, UTL_NAME("BAR")> bar_;
@@ -77,16 +77,16 @@ TEST_CASE("csv_separator") {
   constexpr auto const no_rows_input = R"(BAR$FOO
 1$2
 )";
-  auto const result = line_range<buf_reader>{buf_reader{no_rows_input}}  //
+  auto const result = line_range{make_buf_reader(no_rows_input, {})}  //
                       | csv<baz, '$'>()  //
                       | vec();
 
-  REQUIRE(result.size() == 1);
-  CHECK(result[0].foo_.val() == 2);
-  CHECK(result[0].bar_.val() == 1);
+  ASSERT_TRUE(result.size() == 1);
+  EXPECT_TRUE(result[0].foo_.val() == 2);
+  EXPECT_TRUE(result[0].bar_.val() == 1);
 }
 
-TEST_CASE("csv_escaped_string") {
+TEST(pipe_csv, csv_escaped_string) {
   struct dat {
     csv_col<std::string, UTL_NAME("FOO")> foo_;
     csv_col<std::string, UTL_NAME("BAR")> bar_;
@@ -96,12 +96,12 @@ TEST_CASE("csv_escaped_string") {
   constexpr auto const input = R"(BAR,FOO,BAZ
 "asd","[""asd"", ""bsd""]","xxx"
 )";
-  auto const result = line_range<buf_reader>{buf_reader{input}}  //
+  auto const result = line_range{make_buf_reader(input, {})}  //
                       | csv<dat, ','>()  //
                       | vec();
 
-  REQUIRE(result.size() == 1);
-  CHECK(result[0].foo_.val() == R"([""asd"", ""bsd""])");
-  CHECK(result[0].bar_.val() == "asd");
-  CHECK(result[0].baz_.val() == "xxx");
+  ASSERT_TRUE(result.size() == 1);
+  EXPECT_TRUE(result[0].foo_.val() == R"([""asd"", ""bsd""])");
+  EXPECT_TRUE(result[0].bar_.val() == "asd");
+  EXPECT_TRUE(result[0].baz_.val() == "xxx");
 }
