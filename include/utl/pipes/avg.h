@@ -17,7 +17,7 @@ struct avg_t {
       ++count;
       r.next(it);
     }
-    return sum / static_cast<double>(count);
+    return static_cast<double>(sum) / static_cast<double>(count);
   }
 };
 
