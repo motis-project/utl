@@ -101,7 +101,7 @@ TEST(pipe_csv, csv_escaped_string) {
                       | vec();
 
   ASSERT_TRUE(result.size() == 1);
-  EXPECT_TRUE(result[0].foo_.val() == R"([""asd"", ""bsd""])");
+  EXPECT_TRUE(result[0].foo_.val() == R"(["asd", "bsd"])");
   EXPECT_TRUE(result[0].bar_.val() == "asd");
   EXPECT_TRUE(result[0].baz_.val() == "xxx");
 }

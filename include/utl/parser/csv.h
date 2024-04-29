@@ -53,6 +53,19 @@ inline void parse_column(cstr& s, T& arg) {
                                             adjust_for_quote + adjust_for_cr));
 }
 
+inline void unescape_quoted_string(std::string& arg) {
+  std::string::size_type found_at = 0;
+  while ((found_at = arg.find('"', found_at)) != std::string::npos) {
+    if (found_at < arg.size() - 1 && arg[found_at + 1] == '"') {
+      arg.erase(found_at, 1);  // Since the string is now one character shorter,
+                               // found_at now points to the next character
+      ++found_at;  // Skip following character ("), we are now after the ""
+    } else {
+      ++found_at;  // Continue search from next character
+    }
+  }
+}
+
 template <typename IntType,
           std::enable_if_t<std::is_integral<IntType>::value, int> = 0>
 inline void parse_value(cstr& s, IntType& arg) {
@@ -71,8 +84,13 @@ inline void parse_value(cstr& s, bool& arg) {
   s = s.skip_whitespace_front();
   parse_arg(s, arg);
 }
-inline void parse_value(cstr& s, std::string& arg) { parse_arg(s, arg); }
-inline void parse_value(cstr& s, cstr& arg) { parse_arg(s, arg); }
+inline void parse_value(cstr& s, std::string& arg) {
+  parse_arg(s, arg);
+  unescape_quoted_string(arg);
+}
+inline void parse_value(cstr& s, cstr& arg) {
+  parse_arg(s, arg);
+}
 
 template <int Index, typename... Args>
 typename std::enable_if<Index == sizeof...(Args)>::type read(
