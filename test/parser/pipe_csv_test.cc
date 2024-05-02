@@ -105,3 +105,24 @@ TEST(pipe_csv, csv_escaped_string) {
   EXPECT_TRUE(result[0].bar_.val() == "asd");
   EXPECT_TRUE(result[0].baz_.val() == "xxx");
 }
+
+TEST(pipe_csv, csv_invalid_escaped_string) {
+  struct dat {
+    csv_col<std::string, UTL_NAME("FOO")> foo_;
+    csv_col<std::string, UTL_NAME("BAR")> bar_;
+    csv_col<std::string, UTL_NAME("BAZ")> baz_;
+  };
+
+  // This is invalid, but we need to make sure not to crash
+  constexpr auto const input = R"(BAR,FOO,BAZ
+"asd","[""asd"", ""bsd""]","xxx""
+)";
+  auto const result = line_range{make_buf_reader(input, {})}  //
+                      | csv<dat, ','>()  //
+                      | vec();
+
+  ASSERT_TRUE(result.size() == 1);
+  EXPECT_TRUE(result[0].foo_.val() == R"(["asd", "bsd"])");
+  EXPECT_TRUE(result[0].bar_.val() == "asd");
+  EXPECT_TRUE(result[0].baz_.val() == R"(xxx")");
+}
