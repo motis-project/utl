@@ -7,6 +7,7 @@
 #include <tuple>
 #include <vector>
 
+#include "cista/containers/string.h"
 #include "utl/parser/arg_parser.h"
 #include "utl/parser/cstr.h"
 #include "utl/parser/file.h"
@@ -66,6 +67,19 @@ inline void unescape_quoted_string(std::string& arg) {
   }
 }
 
+inline cista::raw::string unescape_quoted_string(cstr& arg) {
+  cista::raw::string out;
+
+  if (arg.contains(R"("")")) {
+    std::string mut_string = arg.to_str();
+    unescape_quoted_string(mut_string);
+    out.set_owning(mut_string);
+  } else {
+    out.set_non_owning(arg);
+  }
+  return out;
+}
+
 template <typename IntType,
           std::enable_if_t<std::is_integral<IntType>::value, int> = 0>
 inline void parse_value(cstr& s, IntType& arg) {
@@ -87,6 +101,11 @@ inline void parse_value(cstr& s, bool& arg) {
 inline void parse_value(cstr& s, std::string& arg) {
   parse_arg(s, arg);
   unescape_quoted_string(arg);
+}
+inline void parse_value(cstr& s, cista::raw::string& arg) {
+  cstr out;
+  parse_arg(s, out);
+  arg = unescape_quoted_string(out);
 }
 inline void parse_value(cstr& s, cstr& arg) {
   parse_arg(s, arg);
