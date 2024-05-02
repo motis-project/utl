@@ -94,7 +94,7 @@ struct csv_range : public LineRange {
     T t{};
     cista::for_each_field(t, [&, i = 0u](auto& f) mutable {
       if (row[i]) {
-        parse_arg(row[i], f.val());
+        parse_value(row[i], f.val());
       }
       ++i;
     });
