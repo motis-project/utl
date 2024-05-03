@@ -7,6 +7,8 @@
 #include <tuple>
 #include <vector>
 
+#include "cista/containers/string.h"
+
 #include "utl/parser/arg_parser.h"
 #include "utl/parser/cstr.h"
 #include "utl/parser/file.h"
@@ -53,9 +55,11 @@ inline void parse_column(cstr& s, T& arg) {
                                             adjust_for_quote + adjust_for_cr));
 }
 
-inline void unescape_quoted_string(std::string& arg) {
+template <typename StringType>
+inline void unescape_quoted_string(StringType& arg) {
   std::string::size_type found_at = 0;
-  while ((found_at = arg.find('"', found_at)) != std::string::npos) {
+  while ((found_at = std::string_view(arg).find('"', found_at)) !=
+         std::string::npos) {
     if (found_at < arg.size() - 1 && arg[found_at + 1] == '"') {
       arg.erase(found_at, 1);  // Since the string is now one character shorter,
                                // found_at now points to the next character
@@ -85,6 +89,10 @@ inline void parse_value(cstr& s, bool& arg) {
   parse_arg(s, arg);
 }
 inline void parse_value(cstr& s, std::string& arg) {
+  parse_arg(s, arg);
+  unescape_quoted_string(arg);
+}
+inline void parse_value(cstr& s, cista::raw::generic_string& arg) {
   parse_arg(s, arg);
   unescape_quoted_string(arg);
 }
