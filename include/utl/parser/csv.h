@@ -54,9 +54,11 @@ inline void parse_column(cstr& s, T& arg) {
                                             adjust_for_quote + adjust_for_cr));
 }
 
-inline void unescape_quoted_string(std::string& arg) {
+template <typename StringType>
+inline void unescape_quoted_string(StringType& arg) {
   std::string::size_type found_at = 0;
-  while ((found_at = arg.find('"', found_at)) != std::string::npos) {
+  while ((found_at = std::string_view(arg).find('"', found_at)) !=
+         std::string::npos) {
     if (found_at < arg.size() - 1 && arg[found_at + 1] == '"') {
       arg.erase(found_at, 1);  // Since the string is now one character shorter,
                                // found_at now points to the next character
@@ -65,19 +67,6 @@ inline void unescape_quoted_string(std::string& arg) {
       ++found_at;  // Continue search from next character
     }
   }
-}
-
-inline cista::raw::string unescape_quoted_string(cstr& arg) {
-  cista::raw::string out;
-
-  if (arg.contains(R"("")")) {
-    std::string mut_string = arg.to_str();
-    unescape_quoted_string(mut_string);
-    out.set_owning(mut_string);
-  } else {
-    out.set_non_owning(arg);
-  }
-  return out;
 }
 
 template <typename IntType,
@@ -102,10 +91,9 @@ inline void parse_value(cstr& s, std::string& arg) {
   parse_arg(s, arg);
   unescape_quoted_string(arg);
 }
-inline void parse_value(cstr& s, cista::raw::string& arg) {
-  cstr out;
-  parse_arg(s, out);
-  arg = unescape_quoted_string(out);
+inline void parse_value(cstr& s, cista::raw::generic_string& arg) {
+  parse_arg(s, arg);
+  unescape_quoted_string(arg);
 }
 inline void parse_value(cstr& s, cstr& arg) {
   parse_arg(s, arg);
