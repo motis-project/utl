@@ -57,12 +57,13 @@ inline void parse_column(cstr& s, T& arg) {
 
 template <typename StringType>
 inline void unescape_quoted_string(StringType& arg) {
-  std::string::size_type found_at = 0;
+  auto found_at = std::string::size_type{0U};
   while ((found_at = std::string_view(arg).find('"', found_at)) !=
          std::string::npos) {
-    if (found_at < arg.size() - 1 && arg[found_at + 1] == '"') {
-      arg.erase(found_at, 1);  // Since the string is now one character shorter,
-                               // found_at now points to the next character
+    if (found_at < arg.size() - 1U && arg[found_at + 1U] == '"') {
+      // Since the string is now one character shorter,
+      // found_at now points to the next character
+      arg.erase(static_cast<unsigned>(found_at), 1U);
       ++found_at;  // Skip following character ("), we are now after the ""
     } else {
       ++found_at;  // Continue search from next character
@@ -96,9 +97,7 @@ inline void parse_value(cstr& s, cista::raw::generic_string& arg) {
   parse_arg(s, arg);
   unescape_quoted_string(arg);
 }
-inline void parse_value(cstr& s, cstr& arg) {
-  parse_arg(s, arg);
-}
+inline void parse_value(cstr& s, cstr& arg) { parse_arg(s, arg); }
 
 template <int Index, typename... Args>
 typename std::enable_if<Index == sizeof...(Args)>::type read(

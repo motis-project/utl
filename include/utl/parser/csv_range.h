@@ -27,6 +27,7 @@ struct csv_col : Tags... {
   T const& val() const { return t; }
   T const* operator->() const { return &t; }
   T const& operator*() const { return t; }
+  T& operator*() { return t; }
   T& val() { return t; }
   T t{};
 };

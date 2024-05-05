@@ -134,7 +134,7 @@ inline void parse_arg(cstr& s, std::string& arg) { arg.assign(s.str, s.len); }
 inline void parse_arg(cstr& s, cstr& arg) { arg.assign(s.str, s.len); }
 
 inline void parse_arg(cstr& s, cista::raw::generic_string& arg) {
-  arg.set_non_owning(s.str, s.len);
+  arg.set_non_owning(s.str, static_cast<unsigned>(s.len));
 }
 
 inline void parse_arg(cstr& s, std::filesystem::path& arg) { arg = s.str; }
