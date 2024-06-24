@@ -36,9 +36,8 @@ std::string capture_cout(Fn&& fn) {
 
 TEST(progress_tracker_progress_tracker, msg) {
   std::vector<log_entry> log;
-  utl::progress_tracker sut{[&](auto& t) {
-    log.push_back({t.show_progress_, t.out_, t.status_});
-  }};
+  utl::progress_tracker sut{
+      [&](auto& t) { log.push_back({t.show_progress_, t.out_, t.status_}); }};
 
   sut.status("Hello World!");
   sut.status("GO").show_progress(true);
@@ -115,8 +114,8 @@ TEST(progress_tracker_global_progress_tracker, msg) {
     t2->status("READY");
   });
 
-  EXPECT_THAT(str, testing::ContainsRegex("module_1.*?WAITING"));
-  EXPECT_THAT(str, testing::ContainsRegex("module_2.*?READY"));
+  EXPECT_THAT(str, testing::ContainsRegex("module_1.*WAITING"));
+  EXPECT_THAT(str, testing::ContainsRegex("module_2.*READY"));
 }
 
 TEST(progress_tracker_global_progress_tracker, silent_and_clear) {
@@ -140,8 +139,8 @@ TEST(progress_tracker_global_progress_tracker, progress) {
     t1->update(50ULL);
   });
 
-  EXPECT_THAT(str, testing::ContainsRegex("module_1.*?50%"));
-  EXPECT_THAT(str, testing::ContainsRegex("module_2.*?0%"));
+  EXPECT_THAT(str, testing::ContainsRegex("module_1.*50%"));
+  EXPECT_THAT(str, testing::ContainsRegex("module_2.*0%"));
 }
 
 TEST(progress_tracker_active_progress_tracker, one) {
@@ -151,8 +150,8 @@ TEST(progress_tracker_active_progress_tracker, one) {
     utl::get_active_progress_tracker()->status("ASDF");
   });
 
-  EXPECT_THAT(str, testing::ContainsRegex("first.*?YEAH"));
-  EXPECT_THAT(str, testing::ContainsRegex("first.*?ASDF"));
+  EXPECT_THAT(str, testing::ContainsRegex("first.*YEAH"));
+  EXPECT_THAT(str, testing::ContainsRegex("first.*ASDF"));
 }
 
 TEST(progress_tracker_active_progress_tracker, two) {
@@ -162,7 +161,7 @@ TEST(progress_tracker_active_progress_tracker, two) {
     utl::get_active_progress_tracker()->status("QWERTZ");
   });
 
-  EXPECT_THAT(str, testing::ContainsRegex("second.*?QWERTZ"));
+  EXPECT_THAT(str, testing::ContainsRegex("second.*QWERTZ"));
 }
 
 TEST(progress_tracker_active_progress_tracker, clear) {
