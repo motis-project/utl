@@ -99,8 +99,8 @@ inline bool parse_arg(cstr& s, float& arg) { return parse_fp(s, arg); }
 
 inline bool parse_arg(cstr& s, double& arg) { return parse_fp(s, arg); }
 
-inline bool parse_arg(cstr& s, bool& b) {
-  b = false;
+inline bool parse_arg(cstr& s, bool& b, bool const default_value = false) {
+  b = default_value;
 
   if (!s) {
     return false;
