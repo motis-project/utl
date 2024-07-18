@@ -30,6 +30,9 @@ struct generator {
   ~generator() { h_.destroy(); }
 
   explicit operator bool() {
+    if (h_.done()) {
+      return false;
+    }
     fill();
     return !h_.done();
   }
