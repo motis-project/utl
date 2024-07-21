@@ -14,10 +14,10 @@ inline std::optional<std::string> read_file(char const* path) {
     f.seekg(0, std::ios::beg);
 
     std::string buffer;
-    buffer.resize(size);
+    buffer.resize(static_cast<std::size_t>(size));
 
     return f.read(&buffer[0], size) ? std::make_optional(buffer) : std::nullopt;
-  } catch (std::exception const& e) {
+  } catch (std::exception const&) {
     return std::nullopt;
   }
 }
