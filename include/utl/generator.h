@@ -43,6 +43,14 @@ struct generator {
     return std::move(h_.promise().value_);
   }
 
+  std::vector<T> to_vec() {
+    auto v = std::vector<T>{};
+    while ((*this)) {
+      v.emplace_back((*this)());
+    }
+    return v;
+  }
+
 private:
   void fill() {
     if (!full_) {
