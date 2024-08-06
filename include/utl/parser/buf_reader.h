@@ -55,7 +55,7 @@ buf_reader(ProgressConsumer&&) -> buf_reader<ProgressConsumer>;
 
 template <typename ProgressConsumer = noop_progress_consumer>
 buf_reader<ProgressConsumer> make_buf_reader(
-    cstr s, ProgressConsumer&& progress_consumer) {
+    cstr s, ProgressConsumer&& progress_consumer = ProgressConsumer{}) {
   return buf_reader<ProgressConsumer>{
       s, std::forward<ProgressConsumer>(progress_consumer)};
 }
