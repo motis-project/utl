@@ -11,7 +11,8 @@ template <typename Range, typename TakeWhile>
 struct take_while_range : public clear_t<Range> {
   using parent_t = clear_t<Range>;
 
-  take_while_range(Range&& r, TakeWhile&& take_while)
+  template <typename R>
+  take_while_range(R&& r, TakeWhile&& take_while)
       : parent_t(std::forward<parent_t>(r)),
         take_while_(std::forward<TakeWhile>(take_while)) {}
 
