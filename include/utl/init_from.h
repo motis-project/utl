@@ -14,11 +14,24 @@ namespace detail {
 template <std::size_t N>
 using field_count = std::integral_constant<std::size_t, N>;
 
+template <typename T>
+struct is_complete_helper {
+  template <typename U>
+  static auto test(U*) -> std::integral_constant<bool, sizeof(U) == sizeof(U)>;
+  static auto test(...) -> std::false_type;
+  using type = decltype(test((T*)0));
+};
+
+template <typename T>
+struct is_complete : is_complete_helper<T>::type {};
+
 struct wildcard {
-  template <typename T>
+  template <typename T,
+            typename = std::enable_if_t<!std::is_lvalue_reference<T>::value>>
   operator T&&() const;
 
-  template <typename T>
+  template <typename T, typename = std::enable_if_t<std::conjunction_v<
+                            is_complete<T>, std::is_copy_constructible<T>>>>
   operator T&() const;
 };
 

@@ -15,6 +15,10 @@ TEST(init_from, init_from) {
     int y_;
   };
 
+  static_assert(utl::detail::is_brace_constructible<b, 3U>());
+  static_assert(utl::detail::arity<a>() == 3U);
+  static_assert(utl::detail::arity<b>() == 3U);
+
   auto src = b{0.0, std::make_unique<float>(10.0F), 42};
   auto tgt = utl::init_from<a>(src);
   ASSERT_TRUE(tgt.has_value());
