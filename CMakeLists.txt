@@ -1,5 +1,5 @@
 project(utl)
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.20)
 
 option(UTL_LINT "Run clang-tidy with the compiler." OFF)
 if(UTL_LINT)
