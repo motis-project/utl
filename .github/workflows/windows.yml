@@ -20,18 +20,15 @@ jobs:
         config:
           - name: MSVC Debug
             mode: Debug
-            cc: cl
           - name: MSVC Release
             mode: Release
-            cc: cl
           - name: Clang Debug
             mode: Debug
+            cmake-opt: -DCMAKE_C_COMPILER=clang-cl -DCMAKE_CXX_COMPILER=clang-cl
             cc: clang-cl
           - name: Clang Release
             mode: Release
-            cc: clang-cl
-
-        mode: [Debug, Release]
+            cmake-opt: -DCMAKE_C_COMPILER=clang-cl -DCMAKE_CXX_COMPILER=clang-cl
 
     steps:
     - uses: actions/checkout@v2
@@ -43,9 +40,7 @@ jobs:
         $installPath = &"${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationpath
         Import-Module $devShell
         Enter-VsDevShell -VsInstallPath $installPath -SkipAutomaticLocation -DevCmdArguments "-arch=amd64"
-        $env:CC = ${{ matrix.config.cc }}
-        $env:CXX = ${{ matrix.config.cc }}
-        cmake -GNinja -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.mode }}
+        cmake -GNinja -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.config.mode }} ${{ matrix.config.cmake-opt }}
         cmake --build build --target utl-test
 
     - name: Run tests
