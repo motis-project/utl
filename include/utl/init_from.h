@@ -15,24 +15,21 @@ template <std::size_t N>
 using field_count = std::integral_constant<std::size_t, N>;
 
 template <typename T>
-struct is_complete_helper {
-  template <typename U>
-  static auto test(U*) -> std::integral_constant<bool, sizeof(U) == sizeof(U)>;
-  static auto test(...) -> std::false_type;
-  using type = decltype(test(static_cast<T*>(nullptr)));
-};
+concept Complete = requires(T) { sizeof(T); };
 
 template <typename T>
-struct is_complete : is_complete_helper<T>::type {};
+struct is_complete {
+  static constexpr bool value = Complete<T>;
+};
 
 struct wildcard {
-  template <typename T,
-            typename = std::enable_if_t<!std::is_lvalue_reference<T>::value>>
+  template <typename T>
   operator T&&() const;
 
-  template <typename T, typename = std::enable_if_t<std::conjunction_v<
-                            is_complete<T>, std::is_copy_constructible<T>>>>
-  operator T&() const;
+  template <typename T>
+  operator T&() const
+    requires std::disjunction_v<std::negation<is_complete<T>>,
+                                std::is_copy_constructible<T>>;
 };
 
 template <std::size_t N = 0>
@@ -63,19 +60,6 @@ template <typename T, std::size_t N>
 constexpr auto is_brace_constructible()
     -> decltype(is_brace_constructible_(std::make_index_sequence<N>{},
                                         static_cast<T*>(nullptr))) {
-  return {};
-}
-
-template <typename T, typename U>
-struct is_paren_constructible_;
-
-template <typename T, std::size_t... I>
-struct is_paren_constructible_<T, std::index_sequence<I...>>
-    : std::is_constructible<T, decltype(_<I>)...> {};
-
-template <typename T, std::size_t N>
-constexpr auto is_paren_constructible()
-    -> is_paren_constructible_<T, std::make_index_sequence<N>> {
   return {};
 }
 
