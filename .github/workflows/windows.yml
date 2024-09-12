@@ -17,6 +17,20 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        config:
+          - name: MSVC Debug
+            mode: Debug
+            cc: cl
+          - name: MSVC Release
+            mode: Release
+            cc: cl
+          - name: Clang Debug
+            mode: Debug
+            cc: clang-cl
+          - name: Clang Release
+            mode: Release
+            cc: clang-cl
+
         mode: [Debug, Release]
 
     steps:
@@ -29,6 +43,8 @@ jobs:
         $installPath = &"${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationpath
         Import-Module $devShell
         Enter-VsDevShell -VsInstallPath $installPath -SkipAutomaticLocation -DevCmdArguments "-arch=amd64"
+        $env:CC = ${{ matrix.config.cc }}
+        $env:CXX = ${{ matrix.config.cc }}
         cmake -GNinja -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.mode }}
         cmake --build build --target utl-test
 
