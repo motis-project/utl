@@ -3,6 +3,7 @@
 #include <utility>
 
 #include "utl/clear_t.h"
+#include "utl/pipes/is_range.h"
 #include "utl/pipes/make_range.h"
 
 namespace utl {

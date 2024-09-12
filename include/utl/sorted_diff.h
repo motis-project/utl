@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string_view>
+#include <utility>
 
 namespace utl {
 
@@ -11,6 +12,7 @@ constexpr std::string_view to_str(op const o) {
     case op::kAdd: return "add";
     case op::kDel: return "del";
   }
+  std::unreachable();
 }
 
 template <typename It, typename Lt, typename Eq, typename Fn>

@@ -44,8 +44,8 @@ struct iota_range {
 };
 
 template <typename FromIntType, typename ToIntType>
-iota_range(FromIntType, ToIntType)
-    -> iota_range<clear_t<FromIntType>, clear_t<ToIntType>>;
+iota_range(FromIntType,
+           ToIntType) -> iota_range<clear_t<FromIntType>, clear_t<ToIntType>>;
 
 template <typename FromIntType, typename ToIntType>
 auto iota(FromIntType&& from, ToIntType&& to) {

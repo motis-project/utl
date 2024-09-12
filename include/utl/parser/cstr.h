@@ -2,8 +2,8 @@
 
 #include <cassert>
 #include <cctype>
-#include <cstring>
 #include <cstdint>
+#include <cstring>
 
 #include <algorithm>
 #include <limits>
