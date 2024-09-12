@@ -337,7 +337,7 @@ std::optional<T> init_from(S&& s, std::index_sequence<I...>) {
   if (!(c<std::tuple_element_t<I, Tuple>>(s) && ...)) {
     return std::nullopt;
   }
-  return T(m<std::tuple_element_t<I, Tuple>>(s)...);
+  return T{m<std::tuple_element_t<I, Tuple>>(s)...};
 }
 
 }  // namespace detail
