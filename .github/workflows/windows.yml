@@ -6,13 +6,29 @@ on:
   pull_request:
     branches: [ master ]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: windows-latest
 
     strategy:
+      fail-fast: false
       matrix:
-        mode: [Debug, Release]
+        config:
+          - name: MSVC Debug
+            mode: Debug
+          - name: MSVC Release
+            mode: Release
+          - name: Clang Debug
+            mode: Debug
+            cmake-opt: -DCMAKE_C_COMPILER=clang-cl -DCMAKE_CXX_COMPILER=clang-cl
+            cc: clang-cl
+          - name: Clang Release
+            mode: Release
+            cmake-opt: -DCMAKE_C_COMPILER=clang-cl -DCMAKE_CXX_COMPILER=clang-cl
 
     steps:
     - uses: actions/checkout@v2
@@ -20,12 +36,11 @@ jobs:
 
     - name: Build
       run: |
-        $env:BOOST_ROOT = $env:BOOST_ROOT_1_72_0
         $devShell = &"${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -find **\Microsoft.VisualStudio.DevShell.dll
         $installPath = &"${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationpath
         Import-Module $devShell
         Enter-VsDevShell -VsInstallPath $installPath -SkipAutomaticLocation -DevCmdArguments "-arch=amd64"
-        cmake -GNinja -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.mode }}
+        cmake -GNinja -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.config.mode }} ${{ matrix.config.cmake-opt }}
         cmake --build build --target utl-test
 
     - name: Run tests
