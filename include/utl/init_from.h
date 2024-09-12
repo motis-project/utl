@@ -1,7 +1,11 @@
+#pragma once
+
 #include <optional>
 #include <tuple>
 #include <type_traits>
 #include <utility>
+
+#include "cista/reflection/to_tuple.h"
 
 namespace utl {
 
@@ -11,12 +15,10 @@ template <std::size_t N>
 using field_count = std::integral_constant<std::size_t, N>;
 
 struct wildcard {
-  template <typename T,
-            typename = std::enable_if_t<!std::is_lvalue_reference<T>::value>>
+  template <typename T>
   operator T&&() const;
 
-  template <typename T,
-            typename = std::enable_if_t<std::is_copy_constructible<T>::value>>
+  template <typename T>
   operator T&() const;
 };
 
@@ -74,6 +76,13 @@ inline constexpr auto const has_arity_v =
     return {};                                                              \
   }
 
+template <typename T, std::enable_if_t<cista::detail::has_cista_members_v<T> &&
+                                           !std::is_const_v<T>,
+                                       void*> = nullptr>
+constexpr auto to_tuple(T&& t) {
+  return t.cista_members();
+}
+
 UTL_MAKE_ARITY_FUNC(0)
 UTL_MAKE_ARITY_FUNC(1)
 UTL_MAKE_ARITY_FUNC(2)
@@ -109,7 +118,8 @@ UTL_MAKE_ARITY_FUNC(31)
 
 #undef UTL_MAKE_ARITY_FUNC
 
-template <typename T>
+template <typename T, std::enable_if_t<!cista::detail::has_cista_members_v<T>,
+                                       void*> = nullptr>
 auto to_tuple(T& t) {
   constexpr auto const a = arity<T>();
   static_assert(a <= 31U, "Max. supported members: 64");
@@ -287,6 +297,7 @@ bool c(S&& s) {
                                           deref_same<Target, Src>>) {
     return std::get<I>(s) != nullptr;
   } else {
+    static_assert(I + 1U < std::tuple_size_v<std::decay_t<S>>);
     return c<T, S, I + 1U>(std::forward<S>(s));
   }
 }
@@ -302,6 +313,7 @@ T& m(S&& s) {
                                           deref_same<Target, Src>>) {
     return *std::get<I>(s);
   } else {
+    static_assert(I + 1U < std::tuple_size_v<std::decay_t<S>>);
     return m<T, S, I + 1U>(std::forward<S>(s));
   }
 }
