@@ -113,8 +113,7 @@ inline bool parse_arg(cstr& s, bool& b, bool const default_value = false) {
                      std::tolower(s[1]) == 'r' &&  //
                      std::tolower(s[2]) == 'u' &&  //
                      std::tolower(s[3]) == 'e';
-    for (int i = 0; i < 4 && s; ++i, ++s)
-      ;
+    for (int i = 0; i < 4 && s; ++i, ++s);
     return ret;
   } else if (c == 'f') {
     auto const ret = s.len == 5 &&  //
@@ -122,8 +121,7 @@ inline bool parse_arg(cstr& s, bool& b, bool const default_value = false) {
                      std::tolower(s[2]) == 'l' &&  //
                      std::tolower(s[3]) == 's' &&  //
                      std::tolower(s[4]) == 'e';
-    for (int i = 0; i < 5 && s; ++i, ++s)
-      ;
+    for (int i = 0; i < 5 && s; ++i, ++s);
     return ret;
   }
   return false;

@@ -7,8 +7,8 @@
 namespace utl {
 
 template <typename It, typename UnaryOperation>
-inline auto to_set(It b, It e, UnaryOperation&& op)
-    -> std::set<decltype(op(*b))> {
+inline auto to_set(It b, It e,
+                   UnaryOperation&& op) -> std::set<decltype(op(*b))> {
   using set = std::set<decltype(op(*b))>;
   set s(std::distance(s, e));
   std::transform(b, e, std::insert_iterator<set>(s), op);
