@@ -11,7 +11,7 @@
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
-#include <windows.h>
+#include <Windows.h>
 
 #include "utl/parser/buffer.h"
 #include "utl/verify.h"
@@ -60,7 +60,7 @@ struct file {
   size_t size() {
     LARGE_INTEGER filesize;
     check(GetFileSizeEx(f_, &filesize), "get file size error");
-    return filesize.QuadPart;
+    return static_cast<size_t>(filesize.QuadPart);
   }
 
   buffer content() {
@@ -69,12 +69,13 @@ struct file {
 
     auto b = buffer(file_size);
 
-    chunk(block_size, size(), [&](size_t const from, unsigned block_size) {
-      OVERLAPPED overlapped = {0};
+    chunk(block_size, size(), [&](size_t const from, unsigned bs) {
+      OVERLAPPED overlapped;
       overlapped.Offset = static_cast<DWORD>(from);
       overlapped.OffsetHigh = from >> 32u;
-      check(ReadFile(f_, b.data() + from, static_cast<DWORD>(block_size),
-                     nullptr, &overlapped),
+      overlapped.hEvent = nullptr;
+      check(ReadFile(f_, b.data() + from, static_cast<DWORD>(bs), nullptr,
+                     &overlapped),
             "file read error");
     });
 
@@ -88,12 +89,13 @@ struct file {
     auto b = std::string{};
     b.resize(file_size);
 
-    chunk(block_size, size(), [&](size_t const from, unsigned block_size) {
-      OVERLAPPED overlapped = {0};
+    chunk(block_size, size(), [&](size_t const from, unsigned bs) {
+      OVERLAPPED overlapped = {};
       overlapped.Offset = static_cast<DWORD>(from);
       overlapped.OffsetHigh = from >> 32u;
-      check(ReadFile(f_, b.data() + from, static_cast<DWORD>(block_size),
-                     nullptr, &overlapped),
+      overlapped.hEvent = nullptr;
+      check(ReadFile(f_, b.data() + from, static_cast<DWORD>(bs), nullptr,
+                     &overlapped),
             "file read error");
     });
 
@@ -102,12 +104,13 @@ struct file {
 
   void write(void const* buf, size_t size) {
     constexpr auto block_size = 8192u;
-    chunk(block_size, size, [&](size_t const from, unsigned block_size) {
-      OVERLAPPED overlapped = {0};
+    chunk(block_size, size, [&](size_t const from, unsigned bs) {
+      OVERLAPPED overlapped = {};
       overlapped.Offset = static_cast<DWORD>(from);
       overlapped.OffsetHigh = from >> 32u;
-      check(WriteFile(f_, static_cast<unsigned char const*>(buf) + from,
-                      block_size, nullptr, &overlapped),
+      overlapped.hEvent = nullptr;
+      check(WriteFile(f_, static_cast<unsigned char const*>(buf) + from, bs,
+                      nullptr, &overlapped),
             "file write error");
     });
   }
