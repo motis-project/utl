@@ -19,7 +19,7 @@ struct is_complete_helper {
   template <typename U>
   static auto test(U*) -> std::integral_constant<bool, sizeof(U) == sizeof(U)>;
   static auto test(...) -> std::false_type;
-  using type = decltype(test((T*)0));
+  using type = decltype(test(static_cast<T*>(nullptr)));
 };
 
 template <typename T>
