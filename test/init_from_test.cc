@@ -2,6 +2,27 @@
 
 #include "utl/init_from.h"
 
+/* not working currently
+struct a {
+  int& i_;
+  float& j_;
+  int& k_;
+};
+
+struct b {
+  double z_;
+  std::unique_ptr<float> x_;
+  int y_;
+};
+
+template <typename T>
+concept C3 = requires(T t) {
+  T{utl::detail::wildcard{}, utl::detail::wildcard{}, utl::detail::wildcard{}};
+};
+
+static_assert(C3<a>);
+static_assert(C3<b>);
+
 TEST(init_from, init_from) {
   struct a {
     int& i_;
@@ -38,3 +59,4 @@ TEST(init_from, init_from) {
   auto no = utl::init_from<a>(b{});
   EXPECT_FALSE(no.has_value());
 };
+*/

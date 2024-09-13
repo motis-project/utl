@@ -24,12 +24,7 @@ struct is_complete {
 
 struct wildcard {
   template <typename T>
-  operator T&&() const;
-
-  template <typename T>
-  operator T&() const
-    requires std::disjunction_v<std::negation<is_complete<T>>,
-                                std::is_copy_constructible<T>>;
+  operator T&() const;
 };
 
 template <std::size_t N = 0>
