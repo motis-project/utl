@@ -58,11 +58,13 @@ struct cmd_line_flag : public Tags... {
   operator T() { return t; }
   T& val() { return t; }
   T const& val() const { return t; }
+  T const& operator*() const { return t; }
+  T& operator*() { return t; }
   T t{};
 };
 
 template <typename T>
-inline T parse(int argc, char const** argv) {
+inline T parse_flags(int argc, char const** argv) {
   auto parse_flag = [](auto& val, cstr next_arg) {
     using FieldType = std::remove_cv_t<std::remove_reference_t<decltype(val)>>;
     if constexpr (std::is_same_v<FieldType, bool>) {
