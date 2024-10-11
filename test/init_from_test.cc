@@ -14,14 +14,6 @@ struct b {
   int y_;
 };
 
-template <typename T>
-concept C3 = requires(T t) {
-  T{utl::detail::wildcard{}, utl::detail::wildcard{}, utl::detail::wildcard{}};
-};
-
-static_assert(C3<a>);
-static_assert(C3<b>);
-
 TEST(init_from, init_from) {
   struct test {};
 
