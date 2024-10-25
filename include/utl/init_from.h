@@ -23,8 +23,18 @@ struct is_complete {
 };
 
 struct wildcard {
+#ifdef _MSC_VER
   template <typename T>
   operator T&() const;
+#else
+  template <typename T>
+  operator T&&() const;
+
+  template <typename T>
+  operator T&() const
+    requires std::disjunction_v<std::negation<is_complete<T>>,
+                                std::is_copy_constructible<T>>;
+#endif
 };
 
 template <std::size_t N = 0>
@@ -273,9 +283,15 @@ template <typename T>
 using deref_t = decltype(*std::declval<T>());
 
 template <typename T, typename U>
-struct deref_same {
+struct deref_second_same {
   static constexpr auto const value =
       std::is_same_v<T, std::decay_t<deref_t<U>>>;
+};
+
+template <typename T, typename U>
+struct deref_both_same {
+  static constexpr auto const value =
+      std::is_same_v<std::decay_t<deref_t<T>>, std::decay_t<deref_t<U>>>;
 };
 
 template <typename T, typename S, std::size_t I = 0U>
@@ -286,8 +302,11 @@ bool c(S&& s) {
   if constexpr (std::is_same_v<Target, Src>) {
     return true;
   } else if constexpr (std::conjunction_v<derefable<Src>,
-                                          deref_same<Target, Src>>) {
+                                          deref_second_same<Target, Src>>) {
     return std::get<I>(s) != nullptr;
+  } else if constexpr (std::conjunction_v<derefable<Src>, derefable<Target>,
+                                          deref_both_same<Target, Src>>) {
+    return true;
   } else {
     static_assert(I + 1U < std::tuple_size_v<std::decay_t<S>>);
     return c<T, S, I + 1U>(std::forward<S>(s));
@@ -295,15 +314,18 @@ bool c(S&& s) {
 }
 
 template <typename T, typename S, std::size_t I = 0U>
-T& m(S&& s) {
+std::conditional_t<std::is_pointer_v<std::decay_t<T>>, T, T&> m(S&& s) {
   using Src = std::decay_t<std::tuple_element_t<I, std::decay_t<S>>>;
   using Target = std::decay_t<T>;
 
   if constexpr (std::is_same_v<Target, Src>) {
     return std::get<I>(s);
   } else if constexpr (std::conjunction_v<derefable<Src>,
-                                          deref_same<Target, Src>>) {
+                                          deref_second_same<Target, Src>>) {
     return *std::get<I>(s);
+  } else if constexpr (std::conjunction_v<derefable<Src>, derefable<Target>,
+                                          deref_both_same<Target, Src>>) {
+    return std::get<I>(s) == nullptr ? nullptr : &*std::get<I>(s);
   } else {
     static_assert(I + 1U < std::tuple_size_v<std::decay_t<S>>);
     return m<T, S, I + 1U>(std::forward<S>(s));
@@ -316,7 +338,7 @@ std::optional<T> init_from(S&& s, std::index_sequence<I...>) {
   if (!(c<std::tuple_element_t<I, Tuple>>(s) && ...)) {
     return std::nullopt;
   }
-  return T{m<std::tuple_element_t<I, Tuple>>(s)...};
+  return T{m<std::decay_t<std::tuple_element_t<I, Tuple>>>(s)...};
 }
 
 }  // namespace detail

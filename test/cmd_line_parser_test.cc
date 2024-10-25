@@ -22,7 +22,7 @@ constexpr auto const expected_description =
 
 TEST(cmd, cmd_line_flag_test) {
   char const* args[] = {"./exe", "-c", "--file", "test", "--num_threads", "8"};
-  auto c = parse<config>(sizeof(args) / sizeof(char const*), args);
+  auto c = parse_flags<config>(sizeof(args) / sizeof(char const*), args);
 
   EXPECT_TRUE(c.capture_.val());
   EXPECT_TRUE(c.file_.val() == "test");
@@ -35,7 +35,7 @@ TEST(cmd, cmd_line_flag_required_test) {
 
   bool thrown = false;
   try {
-    parse<config>(sizeof(args) / sizeof(char const*), args);
+    parse_flags<config>(sizeof(args) / sizeof(char const*), args);
   } catch (...) {
     thrown = true;
   }

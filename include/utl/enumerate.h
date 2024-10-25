@@ -19,7 +19,7 @@ struct iterator {
   using reference = value_type;
   using pointer = std::add_pointer_t<value_type>;
 
-  difference_type operator-(iterator const& o) {
+  difference_type operator-(iterator const& o) const {
     return static_cast<std::ptrdiff_t>(i_) - static_cast<std::ptrdiff_t>(o.i_);
   }
 
@@ -37,13 +37,13 @@ struct iterator {
     --iter_;
   }
 
-  iterator operator++(int) {
+  iterator operator++(int) const {
     auto tmp = *this;
     ++(*this);
     return tmp;
   }
 
-  iterator operator--(int)
+  iterator operator--(int) const
     requires(std::bidirectional_iterator<It>)
   {
     auto tmp = *this;
