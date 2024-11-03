@@ -89,4 +89,14 @@ constexpr bool equal(Collection1&& c1, Collection2&& c2) {
   return std::equal(begin(c1), end(c1), begin(c2), end(c2));
 }
 
+template <typename Collection, typename Fn>
+constexpr auto max_element(Collection&& c, Fn&& fn) {
+  return std::max_element(begin(c), end(c), std::forward<Fn>(fn));
+}
+
+template <typename Collection, typename Fn>
+constexpr auto min_element(Collection&& c, Fn&& fn) {
+  return std::min_element(begin(c), end(c), std::forward<Fn>(fn));
+}
+
 }  // namespace utl
