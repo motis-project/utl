@@ -12,6 +12,16 @@ template <char... Chars>
 constexpr char const const_str<Chars...>::s[sizeof...(Chars) + 1];
 #endif
 
+#define STRING_LITERAL_30(str) \
+  STRING_LITERAL_29(str), ((TERMINATED_29(str)) ? (str[29]) : ('\0'))
+#define STRING_LITERAL_29(str) \
+  STRING_LITERAL_28(str), ((TERMINATED_28(str)) ? (str[28]) : ('\0'))
+#define STRING_LITERAL_28(str) \
+  STRING_LITERAL_27(str), ((TERMINATED_27(str)) ? (str[27]) : ('\0'))
+#define STRING_LITERAL_27(str) \
+  STRING_LITERAL_26(str), ((TERMINATED_26(str)) ? (str[26]) : ('\0'))
+#define STRING_LITERAL_26(str) \
+  STRING_LITERAL_25(str), ((TERMINATED_25(str)) ? (str[25]) : ('\0'))
 #define STRING_LITERAL_25(str) \
   STRING_LITERAL_24(str), ((TERMINATED_24(str)) ? (str[24]) : ('\0'))
 #define STRING_LITERAL_24(str) \
@@ -61,8 +71,13 @@ constexpr char const const_str<Chars...>::s[sizeof...(Chars) + 1];
 #define STRING_LITERAL_2(str) \
   STRING_LITERAL_1(str), ((TERMINATED_1(str)) ? (str[1]) : ('\0'))
 #define STRING_LITERAL_1(str) str[0]
-#define STRING_LITERAL(str) utl::const_str<STRING_LITERAL_25(str)>::s
+#define STRING_LITERAL(str) utl::const_str<STRING_LITERAL_30(str)>::s
 
+#define TERMINATED_29(str) TERMINATED_28(str) && str[28]
+#define TERMINATED_28(str) TERMINATED_27(str) && str[27]
+#define TERMINATED_27(str) TERMINATED_26(str) && str[26]
+#define TERMINATED_26(str) TERMINATED_25(str) && str[25]
+#define TERMINATED_25(str) TERMINATED_24(str) && str[24]
 #define TERMINATED_24(str) TERMINATED_23(str) && str[23]
 #define TERMINATED_23(str) TERMINATED_22(str) && str[22]
 #define TERMINATED_22(str) TERMINATED_21(str) && str[21]
