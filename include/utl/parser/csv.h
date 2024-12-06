@@ -126,7 +126,7 @@ void read(std::vector<std::tuple<Args...>>& v,
 
 typedef uint8_t column_idx_t;
 constexpr column_idx_t NO_COLUMN_IDX = std::numeric_limits<column_idx_t>::max();
-constexpr column_idx_t MAX_COLUMNS = 32;
+constexpr column_idx_t MAX_COLUMNS = 64;
 
 template <typename Tuple, char Separator = ','>
 std::array<column_idx_t, MAX_COLUMNS> read_header(
@@ -139,6 +139,8 @@ std::array<column_idx_t, MAX_COLUMNS> read_header(
     cstr header;
     parse_column<cstr, Separator>(s, header);
 
+    utl_verify(column < MAX_COLUMNS, "too many columns: {} >= {}", column,
+               MAX_COLUMNS);
     column_map[column] = NO_COLUMN_IDX;
     for (column_idx_t c = 0; c != defined_columns.size(); ++c) {
       if (header == defined_columns[c]) {

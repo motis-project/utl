@@ -51,6 +51,8 @@ std::array<column_idx_t, MAX_COLUMNS> read_header(cstr s) {
     cstr header;
     parse_column<cstr, Separator>(s, header);
 
+    utl_verify(column < MAX_COLUMNS, "too many columns: {} >= {}", column,
+               MAX_COLUMNS);
     column_map[column] = NO_COLUMN_IDX;
     column_idx_t c = 0u;
     cista::for_each_field<T>([&](auto&& f) {
