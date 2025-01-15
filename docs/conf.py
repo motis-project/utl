@@ -6,9 +6,9 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'Motis utl module'
-author = 'The Motis project developers'
-copyright = '2025, The Motis project developers'
+project = 'MOTIS utl module'
+author = 'The MOTIS project developers'
+copyright = '2025, The MOTIS project developers'
 html_show_copyright = False
 
 # -- General configuration ---------------------------------------------------

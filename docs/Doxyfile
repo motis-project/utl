@@ -41,7 +41,7 @@ DOXYFILE_ENCODING      = UTF-8
 # project for which the documentation is generated. This name is used in the
 # title of most generated pages and in a few other places.
 
-PROJECT_NAME           = "Motis utl module"
+PROJECT_NAME           = "MOTIS utl module"
 
 # The PROJECT_NUMBER tag can be used to enter a project or revision number. This
 # could be handy for archiving the generated documentation or if some version

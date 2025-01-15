@@ -12,6 +12,11 @@ Directly with `doxygen`:
     doxygen
 
 ## Generating Sphinx documentation
-From the root directory:
+From the root directory, with auto-reload:
 
     sphinx-autobuild docs docs/_build/html --open-browser
+
+Only generating the documentation:
+
+    cd docs
+    sphinx-build -M html . _build

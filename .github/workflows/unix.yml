@@ -82,10 +82,15 @@ jobs:
       DEBIAN_FRONTEND: noninteractive
       UBSAN_OPTIONS: halt_on_error=1:abort_on_error=1
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - uses: seanmiddleditch/gha-setup-ninja@master
         if: matrix.config.os == 'macos-latest'
+
+      - name: Install doxygen 🔧
+        uses: ssciwr/doxygen-install@v1
+        with:
+          version: "1.13.2"
 
       # ==== INSTALL ====
       - name: Update APT
@@ -141,21 +146,28 @@ jobs:
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v4
+
       - name: Set up Python 3.13 🔧
         uses: actions/setup-python@v5
         with:
           python-version: 3.13
+
       - name: Install doxygen 🔧
         uses: ssciwr/doxygen-install@v1
         with:
           version: "1.13.2"
+
       - name: Install Python dependencies ⚙️
         run: pip install -r docs/requirements.txt
+
       - name: Generate HTML documentation 🏗️
         run: |
-          mkdir -p public/
-          
-      - name: Deploy documentation 🚀
+          cd docs
+          doxygen
+          sphinx-build -M html . _build
+          mv _build ../public
+
+      - name: Deploy documentation onto GitHub Pages 🚀
         if: github.ref == 'refs/heads/master'
         uses: peaceiris/actions-gh-pages@v3
         with:
