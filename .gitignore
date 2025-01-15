@@ -2,5 +2,8 @@
 *.sublime-*
 /.idea
 /deps
+/docs/html
+/docs/xml
 /.vscode
+_build/
 .clang-tidy

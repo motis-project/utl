@@ -10,7 +10,7 @@ jobs:
   formatting:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Install clang-format
         env:
@@ -82,10 +82,15 @@ jobs:
       DEBIAN_FRONTEND: noninteractive
       UBSAN_OPTIONS: halt_on_error=1:abort_on_error=1
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - uses: seanmiddleditch/gha-setup-ninja@master
         if: matrix.config.os == 'macos-latest'
+
+      - name: Install doxygen 🔧
+        uses: ssciwr/doxygen-install@v1
+        with:
+          version: "1.13.2"
 
       # ==== INSTALL ====
       - name: Update APT
@@ -135,3 +140,36 @@ jobs:
       - name: Run Tests Valgrind
         if: matrix.config.mode == 'Debug' && matrix.config.cc == 'gcc-12'
         run: valgrind --error-exitcode=1 --show-reachable=yes --leak-check=full ./build/utl-test
+
+  doc:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.13 🔧
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.13
+
+      - name: Install doxygen 🔧
+        uses: ssciwr/doxygen-install@v1
+        with:
+          version: "1.13.2"
+
+      - name: Install Python dependencies ⚙️
+        run: pip install -r docs/requirements.txt
+
+      - name: Generate HTML documentation 🏗️
+        run: |
+          cd docs
+          doxygen
+          sphinx-build -M html . _build
+          mv _build ../public
+
+      - name: Deploy documentation onto GitHub Pages 🚀
+        if: github.ref == 'refs/heads/master'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: public/
