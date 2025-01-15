@@ -14,6 +14,7 @@ struct b {
   int y_;
 };
 
+#ifndef _MSC_VER  // This use case does not work with MSVC
 TEST(init_from, init_from) {
   struct test {};
 
@@ -55,3 +56,4 @@ TEST(init_from, init_from) {
   auto tgt1 = utl::init_from<a>(src);
   EXPECT_EQ(tgt1->str_, src.str_.get());
 };
+#endif
