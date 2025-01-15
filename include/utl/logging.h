@@ -28,6 +28,9 @@
 
 namespace utl {
 
+/**
+  Entrypoint for all Motis logs
+*/
 struct log {
   log() = default;
 
@@ -51,6 +54,9 @@ struct log {
 
 enum log_level { emrg, alrt, crit, err, warn, notice, info, debug };
 
+/**
+  Format a timestamp as an ISO 8601 string
+*/
 inline std::string time(time_t const t) {
   char buf[sizeof "2011-10-08t07:07:09z-0430"];
   struct tm result {};
@@ -59,6 +65,9 @@ inline std::string time(time_t const t) {
   return buf;
 }
 
+/**
+  Format the current time as an ISO 8601 string
+*/
 inline std::string time() {
   time_t now;
   std::time(&now);
