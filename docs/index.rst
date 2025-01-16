@@ -35,7 +35,7 @@ error
 Advanced usage
 ^^^^^^^^^^^^^^
 
-By default, ``logF()`` inserts the current filename & linenumber in the log line.
+By default, ``logF()`` inserts the current filename & line number in the log line.
 However, you can use ``log()`` to specify your own **context** ::
 
   log(info, "http.get.resource", "Details");
