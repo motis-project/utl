@@ -1,5 +1,17 @@
-Documentation was originally setup following this tutorial:
+Documentation was originally setup in PR [#25](https://github.com/motis-project/utl/pull/25) following this tutorial:
 [Clear, Functional C++ Documentation with Sphinx + Breathe + Doxygen + CMake](https://devblogs.microsoft.com/cppblog/clear-functional-c-documentation-with-sphinx-breathe-doxygen-cmake/)
+
+The documentation is then published to GitHub Pages: <https://motis-project.github.io/utl/>
+
+[breathe](https://breathe.readthedocs.io) is used to insert Doxygen doc snippets
+into the Sphinx-generated documentation.
+
+List of supported directives: <https://breathe.readthedocs.io/en/latest/directives.html#directives>
+
+## Installing the necessary tools
+
+    apt install doxygen
+    pip install -r docs/requirements.txt
 
 ## Generating Doxygen documentation
 With CMake, from the root directory:

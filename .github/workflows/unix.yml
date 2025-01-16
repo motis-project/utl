@@ -165,7 +165,7 @@ jobs:
           cd docs
           doxygen
           sphinx-build -M html . _build
-          mv _build ../public
+          mv _build/html ../public
 
       - name: Deploy documentation onto GitHub Pages 🚀
         if: github.ref == 'refs/heads/master'

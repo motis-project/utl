@@ -74,13 +74,13 @@ void log(log_level const level, char const* ctx,
 }  // namespace utl
 
 // clang-format off
-#define _CLANG_C_COMPILER clang-cl
+#define _IS_MSVC _MSC_VER && CMAKE_C_COMPILER != clang-cl
 // clang-format on
 
 /**
  * Shorthand to invoke utl::log without specifying the namespace
  */
-#if _MSC_VER && CMAKE_C_COMPILER != _CLANG_C_COMPILER
+#if _IS_MSVC
 #define log(level, ctx, fmt_str, ...) \
   utl::log(utl::log_level::##level, ctx, fmt_str, __VA_ARGS__)
 #else
@@ -91,7 +91,7 @@ void log(log_level const level, char const* ctx,
 /**
  * Invoke utl::log using the current C++ filename & line number as ctx
  */
-#if _MSC_VER && CMAKE_C_COMPILER != _CLANG_C_COMPILER
+#if _IS_MSVC
 #define logF(level, fmt_str, ...) \
   log(level, FILE_AND_LINE_SHORT, fmt_str, __VA_ARGS__)
 #else
