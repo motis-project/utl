@@ -5,25 +5,51 @@
 
 using ::testing::MatchesRegex;
 
-TEST(log, basic_usage) {
+TEST(log, can_send_info_msg) {
   testing::internal::CaptureStderr();
-  utl::info("Simple message");
+  utl::info("Message");
   EXPECT_THAT(
       testing::internal::GetCapturedStderr(),
-      MatchesRegex(
-          ".+T.+Z \\[info\\] \\[logging_test.cc:10\\] Simple message\n"));
+      MatchesRegex(".+T.+Z \\[info\\] \\[logging_test.cc:..\\] Message\n"));
 };
 
-TEST(log, specifying_ctx) {
+TEST(log, can_send_debug_msg) {
+  testing::internal::CaptureStderr();
+  utl::debug("Message");
+  EXPECT_THAT(
+      testing::internal::GetCapturedStderr(),
+      MatchesRegex(".+T.+Z \\[debug\\] \\[logging_test.cc:..\\] Message\n"));
+};
+
+TEST(log, can_send_error_msg) {
+  testing::internal::CaptureStderr();
+  utl::error("Message");
+  EXPECT_THAT(
+      testing::internal::GetCapturedStderr(),
+      MatchesRegex(".+T.+Z \\[error\\] \\[logging_test.cc:..\\] Message\n"));
+};
+
+TEST(log, can_format_extra_params) {
+  testing::internal::CaptureStderr();
+  auto const value = 42;
+  utl::info("String={} Int={}", "Hello", value);
+  EXPECT_THAT(testing::internal::GetCapturedStderr(),
+              MatchesRegex(".+T.+Z \\[info\\] \\[logging_test.cc:..\\] "
+                           "String=Hello Int=42\n"));
+};
+
+TEST(log, can_have_an_optional_ctx) {
   testing::internal::CaptureStderr();
   utl::info("Message").ctx("MyCtx");
   EXPECT_THAT(testing::internal::GetCapturedStderr(),
-              MatchesRegex(".+T.+Z \\[info\\] \\[MyCtx\\] Message\n"));
+              MatchesRegex(".+T.+Z \\[info\\] \\[logging_test.cc:..\\] "
+                           "\\[MyCtx\\] Message\n"));
 };
 
-TEST(log, formatting_parameters) {
+TEST(log, can_have_optional_metadata) {
   testing::internal::CaptureStderr();
-  utl::info("String={} Int={}", "Hello", 42);
-  EXPECT_THAT(testing::internal::GetCapturedStderr(),
-              MatchesRegex(".+T.+Z \\[info\\] String=Hello Int=42\n"));
+  utl::info("Message").metadata({{"key", "value"}});
+  EXPECT_THAT(
+      testing::internal::GetCapturedStderr(),
+      MatchesRegex(".+T.+Z \\[info\\] \\[logging_test.cc:..\\] Message\n"));
 };
