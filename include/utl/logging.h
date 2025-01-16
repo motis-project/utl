@@ -7,40 +7,28 @@
 #include <chrono>
 #include <iomanip>
 #include <iostream>
+#include <source_location>
 #include <sstream>
 #include <string>
 
 #include "fmt/core.h"
 #include "fmt/ostream.h"
 
-#define STRINGIFY(x) STRINGIFY_(x)
-#define STRINGIFY_(x) #x
-
-#define FILE_AND_LINE (__FILE__ ":" STRINGIFY(__LINE__))
-#if defined(_WIN32)
-#define FILE_AND_LINE_SHORT                                        \
-  (strrchr(FILE_AND_LINE, '\\') ? strrchr(FILE_AND_LINE, '\\') + 1 \
-                                : FILE_AND_LINE)
-#else
-#define FILE_AND_LINE_SHORT                                      \
-  (strrchr(FILE_AND_LINE, '/') ? strrchr(FILE_AND_LINE, '/') + 1 \
-                               : FILE_AND_LINE)
-#endif
-
 namespace utl {
 
-enum class log_level { debug, info, error };
+/// Log level
+enum class llvl { debug, info, error };
 
-constexpr char const* to_str(log_level const level) {
+constexpr char const* to_str(llvl const level) {
   switch (level) {
-    case log_level::debug: return "debug";
-    case log_level::info: return "info";
-    case log_level::error: return "error";
+    case llvl::debug: return "debug";
+    case llvl::info: return "info";
+    case llvl::error: return "error";
   }
   return "";
 }
 
-static log_level s_verbosity;
+static llvl s_verbosity;
 
 inline std::string now() {
   using clock = std::chrono::system_clock;
@@ -57,46 +45,71 @@ inline std::string now() {
   return ss.str();
 }
 
-/// Produce a new log line at the given `level`, with the given prefix `ctx` and
-/// message
-template <typename... Args>
-void log(log_level const level, char const* ctx,
-         fmt::format_string<Args...> fmt_str, Args&&... args) {
-  if (level >= ::utl::s_verbosity) {
-    fmt::print(std::clog, "{time} [{level}] [{ctx}] {msg}\n",
-               fmt::arg("time", now()), fmt::arg("level", to_str(level)),
-               fmt::arg("ctx", ctx),
-               fmt::arg("msg", fmt::format(fmt::runtime(fmt_str),
-                                           std::forward<Args>(args)...)));
+/// Produce a new log line at the given `level`, with the given message
+template <typename... T>
+struct log {
+  log(llvl const level, fmt::format_string<T...> fmt_str, const T&&... args)
+      //, std::source_location const& loc = std::source_location::current())
+      : level_{level},
+        // loc_{loc},
+        ctx_{nullptr},
+        msg_{fmt::format(fmt_str, std::forward<T>(args)...)} {}
+
+  ~log() {
+    if (level_ >= utl::s_verbosity) {
+      fmt::print(std::clog,
+                 "{time} [{level}] [{file}:{line} {fn}] {ctx} {msg}\n",
+                 fmt::arg("time", now()), fmt::arg("level", to_str(level_)),
+                 // fmt::arg("file", loc_.file_name()),
+                 // fmt::arg("line", loc_.line()),
+                 // fmt::arg("fn", loc_.function_name()),
+                 fmt::arg("ctx", ctx_ ? (std::string("[") + std::string(ctx_) +
+                                         std::string("]"))
+                                      : ""),
+                 fmt::arg("msg", msg_));
+    }
   }
+
+  void ctx(char const* ctx) { ctx_ = ctx; }
+
+  void metadata(
+      std::initializer_list<std::pair<std::string_view, std::string_view> >&&
+          metadata) {
+    metadata_ = std::move(metadata);
+  }
+
+  llvl level_;
+  // std::source_location loc_;
+  char const* ctx_;
+  std::string msg_;
+  std::initializer_list<std::pair<std::string_view, std::string_view> >
+      metadata_;
+};
+
+// Class template deduction guide, to help the compiler distinguish between the
+// variadic template Args... and the next argument std::source_location which
+// has a default value:
+// template <typename... Args> log(llvl level, char const*,
+// fmt::format_string<Args...>, Args&&... args) -> log<Args...>;
+
+template <typename... T>
+auto debug(fmt::format_string<T...> fmt_str, const T&&... args) {
+  //, std::source_location const& loc = std::source_location::current())
+  return log(llvl::debug, fmt_str, std::forward<T>(args)...);
+}
+
+template <typename... T>
+auto info(fmt::format_string<T...> fmt_str, const T&&... args) {
+  //, std::source_location const& loc = std::source_location::current())
+  return log(llvl::info, fmt_str, std::forward<T>(args)...);
+}
+
+template <typename... T>
+auto error(fmt::format_string<T...> fmt_str, const T&&... args) {
+  //, std::source_location const& loc = std::source_location::current())
+  return log(llvl::error, fmt_str, std::forward<T>(args)...);
 }
 
 }  // namespace utl
-
-// clang-format off
-#define _IS_MSVC _MSC_VER && CMAKE_C_COMPILER != clang-cl
-// clang-format on
-
-/**
- * Shorthand to invoke utl::log without specifying the namespace
- */
-#if _IS_MSVC
-#define log(level, ctx, fmt_str, ...) \
-  utl::log(utl::log_level::##level, ctx, fmt_str, __VA_ARGS__)
-#else
-#define log(level, ctx, fmt_str, ...) \
-  utl::log(utl::log_level::level, ctx, fmt_str, ##__VA_ARGS__)
-#endif
-
-/**
- * Invoke utl::log using the current C++ filename & line number as ctx
- */
-#if _IS_MSVC
-#define logF(level, fmt_str, ...) \
-  log(level, FILE_AND_LINE_SHORT, fmt_str, __VA_ARGS__)
-#else
-#define logF(level, fmt_str, ...) \
-  log(level, FILE_AND_LINE_SHORT, fmt_str, ##__VA_ARGS__)
-#endif
 
 #endif  // LOGGING_HEADER

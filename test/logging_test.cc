@@ -7,7 +7,7 @@ using ::testing::MatchesRegex;
 
 TEST(log, basic_usage) {
   testing::internal::CaptureStderr();
-  logF(info, "Simple message");
+  utl::info("Simple message");
   EXPECT_THAT(
       testing::internal::GetCapturedStderr(),
       MatchesRegex(
@@ -16,15 +16,14 @@ TEST(log, basic_usage) {
 
 TEST(log, specifying_ctx) {
   testing::internal::CaptureStderr();
-  log(info, "MyCtx", "Message");
+  utl::info("Message").ctx("MyCtx");
   EXPECT_THAT(testing::internal::GetCapturedStderr(),
               MatchesRegex(".+T.+Z \\[info\\] \\[MyCtx\\] Message\n"));
 };
 
 TEST(log, formatting_parameters) {
   testing::internal::CaptureStderr();
-  log(info, "MyCtx", "String={} Int={}", "Hello", 42);
-  EXPECT_THAT(
-      testing::internal::GetCapturedStderr(),
-      MatchesRegex(".+T.+Z \\[info\\] \\[MyCtx\\] String=Hello Int=42\n"));
+  utl::info("String={} Int={}", "Hello", 42);
+  EXPECT_THAT(testing::internal::GetCapturedStderr(),
+              MatchesRegex(".+T.+Z \\[info\\] String=Hello Int=42\n"));
 };

@@ -17,9 +17,13 @@ This is the documentation for the **utl** (utility) module.
 Logging
 -------
 
-The simplest way to produce log lines is to use the ``logF()`` macro::
+The simplest way to produce log lines is to use the ``utl:log()`` function,
+or the wrapping functions for the various log levels,
+``utl::debug()``, ``utl::info()`` and ``utl::error()``::
 
-  logF(info, "Simple message");
+  #include "utl/logging.h"
+
+  utl::info("Simple message");
 
 The following log levels are supported:
 
@@ -35,17 +39,20 @@ error
 Advanced usage
 ^^^^^^^^^^^^^^
 
-By default, ``logF()`` inserts the current filename & line number in the log line.
-However, you can use ``log()`` to specify your own **context** ::
+You can insert variables in the message by using ``{}`` and passing them as extra arguments
+(formatting is performed by the `fmt <https://fmt.dev>`_ library)::
 
-  log(info, "http.get.resource", "Details");
+  utl::info("String={} Int={}", "Hello", 42);
 
-You can also insert variables in the message by using ``{}`` and passing them as extra arguments::
+You can specify a **context** string::
 
-  logF(info, "String={} Int={}", "Hello", 42);
+  utl::info("Message").ctx("http.get.resource");
+
+You can specify **metadata**::
+
+  utl::info("Message").metadata("key", "value");
 
 API details
 ^^^^^^^^^^^
-Under the hood, the ``log()`` & ``logF()`` macros use the ``utl::log()`` function:
 
 .. doxygenfunction:: utl::log

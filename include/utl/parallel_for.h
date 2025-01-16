@@ -160,7 +160,7 @@ inline errors_t parallel_for(
       jobs.size(),
       [&](auto const idx) {
         if (idx % mod == 0) {
-          logF(info, "{} {}/{}", desc, idx, jobs.size());
+          utl::info("{} {}/{}", desc, idx, jobs.size());
         }
         func(jobs[idx]);
       },
