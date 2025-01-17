@@ -12,11 +12,11 @@ This is the documentation for the **utl** (utility) module.
 ## Logging
 The simplest way to produce log lines is to use the `utl:log()` function,
 or the wrapping functions for the various log levels,
-`utl::debug()`, `utl::info()` and `utl::error()`:
+`utl::log_debug()`, `utl::log_info()` and `utl::log_error()`:
 ```c++
 #include "utl/logging.h"
 
-utl::info("MyCtx", "Simple message");
+utl::log_info("MyCtx", "Simple message");
 ```
 
 The first parameter is the **context**, that provides an information of the origin of the log line inside MOTIS code.
@@ -36,12 +36,12 @@ error
 You can insert variables in the message by using `{}` and passing them as extra arguments
 (formatting is performed by the [fmt](https://fmt.dev>) library):
 ```c++
-utl::info("MyCtx", "String={} Int={}", "Hello", 42);
+utl::log_info("MyCtx", "String={} Int={}", "Hello", 42);
 ```
 
 You can specify **metadata** using `.attrs()`:
 ```c++
-utl::info("MyCtx", "Message").attrs({{"key1", "value1"}, {"key2", "value2"}});
+utl::log_info("MyCtx", "Message").attrs({{"key1", "value1"}, {"key2", "value2"}});
 ```
 
 ### API details
@@ -50,17 +50,17 @@ utl::info("MyCtx", "Message").attrs({{"key1", "value1"}, {"key2", "value2"}});
 :members:
 :::
 
-:::{doxygenstruct} utl::debug
+:::{doxygenstruct} utl::log_debug
 :no-link:
 :members:
 :::
 
-:::{doxygenstruct} utl::info
+:::{doxygenstruct} utl::log_info
 :no-link:
 :members:
 :::
 
-:::{doxygenstruct} utl::error
+:::{doxygenstruct} utl::log_error
 :no-link:
 :members:
 :::
@@ -68,5 +68,5 @@ utl::info("MyCtx", "Message").attrs({{"key1", "value1"}, {"key2", "value2"}});
 :::{note}
 Those logging function are an exception to the rule that, in MOTIS,
 we use [Aggregate Initialization](https://en.cppreference.com/w/cpp/language/aggregate_initialization) wherever possible,
-but here we do not want to use `utl::info{...}`.
+but here we do not want to use `utl::log_info{...}`.
 :::
