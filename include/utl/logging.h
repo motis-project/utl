@@ -94,19 +94,19 @@ struct log {
 
 /// Produce a new DEBUG log line
 template <typename... Args>
-struct debug : public log<log_level::debug, Args...> {
+struct log_debug : public log<log_level::debug, Args...> {
   using log<log_level::debug, Args...>::log;
 };
 
 /// Produce a new INFO log line
 template <typename... Args>
-struct info : public log<log_level::info, Args...> {
+struct log_info : public log<log_level::info, Args...> {
   using log<log_level::info, Args...>::log;
 };
 
 /// Produce a new ERROR log line
 template <typename... Args>
-struct error : public log<log_level::error, Args...> {
+struct log_error : public log<log_level::error, Args...> {
   using log<log_level::error, Args...>::log;
 };
 
@@ -115,16 +115,16 @@ struct error : public log<log_level::error, Args...> {
 // which has a default value:
 
 template <typename... Args>
-debug(const char* ctx, fmt::format_string<Args...>,
-      Args&&... args) -> debug<Args...>;
+log_debug(const char* ctx, fmt::format_string<Args...>,
+          Args&&... args) -> log_debug<Args...>;
 
 template <typename... Args>
-info(const char* ctx, fmt::format_string<Args...>,
-     Args&&... args) -> info<Args...>;
+log_info(const char* ctx, fmt::format_string<Args...>,
+         Args&&... args) -> log_info<Args...>;
 
 template <typename... Args>
-error(const char* ctx, fmt::format_string<Args...>,
-      Args&&... args) -> error<Args...>;
+log_error(const char* ctx, fmt::format_string<Args...>,
+          Args&&... args) -> log_error<Args...>;
 
 }  // namespace utl
 

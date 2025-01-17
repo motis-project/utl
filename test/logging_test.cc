@@ -7,7 +7,7 @@ using ::testing::MatchesRegex;
 
 TEST(log, can_send_info_msg) {
   testing::internal::CaptureStderr();
-  utl::info("MyCtx", "Message");
+  utl::log_info("MyCtx", "Message");
   EXPECT_THAT(
       testing::internal::GetCapturedStderr(),
       MatchesRegex(
@@ -16,7 +16,7 @@ TEST(log, can_send_info_msg) {
 
 TEST(log, can_send_debug_msg) {
   testing::internal::CaptureStderr();
-  utl::debug("MyCtx", "Message");
+  utl::log_debug("MyCtx", "Message");
   EXPECT_THAT(
       testing::internal::GetCapturedStderr(),
       MatchesRegex(
@@ -25,7 +25,7 @@ TEST(log, can_send_debug_msg) {
 
 TEST(log, can_send_error_msg) {
   testing::internal::CaptureStderr();
-  utl::error("MyCtx", "Message");
+  utl::log_error("MyCtx", "Message");
   EXPECT_THAT(
       testing::internal::GetCapturedStderr(),
       MatchesRegex(
@@ -35,7 +35,7 @@ TEST(log, can_send_error_msg) {
 TEST(log, can_format_extra_params) {
   testing::internal::CaptureStderr();
   auto const value = 42;
-  utl::info("MyCtx", "String={} Int={}", "Hello", value);
+  utl::log_info("MyCtx", "String={} Int={}", "Hello", value);
   EXPECT_THAT(testing::internal::GetCapturedStderr(),
               MatchesRegex(".+T.+Z \\[info\\] \\[logging.+:.+\\] \\[MyCtx\\] "
                            "String=Hello Int=42\n"));
@@ -43,7 +43,7 @@ TEST(log, can_format_extra_params) {
 
 TEST(log, can_have_optional_attrs) {
   testing::internal::CaptureStderr();
-  utl::info("MyCtx", "Message").attrs({{"key", "value"}});
+  utl::log_info("MyCtx", "Message").attrs({{"key", "value"}});
   EXPECT_THAT(
       testing::internal::GetCapturedStderr(),
       MatchesRegex(

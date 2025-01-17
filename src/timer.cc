@@ -6,7 +6,7 @@ namespace utl {
 
 scoped_timer::scoped_timer(std::string name)
     : name_{std::move(name)}, start_{std::chrono::steady_clock::now()} {
-  utl::info("scoped_timer", "[{}] starting", name);
+  utl::log_info("scoped_timer", "[{}] starting", name);
 }
 
 scoped_timer::~scoped_timer() {
@@ -15,7 +15,7 @@ scoped_timer::~scoped_timer() {
   double t =
       static_cast<double>(duration_cast<microseconds>(stop - start_).count()) /
       1000.0;
-  utl::info("scoped_timer", "[{}] finished ({}ms)", name_, t);
+  utl::log_info("scoped_timer", "[{}] finished ({}ms)", name_, t);
 }
 
 void scoped_timer::print(std::string_view const message) const {
@@ -24,12 +24,12 @@ void scoped_timer::print(std::string_view const message) const {
   double const t =
       static_cast<double>(duration_cast<microseconds>(stop - start_).count()) /
       1000.0;
-  utl::info("scoped_timer", "[{}] {} ({}ms)", name_, message, t);
+  utl::log_info("scoped_timer", "[{}] {} ({}ms)", name_, message, t);
 }
 
 manual_timer::manual_timer(std::string name)
     : name_{std::move(name)}, start_{std::chrono::steady_clock::now()} {
-  utl::info("scoped_timer", "[{}] starting", name_);
+  utl::log_info("scoped_timer", "[{}] starting", name_);
 }
 
 void manual_timer::stop_and_print() const {
@@ -38,7 +38,7 @@ void manual_timer::stop_and_print() const {
   double t =
       static_cast<double>(duration_cast<microseconds>(stop - start_).count()) /
       1000.0;
-  utl::info("scoped_timer", "[{}] finished ({}ms)", name_, t);
+  utl::log_info("scoped_timer", "[{}] finished ({}ms)", name_, t);
 }
 
 void manual_timer::print(std::string_view const message) const {
@@ -47,7 +47,7 @@ void manual_timer::print(std::string_view const message) const {
   double const t =
       static_cast<double>(duration_cast<microseconds>(stop - start_).count()) /
       1000.0;
-  utl::info("scoped_timer", "[{}] {} ({}ms)", name_, message, t);
+  utl::log_info("scoped_timer", "[{}] {} ({}ms)", name_, message, t);
 }
 
 }  // namespace utl
