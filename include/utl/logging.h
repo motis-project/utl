@@ -16,6 +16,14 @@
 
 namespace utl {
 
+#if defined(_WIN32)
+auto const FILE_SEPARATOR = '\\';
+auto const MODULE_PREFIX = "\\motis-";
+#else
+auto const FILE_SEPARATOR = '/';
+auto const MODULE_PREFIX = "/motis-";
+#endif
+
 /// Log level
 enum class log_level { debug, info, error };
 
@@ -57,24 +65,23 @@ struct log {
 
   ~log() {
     if (LogLevel >= utl::s_verbosity) {
-#if defined(_WIN32)
-      auto const base_file_name = strrchr(loc_.file_name(), '\\')
-                                      ? strrchr(loc_.file_name(), '\\') + 1
-                                      : loc_.file_name();
-#else
       // On MacOS, due to a bug with Clang 15, the wrong filename
       // is retrieved (logging.h instead of the calling file):
       // https://github.com/llvm/llvm-project/issues/56379
-      auto const base_file_name = strrchr(loc_.file_name(), '/')
-                                      ? strrchr(loc_.file_name(), '/') + 1
-                                      : loc_.file_name();
-#endif
+      auto const char_index = strrchr(loc_.file_name(), FILE_SEPARATOR);
+      auto const base_file_name =
+          char_index ? char_index + 1 : loc_.file_name();
+      auto const file_name = std::string(loc_.file_name());
+      auto const mod_start = file_name.find(MODULE_PREFIX) + 7;
+      auto const mod_end = file_name.find(FILE_SEPARATOR, mod_start);
+      auto const mod_name = file_name.substr(mod_start, mod_end - mod_start);
       fmt::print(
-          std::clog, "{time} [{level}] [{file}:{line} {fn}] [{ctx}] {msg}\n",
+          std::clog,
+          "{time} [{level}] [{mod}] [{file}:{line} {fn}] [{ctx}] {msg}\n",
           fmt::arg("time", now()), fmt::arg("level", to_str(LogLevel)),
-          fmt::arg("file", base_file_name), fmt::arg("line", loc_.line()),
-          fmt::arg("fn", loc_.function_name()), fmt::arg("ctx", ctx_),
-          fmt::arg("msg", msg_));
+          fmt::arg("mod", mod_name), fmt::arg("file", base_file_name),
+          fmt::arg("line", loc_.line()), fmt::arg("fn", loc_.function_name()),
+          fmt::arg("ctx", ctx_), fmt::arg("msg", msg_));
     }
   }
 

@@ -28,6 +28,7 @@ myst_enable_extensions = [ # Doc: https://myst-parser.readthedocs.io/en/latest/s
     "deflist",         # allow to use definition lists
     "html_admonition", # enable parsing of <div class="admonition"> HTML blocks
     "html_image",      # convert any isolated img tags to the internal representation used in Sphinx
+    "linkify",         # automatically identify “bare” web URLs and add hyperlinks
     "replacements",    # automatically convert some common typographic texts
     "smartquotes",     # automatically convert standard quotations to their opening/closing variants
     "tasklist",        # support for markdown list items starting with [ ] or [x]
