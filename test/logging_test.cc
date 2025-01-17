@@ -5,26 +5,47 @@
 
 using ::testing::MatchesRegex;
 
-TEST(log, basic_usage) {
+TEST(log, can_send_info_msg) {
   testing::internal::CaptureStderr();
-  logF(info, "Simple message");
+  utl::info("MyCtx", "Message");
   EXPECT_THAT(
       testing::internal::GetCapturedStderr(),
       MatchesRegex(
-          ".+T.+Z \\[info\\] \\[logging_test.cc:10\\] Simple message\n"));
+          ".+T.+Z \\[info\\] \\[logging.+:.+\\] \\[MyCtx\\] Message\n"));
 };
 
-TEST(log, specifying_ctx) {
+TEST(log, can_send_debug_msg) {
   testing::internal::CaptureStderr();
-  log(info, "MyCtx", "Message");
-  EXPECT_THAT(testing::internal::GetCapturedStderr(),
-              MatchesRegex(".+T.+Z \\[info\\] \\[MyCtx\\] Message\n"));
-};
-
-TEST(log, formatting_parameters) {
-  testing::internal::CaptureStderr();
-  log(info, "MyCtx", "String={} Int={}", "Hello", 42);
+  utl::debug("MyCtx", "Message");
   EXPECT_THAT(
       testing::internal::GetCapturedStderr(),
-      MatchesRegex(".+T.+Z \\[info\\] \\[MyCtx\\] String=Hello Int=42\n"));
+      MatchesRegex(
+          ".+T.+Z \\[debug\\] \\[logging.+:.+\\] \\[MyCtx\\] Message\n"));
+};
+
+TEST(log, can_send_error_msg) {
+  testing::internal::CaptureStderr();
+  utl::error("MyCtx", "Message");
+  EXPECT_THAT(
+      testing::internal::GetCapturedStderr(),
+      MatchesRegex(
+          ".+T.+Z \\[error\\] \\[logging.+:.+\\] \\[MyCtx\\] Message\n"));
+};
+
+TEST(log, can_format_extra_params) {
+  testing::internal::CaptureStderr();
+  auto const value = 42;
+  utl::info("MyCtx", "String={} Int={}", "Hello", value);
+  EXPECT_THAT(testing::internal::GetCapturedStderr(),
+              MatchesRegex(".+T.+Z \\[info\\] \\[logging.+:.+\\] \\[MyCtx\\] "
+                           "String=Hello Int=42\n"));
+};
+
+TEST(log, can_have_optional_attrs) {
+  testing::internal::CaptureStderr();
+  utl::info("MyCtx", "Message").attrs({{"key", "value"}});
+  EXPECT_THAT(
+      testing::internal::GetCapturedStderr(),
+      MatchesRegex(
+          ".+T.+Z \\[info\\] \\[logging.+:.+\\] \\[MyCtx\\] Message\n"));
 };

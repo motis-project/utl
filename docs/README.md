@@ -6,7 +6,8 @@ The documentation is then published to GitHub Pages: <https://motis-project.gith
 [breathe](https://breathe.readthedocs.io) is used to insert Doxygen doc snippets
 into the Sphinx-generated documentation.
 
-List of supported directives: <https://breathe.readthedocs.io/en/latest/directives.html#directives>
+List of supported directives: <https://breathe.readthedocs.io/en/latest/directives.html#directives>.
+They have to be inserted using [`myst-parser` directive syntax for Markdown](https://myst-parser.readthedocs.io/en/latest/syntax/roles-and-directives.html).
 
 ## Installing the necessary tools
 

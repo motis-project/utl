@@ -15,10 +15,25 @@ html_show_copyright = False
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 templates_path = ['_templates']
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
-extensions = ['breathe']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', 'README.md']
+extensions = [
+  'breathe',    # allow inserting Doxygen snippets: https://breathe.readthedocs.io
+  'myst_parser' # allow using Markdown instead of reStructuredText: https://www.sphinx-doc.org/en/master/usage/markdown.html
+]
 
-# Breathe Configuration
+# myst-parser configuration:
+myst_enable_extensions = [ # Doc: https://myst-parser.readthedocs.io/en/latest/syntax/optional.html
+    "attrs_inline",    # enable parsing of inline attributes after certain inline syntaxes
+    "colon_fence",     # use ::: delimiters to denote directives, instead of ```
+    "deflist",         # allow to use definition lists
+    "html_admonition", # enable parsing of <div class="admonition"> HTML blocks
+    "html_image",      # convert any isolated img tags to the internal representation used in Sphinx
+    "replacements",    # automatically convert some common typographic texts
+    "smartquotes",     # automatically convert standard quotations to their opening/closing variants
+    "tasklist",        # support for markdown list items starting with [ ] or [x]
+]
+
+# breathe configuration;
 breathe_projects = {
     'utl': './xml/',
 }
