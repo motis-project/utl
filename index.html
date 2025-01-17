@@ -46,10 +46,7 @@
 <li><a class="reference internal" href="#">MOTIS utl module documentation</a><ul>
 <li><a class="reference internal" href="#logging">Logging</a><ul>
 <li><a class="reference internal" href="#advanced-usage">Advanced usage</a></li>
-<li><a class="reference internal" href="#api-details">API details</a><ul>
-<li><a class="reference internal" href="#_CPPv4IDpEN3utl3logEvK9log_levelPKcN3fmt13format_stringIDp4ArgsEEDpRR4Args"><code class="docutils literal notranslate"><span class="pre">log()</span></code></a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#api-details">API details</a></li>
 </ul>
 </li>
 </ul>
@@ -72,7 +69,7 @@
       <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">MOTIS utl module documentation</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/index.md.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -83,16 +80,23 @@
   <section id="motis-utl-module-documentation">
 <h1>MOTIS utl module documentation<a class="headerlink" href="#motis-utl-module-documentation" title="Link to this heading"></a></h1>
 <p>MOTIS is an open-source software platform for efficient planning and routing in multi-modal transportation systems.
-GitHub main repository: <a class="reference external" href="https://github.com/motis-project/motis">https://github.com/motis-project/motis</a></p>
+GitHub main repository: https://github.com/motis-project/motis</p>
 <p>This is the documentation for the <strong>utl</strong> (utility) module.</p>
+<div class="toctree-wrapper compound">
+</div>
 <section id="logging">
 <h2>Logging<a class="headerlink" href="#logging" title="Link to this heading"></a></h2>
-<p>The simplest way to produce log lines is to use the <code class="docutils literal notranslate"><span class="pre">logF()</span></code> macro:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">logF</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="s2">&quot;Simple message&quot;</span><span class="p">);</span>
+<p>The simplest way to produce log lines is to use the <code class="docutils literal notranslate"><span class="pre">utl:log()</span></code> function,
+or the wrapping functions for the various log levels,
+<code class="docutils literal notranslate"><span class="pre">utl::debug()</span></code>, <code class="docutils literal notranslate"><span class="pre">utl::info()</span></code> and <code class="docutils literal notranslate"><span class="pre">utl::error()</span></code>:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;utl/logging.h&quot;</span>
+
+<span class="n">utl</span><span class="o">::</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;MyCtx&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Simple message&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
+<p>The first parameter is the <strong>context</strong>, that provides an information of the origin of the log line inside MOTIS code.</p>
 <p>The following log levels are supported:</p>
-<dl class="simple">
+<dl class="simple myst">
 <dt>debug</dt><dd><p>Messages that contain information only useful when debugging MOTIS</p>
 </dd>
 <dt>info</dt><dd><p>Important information about a normal behavior of the program</p>
@@ -102,25 +106,28 @@ GitHub main repository: <a class="reference external" href="https://github.com/m
 </dl>
 <section id="advanced-usage">
 <h3>Advanced usage<a class="headerlink" href="#advanced-usage" title="Link to this heading"></a></h3>
-<p>By default, <code class="docutils literal notranslate"><span class="pre">logF()</span></code> inserts the current filename &amp; line number in the log line.
-However, you can use <code class="docutils literal notranslate"><span class="pre">log()</span></code> to specify your own <strong>context</strong></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">log</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="s2">&quot;http.get.resource&quot;</span><span class="p">,</span> <span class="s2">&quot;Details&quot;</span><span class="p">);</span>
+<p>You can insert variables in the message by using <code class="docutils literal notranslate"><span class="pre">{}</span></code> and passing them as extra arguments
+(formatting is performed by the <a class="reference external" href="https://fmt.dev%3E">fmt</a> library):</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">utl</span><span class="o">::</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;MyCtx&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;String={} Int={}&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Hello&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">42</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>You can also insert variables in the message by using <code class="docutils literal notranslate"><span class="pre">{}</span></code> and passing them as extra arguments:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">logF</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="s2">&quot;String=</span><span class="si">{}</span><span class="s2"> Int=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;Hello&quot;</span><span class="p">,</span> <span class="mi">42</span><span class="p">);</span>
+<p>You can specify <strong>metadata</strong> using <code class="docutils literal notranslate"><span class="pre">.attrs()</span></code>:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">utl</span><span class="o">::</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;MyCtx&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Message&quot;</span><span class="p">).</span><span class="n">attrs</span><span class="p">({{</span><span class="s">&quot;key1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;value1&quot;</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="s">&quot;key2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;value2&quot;</span><span class="p">}});</span>
 </pre></div>
 </div>
 </section>
 <section id="api-details">
 <h3>API details<a class="headerlink" href="#api-details" title="Link to this heading"></a></h3>
-<p>Under the hood, the <code class="docutils literal notranslate"><span class="pre">log()</span></code> &amp; <code class="docutils literal notranslate"><span class="pre">logF()</span></code> macros use the <code class="docutils literal notranslate"><span class="pre">utl::log()</span></code> function:</p>
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4IDpEN3utl3logEvK9log_levelPKcN3fmt13format_stringIDp4ArgsEEDpRR4Args">
-<span id="_CPPv3IDpEN3utl3logEK9log_levelPKcN3fmt13format_stringIDp4ArgsEEDpRR4Args"></span><span id="_CPPv2IDpEN3utl3logEK9log_levelPKcN3fmt13format_stringIDp4ArgsEEDpRR4Args"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="sig-name descname"><span class="n"><span class="pre">Args</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceutl_1a6342ac8f55741992bb20d3ce5ec880f6"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">utl</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">log</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">log_level</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">level</span></span>, <span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">ctx</span></span>, <span class="n"><span class="pre">fmt</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">format_string</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4IDpEN3utl3logEvK9log_levelPKcN3fmt13format_stringIDp4ArgsEEDpRR4Args" title="utl::log::Args"><span class="n"><span class="pre">Args</span></span></a><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fmt_str</span></span>, <a class="reference internal" href="#_CPPv4IDpEN3utl3logEvK9log_levelPKcN3fmt13format_stringIDp4ArgsEEDpRR4Args" title="utl::log::Args"><span class="n"><span class="pre">Args</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">...</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">args</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4IDpEN3utl3logEvK9log_levelPKcN3fmt13format_stringIDp4ArgsEEDpRR4Args" title="Link to this definition"></a><br /></dt>
-<dd><p>Produce a new log line at the given <code class="docutils literal notranslate"><span class="pre">level</span></code>, with the given prefix <code class="docutils literal notranslate"><span class="pre">ctx</span></code> and message </p>
-</dd></dl>
-
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>doxygenfunction: Cannot find function “utl::log” in doxygen xml output for project “utl” from directory: ./xml/</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Those logging function are an exception to the rule that, in MOTIS,
+we use <a class="reference external" href="https://en.cppreference.com/w/cpp/language/aggregate_initialization">Aggregate Initialization</a> wherever possible,
+but here we do not want to use <code class="docutils literal notranslate"><span class="pre">utl::info{...}</span></code>.</p>
+</div>
 </section>
 </section>
 </section>
