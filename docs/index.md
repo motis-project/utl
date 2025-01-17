@@ -16,8 +16,10 @@ or the wrapping functions for the various log levels,
 ```c++
 #include "utl/logging.h"
 
-utl::info("Simple message");
+utl::info("MyCtx", "Simple message");
 ```
+
+The first parameter is the **context**, that provides an information of the origin of the log line inside MOTIS code.
 
 The following log levels are supported:
 
@@ -34,17 +36,12 @@ error
 You can insert variables in the message by using `{}` and passing them as extra arguments
 (formatting is performed by the [fmt](https://fmt.dev>) library):
 ```c++
-utl::info("String={} Int={}", "Hello", 42);
+utl::info("MyCtx", "String={} Int={}", "Hello", 42);
 ```
 
-You can specify a **context** string:
+You can specify **metadata** using `.attrs()`:
 ```c++
-utl::info("Message").ctx("http.get.resource");
-```
-
-You can specify **metadata**:
-```c++
-utl::info("Message").metadata("key", "value");
+utl::info("MyCtx", "Message").attrs({{"key1", "value1"}, {"key2", "value2"}});
 ```
 
 ### API details

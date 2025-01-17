@@ -17,18 +17,18 @@
 namespace utl {
 
 /// Log level
-enum class llvl { debug, info, error };
+enum class log_level { debug, info, error };
 
-constexpr char const* to_str(llvl const level) {
+constexpr char const* to_str(log_level const level) {
   switch (level) {
-    case llvl::debug: return "debug";
-    case llvl::info: return "info";
-    case llvl::error: return "error";
+    case log_level::debug: return "debug";
+    case log_level::info: return "info";
+    case log_level::error: return "error";
   }
   return "";
 }
 
-static llvl s_verbosity;
+static log_level s_verbosity;
 
 inline std::string now() {
   using clock = std::chrono::system_clock;
@@ -46,12 +46,13 @@ inline std::string now() {
 }
 
 /// Produce a new log line at the given `level`, with the given message
-template <llvl LogLevel, typename... Args>
+template <log_level LogLevel, typename... Args>
 struct log {
-  log(fmt::format_string<Args...> fmt_str, const Args&&... args,
+  log(const char* ctx, fmt::format_string<Args...> fmt_str,
+      const Args&&... args,
       std::source_location const& loc = std::source_location::current())
       : loc_{loc},
-        ctx_{nullptr},
+        ctx_{ctx},
         msg_{fmt::format(fmt_str, std::forward<Args>(args)...)} {}
 
   ~log() {
@@ -61,50 +62,48 @@ struct log {
                                      ? strrchr(loc_.file_name(), '\\') + 1
                                      : loc_.file_name();
 #else
+      // On MacOS, due to a bug with Clang 15, the wrong filename
+      // is retrieved (logging.h instead of the calling file):
+      // https://github.com/llvm/llvm-project/issues/56379
       const char* baseFileName = strrchr(loc_.file_name(), '/')
                                      ? strrchr(loc_.file_name(), '/') + 1
                                      : loc_.file_name();
 #endif
-      fmt::print(std::clog, "{time} [{level}] [{file}:{line}]{ctx} {msg}\n",
+      fmt::print(std::clog,
+                 "{time} [{level}] [{file}:{line} {fn}] [{ctx}] {msg}\n",
                  fmt::arg("time", now()), fmt::arg("level", to_str(LogLevel)),
                  fmt::arg("file", baseFileName), fmt::arg("line", loc_.line()),
-                 //  fmt::arg("fn", loc_.function_name()),
-                 fmt::arg("ctx", ctx_ ? (std::string(" [") + std::string(ctx_) +
-                                         std::string("]"))
-                                      : ""),
+                 fmt::arg("fn", loc_.function_name()), fmt::arg("ctx", ctx_),
                  fmt::arg("msg", msg_));
     }
   }
 
-  void ctx(char const* ctx) { ctx_ = ctx; }
-
-  void metadata(
+  void attrs(
       std::initializer_list<std::pair<std::string_view, std::string_view> >&&
-          metadata) {
-    metadata_ = std::move(metadata);
+          attrs) {
+    attrs_ = std::move(attrs);
   }
 
-  llvl level_;
+  log_level level_;
   std::source_location loc_;
   char const* ctx_;
   std::string msg_;
-  std::initializer_list<std::pair<std::string_view, std::string_view> >
-      metadata_;
+  std::initializer_list<std::pair<std::string_view, std::string_view> > attrs_;
 };
 
 template <typename... Args>
-struct debug : public log<llvl::debug, Args...> {
-  using log<llvl::debug, Args...>::log;
+struct debug : public log<log_level::debug, Args...> {
+  using log<log_level::debug, Args...>::log;
 };
 
 template <typename... Args>
-struct info : public log<llvl::info, Args...> {
-  using log<llvl::info, Args...>::log;
+struct info : public log<log_level::info, Args...> {
+  using log<log_level::info, Args...>::log;
 };
 
 template <typename... Args>
-struct error : public log<llvl::error, Args...> {
-  using log<llvl::error, Args...>::log;
+struct error : public log<log_level::error, Args...> {
+  using log<log_level::error, Args...>::log;
 };
 
 // Template deduction guides, to help the compiler distinguish between
@@ -112,13 +111,16 @@ struct error : public log<llvl::error, Args...> {
 // which has a default value:
 
 template <typename... Args>
-debug(fmt::format_string<Args...>, Args&&... args) -> debug<Args...>;
+debug(const char* ctx, fmt::format_string<Args...>,
+      Args&&... args) -> debug<Args...>;
 
 template <typename... Args>
-info(fmt::format_string<Args...>, Args&&... args) -> info<Args...>;
+info(const char* ctx, fmt::format_string<Args...>,
+     Args&&... args) -> info<Args...>;
 
 template <typename... Args>
-error(fmt::format_string<Args...>, Args&&... args) -> error<Args...>;
+error(const char* ctx, fmt::format_string<Args...>,
+      Args&&... args) -> error<Args...>;
 
 }  // namespace utl
 
