@@ -45,3 +45,23 @@ breathe_default_project = 'utl'
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 html_logo = './motis-logo.svg'
+html_theme_options = {
+    'style_external_links': True,
+}
+
+from pathlib import Path
+from docutils import nodes
+from breathe.renderer.sphinxrenderer import SphinxRenderer
+
+URL_TEMPLATE = "https://github.com/motis-project/utl/blob/master/{file_path}#L{line}"
+REPO_ROOT_DIR = Path(__file__).parent.parent
+
+def create_doxygen_target(self, node):
+    loc = node.location
+    file_path = loc.file[len(str(REPO_ROOT_DIR))+1:]
+    url = URL_TEMPLATE.format(file_path=file_path, line=loc.line)
+    title = f"{file_path} on line {loc.line}"
+    return [nodes.reference("", "", refuri=url, reftitle=title)]
+
+# Monkey patching this method:
+SphinxRenderer.create_doxygen_target = create_doxygen_target
