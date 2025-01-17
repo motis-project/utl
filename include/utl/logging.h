@@ -45,7 +45,7 @@ inline std::string now() {
   return ss.str();
 }
 
-/// Produce a new log line at the given `level`, with the given message
+/// Produce a new log line at the given `level`.
 template <log_level LogLevel, typename... Args>
 struct log {
   log(const char* ctx, fmt::format_string<Args...> fmt_str,
@@ -91,16 +91,19 @@ struct log {
   std::initializer_list<std::pair<std::string_view, std::string_view> > attrs_;
 };
 
+/// Produce a new DEBUG log line
 template <typename... Args>
 struct debug : public log<log_level::debug, Args...> {
   using log<log_level::debug, Args...>::log;
 };
 
+/// Produce a new INFO log line
 template <typename... Args>
 struct info : public log<log_level::info, Args...> {
   using log<log_level::info, Args...>::log;
 };
 
+/// Produce a new ERROR log line
 template <typename... Args>
 struct error : public log<log_level::error, Args...> {
   using log<log_level::error, Args...>::log;
