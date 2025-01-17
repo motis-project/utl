@@ -78,6 +78,7 @@ struct log {
     }
   }
 
+  /// Add key-values metadata
   void attrs(
       std::initializer_list<std::pair<std::string_view, std::string_view> >&&
           attrs) {

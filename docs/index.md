@@ -46,15 +46,23 @@ utl::info("MyCtx", "Message").attrs({{"key1", "value1"}, {"key2", "value2"}});
 
 ### API details
 :::{doxygenstruct} utl::log
+:no-link:
+:members:
 :::
 
 :::{doxygenstruct} utl::debug
+:no-link:
+:members:
 :::
 
 :::{doxygenstruct} utl::info
+:no-link:
+:members:
 :::
 
 :::{doxygenstruct} utl::error
+:no-link:
+:members:
 :::
 
 :::{note}
