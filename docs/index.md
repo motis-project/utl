@@ -4,10 +4,10 @@ GitHub main repository: https://github.com/motis-project/motis
 
 This is the documentation for the **utl** (utility) module.
 
-```{toctree}
+:::{toctree}
 :maxdepth: 2
 :caption: Contents:
-```
+:::
 
 ## Logging
 The simplest way to produce log lines is to use the `utl:log()` function,
@@ -45,5 +45,11 @@ utl::info("MyCtx", "Message").attrs({{"key1", "value1"}, {"key2", "value2"}});
 ```
 
 ### API details
-```{doxygenfunction} utl::log
-```
+:::{doxygenfunction} utl::log
+:::
+
+:::{note}
+Those logging function are an exception to the rule that, in MOTIS,
+we use [Aggregate Initialization](https://en.cppreference.com/w/cpp/language/aggregate_initialization) wherever possible,
+but here we do not want to use `utl::info{...}`.
+:::

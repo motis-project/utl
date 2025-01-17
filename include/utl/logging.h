@@ -58,23 +58,23 @@ struct log {
   ~log() {
     if (LogLevel >= utl::s_verbosity) {
 #if defined(_WIN32)
-      const char* baseFileName = strrchr(loc_.file_name(), '\\')
-                                     ? strrchr(loc_.file_name(), '\\') + 1
-                                     : loc_.file_name();
+      auto const base_file_name = strrchr(loc_.file_name(), '\\')
+                                      ? strrchr(loc_.file_name(), '\\') + 1
+                                      : loc_.file_name();
 #else
       // On MacOS, due to a bug with Clang 15, the wrong filename
       // is retrieved (logging.h instead of the calling file):
       // https://github.com/llvm/llvm-project/issues/56379
-      const char* baseFileName = strrchr(loc_.file_name(), '/')
-                                     ? strrchr(loc_.file_name(), '/') + 1
-                                     : loc_.file_name();
+      auto const base_file_name = strrchr(loc_.file_name(), '/')
+                                      ? strrchr(loc_.file_name(), '/') + 1
+                                      : loc_.file_name();
 #endif
-      fmt::print(std::clog,
-                 "{time} [{level}] [{file}:{line} {fn}] [{ctx}] {msg}\n",
-                 fmt::arg("time", now()), fmt::arg("level", to_str(LogLevel)),
-                 fmt::arg("file", baseFileName), fmt::arg("line", loc_.line()),
-                 fmt::arg("fn", loc_.function_name()), fmt::arg("ctx", ctx_),
-                 fmt::arg("msg", msg_));
+      fmt::print(
+          std::clog, "{time} [{level}] [{file}:{line} {fn}] [{ctx}] {msg}\n",
+          fmt::arg("time", now()), fmt::arg("level", to_str(LogLevel)),
+          fmt::arg("file", base_file_name), fmt::arg("line", loc_.line()),
+          fmt::arg("fn", loc_.function_name()), fmt::arg("ctx", ctx_),
+          fmt::arg("msg", msg_));
     }
   }
 

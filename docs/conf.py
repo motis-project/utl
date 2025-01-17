@@ -24,6 +24,7 @@ extensions = [
 # myst-parser configuration:
 myst_enable_extensions = [ # Doc: https://myst-parser.readthedocs.io/en/latest/syntax/optional.html
     "attrs_inline",    # enable parsing of inline attributes after certain inline syntaxes
+    "colon_fence",     # use ::: delimiters to denote directives, instead of ```
     "deflist",         # allow to use definition lists
     "html_admonition", # enable parsing of <div class="admonition"> HTML blocks
     "html_image",      # convert any isolated img tags to the internal representation used in Sphinx
