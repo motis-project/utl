@@ -87,11 +87,6 @@ jobs:
       - uses: seanmiddleditch/gha-setup-ninja@master
         if: matrix.config.os == 'macos-latest'
 
-      - name: Install doxygen 🔧
-        uses: ssciwr/doxygen-install@v1
-        with:
-          version: "1.13.2"
-
       # ==== INSTALL ====
       - name: Update APT
         if: matrix.config.os != 'macos-latest'
@@ -152,20 +147,19 @@ jobs:
         with:
           python-version: 3.13
 
-      - name: Install doxygen 🔧
+      - name: Install doxygen ⬇️
         uses: ssciwr/doxygen-install@v1
         with:
           version: "1.13.2"
 
-      - name: Install Python dependencies ⚙️
-        run: pip install -r docs/requirements.txt
+      - name: Install ninja ⚙️ ⬇️
+        uses: seanmiddleditch/gha-setup-ninja@master
+
+      - name: Invoke CMake to install deps ⚙️
+        run: cmake -G Ninja -S . -B build
 
       - name: Generate HTML documentation 🏗️
-        run: |
-          cd docs
-          doxygen
-          sphinx-build -M html . _build
-          mv _build/html ../public
+        run: deps/docs/build_docs.sh
 
       - name: Deploy documentation onto GitHub Pages 🚀
         if: github.ref == 'refs/heads/master'

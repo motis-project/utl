@@ -29,5 +29,3 @@ target_link_libraries(utl-test utl gtest gmock gtest_main)
 if (NOT MSVC)
   target_compile_options(utl-test PRIVATE -Wall -Wextra -Werror)
 endif()
-
-add_subdirectory ("docs")
