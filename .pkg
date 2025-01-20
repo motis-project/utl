@@ -1,7 +1,7 @@
 [docs]
   url=git@github.com:motis-project/docs.git
   branch=main
-  commit=6f234581cab199d66d070e4de8a32ddba1967b38
+  commit=75dc89a53e9c2d78574fc0ffda698e69f1682ed2
 [googletest]
   url=git@github.com:motis-project/googletest.git
   branch=master

@@ -3,6 +3,7 @@
 /.idea
 /deps
 /docs/conf.py
+/docs/Doxyfile
 /docs/html
 /docs/xml
 /public
