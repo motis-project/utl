@@ -1,3 +1,5 @@
+#include <string_view>
+
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -39,6 +41,15 @@ TEST(log, can_format_extra_params) {
   EXPECT_THAT(testing::internal::GetCapturedStderr(),
               MatchesRegex(".+T.+Z \\[info\\] \\[logging.+:.+\\] \\[MyCtx\\] "
                            "String=Hello Int=42\n"));
+};
+
+TEST(log, accept_string_view_as_extra_param) {
+  testing::internal::CaptureStderr();
+  std::string_view str{"world"};
+  utl::log_info("MyCtx", "Hello {}!", str);
+  EXPECT_THAT(testing::internal::GetCapturedStderr(),
+              MatchesRegex(".+T.+Z \\[info\\] \\[logging.+:.+\\] \\[MyCtx\\] "
+                           "Hello world!\n"));
 };
 
 TEST(log, can_have_optional_attrs) {
