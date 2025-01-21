@@ -48,8 +48,7 @@ inline std::string now() {
 /// Produce a new log line at the given `level`.
 template <log_level LogLevel, typename... Args>
 struct log {
-  log(const char* ctx, fmt::format_string<Args...> fmt_str,
-      const Args&&... args,
+  log(const char* ctx, fmt::format_string<Args...> fmt_str, Args&&... args,
       std::source_location const& loc = std::source_location::current())
       : loc_{loc},
         ctx_{ctx},
