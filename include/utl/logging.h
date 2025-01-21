@@ -53,7 +53,7 @@ struct log {
       std::source_location const& loc = std::source_location::current())
       : loc_{loc},
         ctx_{ctx},
-        msg_{fmt::format(fmt_str, args...)} {}
+        msg_{fmt::format(fmt_str, std::forward<Args>(args)...)} {}
 
   ~log() {
     if (LogLevel >= utl::s_verbosity) {
