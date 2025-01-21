@@ -49,11 +49,11 @@ inline std::string now() {
 template <log_level LogLevel, typename... Args>
 struct log {
   log(const char* ctx, fmt::format_string<Args...> fmt_str,
-      const Args&&... args,
+      Args&&... args,
       std::source_location const& loc = std::source_location::current())
       : loc_{loc},
         ctx_{ctx},
-        msg_{fmt::format(fmt_str, std::forward<Args>(args)...)} {}
+        msg_{fmt::format(fmt_str, args...)} {}
 
   ~log() {
     if (LogLevel >= utl::s_verbosity) {

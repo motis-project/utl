@@ -52,6 +52,15 @@ TEST(log, accept_string_view_as_extra_param) {
                            "Hello world!\n"));
 };
 
+TEST(log, accept_string_view_as_extra_param_inline) {
+  testing::internal::CaptureStderr();
+  std::string str{"world"};
+  utl::log_info("MyCtx", "Hello {}!", std::string_view{str});
+  EXPECT_THAT(testing::internal::GetCapturedStderr(),
+              MatchesRegex(".+T.+Z \\[info\\] \\[logging.+:.+\\] \\[MyCtx\\] "
+                           "Hello world!\n"));
+};
+
 TEST(log, can_have_optional_attrs) {
   testing::internal::CaptureStderr();
   utl::log_info("MyCtx", "Message").attrs({{"key", "value"}});
