@@ -1,9 +1,5 @@
 #pragma once
 
-#ifdef LOGGING_HEADER
-#include LOGGING_HEADER
-#else
-
 #include <chrono>
 #include <iomanip>
 #include <iostream>
@@ -28,7 +24,7 @@ constexpr char const* to_str(log_level const level) {
   return "";
 }
 
-static log_level s_verbosity;
+extern log_level log_verbosity;
 
 inline std::string now() {
   using clock = std::chrono::system_clock;
@@ -55,7 +51,7 @@ struct log {
         msg_{fmt::format(fmt_str, std::forward<Args>(args)...)} {}
 
   ~log() {
-    if (LogLevel >= utl::s_verbosity) {
+    if (LogLevel >= log_verbosity) {
 #if defined(_WIN32)
       auto const base_file_name = strrchr(loc_.file_name(), '\\')
                                       ? strrchr(loc_.file_name(), '\\') + 1
@@ -126,5 +122,3 @@ log_error(const char* ctx, fmt::format_string<Args...>,
           Args&&... args) -> log_error<Args...>;
 
 }  // namespace utl
-
-#endif  // LOGGING_HEADER
