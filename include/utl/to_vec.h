@@ -7,12 +7,13 @@
 namespace utl {
 
 template <typename Output, typename Container, typename UnaryOperation>
-inline void transform_to(Container&& c, Output& out, UnaryOperation&& op) {
+inline Output& transform_to(Container&& c, Output& out, UnaryOperation&& op) {
   using std::begin;
   using std::end;
   out.reserve(static_cast<std::size_t>(std::distance(begin(c), end(c))));
   std::transform(begin(c), end(c), std::back_inserter(out),
                  std::forward<UnaryOperation>(op));
+  return out;
 }
 
 template <typename Output, typename Container, typename UnaryOperation>
