@@ -64,12 +64,11 @@ struct log {
                                       ? strrchr(loc_.file_name(), '/') + 1
                                       : loc_.file_name();
 #endif
-      fmt::print(
-          std::clog, "{time} [{level}] [{file}:{line} {fn}] [{ctx}] {msg}\n",
-          fmt::arg("time", now()), fmt::arg("level", to_str(LogLevel)),
-          fmt::arg("file", base_file_name), fmt::arg("line", loc_.line()),
-          fmt::arg("fn", loc_.function_name()), fmt::arg("ctx", ctx_),
-          fmt::arg("msg", msg_));
+      fmt::print(std::clog, "{time} [{level}] [{file}:{line}] [{ctx}] {msg}\n",
+                 fmt::arg("time", now()), fmt::arg("level", to_str(LogLevel)),
+                 fmt::arg("file", base_file_name),
+                 fmt::arg("line", loc_.line()), fmt::arg("ctx", ctx_),
+                 fmt::arg("msg", msg_));
     }
   }
 
