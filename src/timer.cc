@@ -6,7 +6,7 @@ namespace utl {
 
 scoped_timer::scoped_timer(std::string name)
     : name_{std::move(name)}, start_{std::chrono::steady_clock::now()} {
-  utl::log_info("scoped_timer", "[{}] starting", name);
+  utl::log_info("scoped_timer", "[{}] starting", name_);
 }
 
 scoped_timer::~scoped_timer() {
