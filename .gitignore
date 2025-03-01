@@ -2,5 +2,11 @@
 *.sublime-*
 /.idea
 /deps
+/docs/conf.py
+/docs/Doxyfile
+/docs/html
+/docs/xml
+/public
 /.vscode
+_build/
 .clang-tidy

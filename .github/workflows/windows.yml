@@ -31,8 +31,15 @@ jobs:
             cmake-opt: -DCMAKE_C_COMPILER=clang-cl -DCMAKE_CXX_COMPILER=clang-cl
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
+
     - uses: seanmiddleditch/gha-setup-ninja@master
+
+    - name: Install doxygen 🔧
+      uses: ssciwr/doxygen-install@v1
+      with:
+        version: "1.13.2"
+
     - uses: ilammy/msvc-dev-cmd@v1
 
     - name: Build
