@@ -99,6 +99,16 @@ inline void parse_value(cstr& s, cista::raw::generic_string& arg) {
 }
 inline void parse_value(cstr& s, cstr& arg) { parse_arg(s, arg); }
 
+template <typename T>
+inline void parse_value(cstr& s, std::optional<T>& arg) {
+  if (s.trim().empty()) {
+    arg = std::nullopt;
+  } else {
+    arg = T{};
+    parse_value(s, *arg);
+  }
+}
+
 template <int Index, typename... Args>
 typename std::enable_if<Index == sizeof...(Args)>::type read(
     std::tuple<Args...>&, std::array<cstr, sizeof...(Args)>&) {}
