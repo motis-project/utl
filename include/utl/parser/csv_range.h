@@ -3,13 +3,15 @@
 #include <array>
 #include <optional>
 
+#include "cista/reflection/for_each_field.h"
+
 #include "utl/const_str.h"
 #include "utl/parser/arg_parser.h"
 #include "utl/parser/csv.h"
+#include "utl/parser/line_range.h"
 #include "utl/pipes/all.h"
+#include "utl/pipes/for_each.h"
 #include "utl/pipes/is_range.h"
-
-#include "cista/reflection/for_each_field.h"
 
 namespace utl {
 
@@ -148,5 +150,12 @@ struct csv {
 
 template <typename T, typename LineRange, char Separator>
 struct is_range<csv_range<T, LineRange, Separator>> : std::true_type {};
+
+template <typename T, typename Fn>
+void for_each_row(std::string_view file_content, Fn&& fn) {
+  line_range{utl::make_buf_reader(file_content)}  //
+      | csv<T>()  //
+      | for_each(std::forward<Fn>(fn));
+}
 
 }  // namespace utl
