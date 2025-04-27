@@ -7,6 +7,7 @@
 
 #include "utl/const_str.h"
 #include "utl/parser/arg_parser.h"
+#include "utl/parser/buf_reader.h"
 #include "utl/parser/csv.h"
 #include "utl/parser/line_range.h"
 #include "utl/pipes/all.h"
@@ -58,7 +59,7 @@ std::array<column_idx_t, MAX_COLUMNS> read_header(cstr s) {
     column_map[column] = NO_COLUMN_IDX;
     column_idx_t c = 0u;
     cista::for_each_field<T>([&](auto&& f) {
-      if (header == get_name(f)) {
+      if (header.trim() == get_name(f)) {
         column_map[column] = c;
         return;
       }
