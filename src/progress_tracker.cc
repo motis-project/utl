@@ -37,6 +37,13 @@ progress_tracker::tracker_update progress_tracker::tracker_update::status(
   compare_and_update(status_changed_, tracker_->status_, status);
   return std::move(*this);
 }
+
+progress_tracker::tracker_update progress_tracker::tracker_update::context(
+    std::string const& context) {
+  compare_and_update(status_changed_, tracker_->context_, context);
+  return std::move(*this);
+}
+
 progress_tracker::tracker_update
 progress_tracker::tracker_update::show_progress(bool const p) {
   compare_and_update(status_changed_, tracker_->show_progress_, p);
@@ -78,6 +85,12 @@ progress_tracker::tracker_update progress_tracker::status(
     std::string const& status) {
   return progress_tracker::tracker_update{this}.status(status);
 }
+
+progress_tracker::tracker_update progress_tracker::context(
+    std::string const& context) {
+  return progress_tracker::tracker_update{this}.context(context);
+}
+
 progress_tracker::tracker_update progress_tracker::show_progress(bool const p) {
   return progress_tracker::tracker_update{this}.show_progress(p);
 }
@@ -210,6 +223,8 @@ void global_progress_trackers::print() {
   for (auto const& [name, t] : trackers_) {
     clear_line();
     std::lock_guard<std::mutex> tracker_lock{t->mutex_};
+    auto const ctx =
+        t->context_.empty() ? "" : fmt::format("{}: ", t->context_);
     if (t->show_progress_) {
       fmt::print(std::cout, "{:>12}: [", name);
       constexpr auto const WIDTH = 55U;
@@ -219,11 +234,11 @@ void global_progress_trackers::print() {
       }
       fmt::print(std::cout, " ] {:>3}%", static_cast<int>(t->out_));
       if (!t->status_.empty()) {
-        fmt::print(std::cout, " | {}", t->status_);
+        fmt::print(std::cout, " | {}{}", ctx, t->status_);
       }
       std::cout << "\n";
     } else {
-      fmt::print(std::cout, "{:>12}: {}\n", name, t->status_);
+      fmt::print(std::cout, "{:>12}: {}{}\n", name, ctx, t->status_);
     }
   }
   std::cout << std::flush;

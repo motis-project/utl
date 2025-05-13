@@ -21,6 +21,7 @@ struct progress_tracker {
     tracker_update& operator=(tracker_update&&) = default;
 
     tracker_update status(std::string const&);
+    tracker_update context(std::string const&);
     tracker_update show_progress(bool);
 
     tracker_update reset_bounds();
@@ -39,6 +40,7 @@ struct progress_tracker {
       : callback_{std::move(callback)} {}
 
   tracker_update status(std::string const&);
+  tracker_update context(std::string const&);
   tracker_update show_progress(bool);
 
   tracker_update reset_bounds();
@@ -62,6 +64,7 @@ struct progress_tracker {
 
   mutable std::mutex mutex_;
   std::string status_;
+  std::string context_;
   bool show_progress_{true};
   float out_low_{0.F};
   float out_high_{100.F};
