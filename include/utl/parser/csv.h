@@ -153,7 +153,7 @@ std::array<column_idx_t, MAX_COLUMNS> read_header(
                MAX_COLUMNS);
     column_map[column] = NO_COLUMN_IDX;
     for (column_idx_t c = 0; c != defined_columns.size(); ++c) {
-      if (header == defined_columns[c]) {
+      if (header.trim() == defined_columns[c]) {
         column_map[column] = c;
         break;
       }

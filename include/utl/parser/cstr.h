@@ -100,7 +100,7 @@ struct cstr {
     }
     return substr(0, size(prefix.len)) == prefix;
   }
-  static bool is_space(char const c) { return c == ' ' || c == '\n'; }
+  static bool is_space(char const c) { return c == '\t' || c == ' ' || c == '\n'; }
   cstr skip_whitespace_front() const {
     auto copy = (*this);
     while (copy.len != 0 && is_space(copy[0])) {
