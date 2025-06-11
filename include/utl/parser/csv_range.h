@@ -74,6 +74,33 @@ std::array<column_idx_t, MAX_COLUMNS> read_header(cstr s) {
   return column_map;
 }
 
+template <typename T, char Separator = ','>
+T read_row(std::array<column_idx_t, MAX_COLUMNS> const& headers_permutation,
+           cstr s) {
+  std::array<cstr, MAX_COLUMNS> row;
+  for (column_idx_t i = 0; i < MAX_COLUMNS && s; ++i) {
+    cstr column_content;
+    parse_column<cstr, Separator>(s, column_content);
+
+    if (headers_permutation[i] != NO_COLUMN_IDX) {
+      row[headers_permutation[i]] = column_content;
+    }
+
+    if (s) {
+      ++s;
+    }
+  }
+
+  T t{};
+  cista::for_each_field(t, [&, i = 0u](auto& f) mutable {
+    if (row[i]) {
+      parse_value(row[i], f.val());
+    }
+    ++i;
+  });
+  return t;
+}
+
 template <typename T, typename LineRange, char Separator = ','>
 struct csv_range : public LineRange {
   using result_t = T;
@@ -82,36 +109,11 @@ struct csv_range : public LineRange {
       : LineRange{std::forward<LineRange>(r)},
         headers_permutation_{read_header<T, Separator>(LineRange::begin())} {}
 
-  inline T read_row(cstr s) {
-    std::array<cstr, MAX_COLUMNS> row;
-    for (column_idx_t i = 0; i < MAX_COLUMNS && s; ++i) {
-      cstr column_content;
-      parse_column<cstr, Separator>(s, column_content);
-
-      if (headers_permutation_[i] != NO_COLUMN_IDX) {
-        row[headers_permutation_[i]] = column_content;
-      }
-
-      if (s) {
-        ++s;
-      }
-    }
-
-    T t{};
-    cista::for_each_field(t, [&, i = 0u](auto& f) mutable {
-      if (row[i]) {
-        parse_value(row[i], f.val());
-      }
-      ++i;
-    });
-    return t;
-  }
-
   std::optional<T> begin() {
     cstr s;
     LineRange::next(s);
     if (LineRange::valid(s)) {
-      return read_row(s);
+      return read_row<T, Separator>(headers_permutation_, s);
     } else {
       return std::nullopt;
     }
@@ -127,7 +129,7 @@ struct csv_range : public LineRange {
     cstr s;
     LineRange::next(s);
     if (LineRange::valid(s)) {
-      it = read_row(s);
+      it = read_row<T, Separator>(headers_permutation_, s);
     } else {
       it = std::nullopt;
     }
