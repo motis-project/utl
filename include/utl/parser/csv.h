@@ -136,7 +136,7 @@ void read(std::vector<std::tuple<Args...>>& v,
 
 typedef uint8_t column_idx_t;
 constexpr column_idx_t NO_COLUMN_IDX = std::numeric_limits<column_idx_t>::max();
-constexpr column_idx_t MAX_COLUMNS = 64;
+constexpr column_idx_t MAX_COLUMNS = 100;
 
 template <typename Tuple, char Separator = ','>
 std::array<column_idx_t, MAX_COLUMNS> read_header(
