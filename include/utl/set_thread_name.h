@@ -13,8 +13,8 @@
 #define NOMINMAX
 #endif
 
-#include "windows.h"
 #include "processthreadsapi.h"
+#include "windows.h"
 
 namespace utl {
 
