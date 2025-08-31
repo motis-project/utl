@@ -7,6 +7,7 @@
 #include <mutex>
 #include <thread>
 #include <vector>
+#include <map>
 
 #include "utl/logging.h"
 
@@ -19,6 +20,78 @@ using errors_t = std::vector<std::pair<size_t, std::exception_ptr>>;
 struct noop_progress_update {
   void operator()(size_t const) {}
 };
+
+template <typename ThreadLocal, typename Fun, typename Collect,
+          typename ProgressUpdateFn = noop_progress_update>
+inline errors_t parallel_ordered_collect_threadlocal(
+    size_t const job_count, Fun&& func, Collect&& collect,
+    ProgressUpdateFn&& progress_update = ProgressUpdateFn{},
+    parallel_error_strategy const err_strat =
+        parallel_error_strategy::QUIT_EXEC) {
+  using result_t = decltype(func(
+      std::declval<std::add_lvalue_reference_t<ThreadLocal>>(), size_t{}));
+
+  errors_t errors;
+  std::mutex errors_mutex;
+  std::atomic<size_t> counter(0);
+  std::atomic<bool> quit{false};
+  std::vector<std::thread> threads;
+
+  std::mutex pending_mutex;
+  size_t next_pending{0};
+  std::map<size_t, result_t> pending;
+
+  for (auto i = 0u; i < std::thread::hardware_concurrency(); ++i) {
+    threads.emplace_back([&]() {
+      auto threadlocal = ThreadLocal{};
+
+      while (!quit) {
+        auto const idx = counter.fetch_add(1);
+        if (idx >= job_count) {
+          break;
+        }
+
+        try {
+          auto result = func(threadlocal, idx);
+          progress_update(idx);
+
+          auto lock = std::scoped_lock{pending_mutex};
+          if (idx == next_pending) {
+            collect(idx, std::move(result));
+            ++next_pending;
+
+            while (true) {
+              auto const it = pending.find(next_pending);
+              if (it == end(pending)) {
+                break;
+              }
+              collect(next_pending, std::move(it->second));
+              ++next_pending;
+              pending.erase(it);
+            }
+          } else {
+            pending.emplace(idx, std::move(result));
+          }
+        } catch (...) {
+          std::lock_guard<std::mutex> lock{errors_mutex};
+          errors.emplace_back(std::pair{i, std::current_exception()});
+          if (err_strat == parallel_error_strategy::QUIT_EXEC) {
+            quit = true;
+            break;
+          }
+        }
+      }
+    });
+  }
+
+  std::for_each(begin(threads), end(threads), [](auto& t) { t.join(); });
+
+  if (err_strat == parallel_error_strategy::QUIT_EXEC && !errors.empty()) {
+    std::rethrow_exception(errors.front().second);
+  }
+
+  return errors;
+}
 
 template <typename ThreadLocal, typename Fun,
           typename ProgressUpdateFn = noop_progress_update>
