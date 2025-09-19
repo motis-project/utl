@@ -16,7 +16,7 @@ struct buf_reader {
   buf_reader& operator=(buf_reader const&) = delete;
   buf_reader& operator=(buf_reader&&) = default;
 
-  explicit buf_reader(cstr s) : s_{s}, it_{s_.c_str()} {}
+  explicit buf_reader(cstr s) : s_{s}, it_{s_.c_str()}, progress_consumer_{} {}
   buf_reader(cstr s, ProgressConsumer&& consumer)
       : s_{s}, it_{s_.c_str()}, progress_consumer_{std::move(consumer)} {}
 
