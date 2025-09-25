@@ -1,5 +1,7 @@
 #pragma once
 
+#include <type_traits>
+
 namespace utl {
 
 template <typename Ret, typename Arg, typename... Rest>
@@ -30,10 +32,5 @@ struct overloaded : Ts... {
 
 template <class... Ts>
 overloaded(Ts...) -> overloaded<Ts...>;
-
-template <class... Ts, typename Variant>
-auto apply(overloaded<Ts...>&& x, Variant&& variant) {
-  return std::apply(std::move(x), variant);
-}
 
 }  // namespace utl
