@@ -26,8 +26,8 @@
 
 namespace utl {
 
-template <typename... FmtArgs>
-std::runtime_error fail(std::string_view msg, FmtArgs... args) {
+template <typename Ex = std::runtime_error, typename... FmtArgs>
+Ex fail(std::string_view msg, FmtArgs... args) {
   using clock = std::chrono::system_clock;
 
   auto const now = clock::to_time_t(clock::now());
@@ -43,23 +43,21 @@ std::runtime_error fail(std::string_view msg, FmtArgs... args) {
   fmt::print(std::clog, fmt::runtime(msg), std::forward<FmtArgs>(args)...);
   fmt::print(std::clog, "\n");
 
-  return std::runtime_error{
-      fmt::format(fmt::runtime(msg), std::forward<FmtArgs>(args)...)};
+  return Ex{fmt::format(fmt::runtime(msg), std::forward<FmtArgs>(args)...)};
 }
 
-template <typename... FmtArgs>
+template <typename Ex = std::runtime_error, typename... FmtArgs>
 void verify(bool condition, std::string_view msg, FmtArgs... args) {
   if (!condition) {
-    UTL_UNLIKELY throw fail(msg, std::forward<FmtArgs>(args)...);
+    UTL_UNLIKELY throw fail<Ex>(msg, std::forward<FmtArgs>(args)...);
   }
 }
 
-template <typename... FmtArgs>
+template <typename Ex = std::runtime_error, typename... FmtArgs>
 void verify_silent(bool condition, fmt::format_string<FmtArgs...> msg,
                    FmtArgs... args) {
   if (!condition) {
-    UTL_UNLIKELY throw std::runtime_error{
-        fmt::format(msg, std::forward<FmtArgs>(args)...)};
+    UTL_UNLIKELY throw Ex{fmt::format(msg, std::forward<FmtArgs>(args)...)};
   }
 }
 
