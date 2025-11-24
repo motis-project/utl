@@ -50,9 +50,46 @@ inline void parse_column(cstr& s, T& arg) {
     }
   }
 
-  int adjust_for_quote = (end == '"') ? -1 : 0;
+  // Handle invalid CSV that starts with a quote
+  // but the quote ends not before the separator:
+  //
+  // 1299,"POLTURIST" PRZEDSIĘBIORSTWO , ...
+  //      ^         ^                  ^
+  //      escaped   escaped end        separator
+  //
+  // --> skip from escape end to separator, stop at line end
+  bool adjust_for_unquoted_rest = false;
+  if (end == '"' && s && s[0] != Separator) {
+    adjust_for_unquoted_rest = true;
+
+    printf("SPECIAL CASE %.*s\n", static_cast<int>(s.str - begin.str),
+           begin.str);
+    auto recap = begin;
+    while (recap.str != s.str) {
+      printf("RECAP CHECK %c\n", recap[0]);
+      if (recap[0] == '\r' || recap[0] == '\n' || recap[0] == Separator) {
+        printf("RECAP FOUND LINE BREAK\n");
+        s = recap;
+        break;
+      }
+      ++recap;
+    }
+    while (s && s[0] != Separator && s[0] != '\r' && s[0] != '\n') {
+      printf("ADJUST %d [%c]\n", s[0], s[0]);
+      ++s;
+    }
+    printf("---\n");
+  }
+
+  int adjust_for_quote = (end == '"' && !adjust_for_unquoted_rest) ? -1 : 0;
+  printf("adjust for unquoted rest: %d %c\n", adjust_for_unquoted_rest, end);
   arg.assign(begin.str, static_cast<size_t>((s.str - begin.str) +
                                             adjust_for_quote + adjust_for_cr));
+
+  printf(
+      "ASSIGN [%.*s]\n",
+      static_cast<int>((s.str - begin.str) + adjust_for_quote + adjust_for_cr),
+      begin.str);
 }
 
 template <typename StringType>

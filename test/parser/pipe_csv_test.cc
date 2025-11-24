@@ -126,3 +126,28 @@ TEST(pipe_csv, csv_invalid_escaped_string) {
   EXPECT_TRUE(result[0].bar_.val() == "asd");
   EXPECT_TRUE(result[0].baz_.val() == R"(xxx")");
 }
+
+TEST(pipe_csv, test1) {
+  struct dat {
+    csv_col<std::string, UTL_NAME("agency_timezone")> timezone_;
+    csv_col<std::string, UTL_NAME("agency_email")> email_;
+  };
+
+  constexpr auto in =
+      R"(agency_id,agency_name,agency_url,agency_timezone,agency_lang,agency_phone,agency_fare_url,agency_email
+1299,"POLTURIST" PRZEDSIĘBIORSTWO PRZEWOZOWE ANDRZEJ JARENTOWSKI,http:,Europe/Warsaw,pl,+48,,"test" blabla
+1299,"POLTURIST" PRZEDSIĘBIORSTWO PRZEWOZOWE ANDRZEJ JARENTOWSKI,http:,Europe/Warsaw,pl,+48,,"test
+1299,"POLTURIST" ,http: ,Europe/Warsaw,pl,+48,,
+
+)";
+
+  auto const result = line_range{make_buf_reader(in, {})}  //
+                      | csv<dat, ','>()  //
+                      | vec();
+
+  EXPECT_STREQ("test\" blabla", result[0].email_->c_str());
+  EXPECT_STREQ("test", result[1].email_->c_str());
+  for (auto const& x : result) {
+    EXPECT_STREQ("Europe/Warsaw", x.timezone_->c_str());
+  }
+}
