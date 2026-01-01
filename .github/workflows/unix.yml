@@ -18,11 +18,11 @@ jobs:
         run: |
           wget https://apt.llvm.org/llvm.sh
           chmod +x llvm.sh
-          sudo ./llvm.sh 18
+          sudo ./llvm.sh 21
           rm llvm.sh
-          sudo apt-get install -y --no-install-recommends clang-format-18
+          sudo apt-get install -y --no-install-recommends clang-format-21
       - name: Format files
-        run: find test include -type f -not -name catch.hpp -a \( -name "*.cc" -o -name "*.h" \) -print0 | xargs -0 clang-format-18 -i
+        run: find test include -type f -not -name catch.hpp -a \( -name "*.cc" -o -name "*.h" \) -print0 | xargs -0 clang-format-21 -i
 
       - name: Check for differences
         run: |
@@ -56,16 +56,16 @@ jobs:
             cc: gcc-12
             mode: Debug
             os: ubuntu-24.04
-          - name: Clang 18 Release
-            cxx: clang++-18
-            cc: clang-18
+          - name: Clang 21 Release
+            cxx: clang++-21
+            cc: clang-21
             mode: Release
             cxxflags: -stdlib=libc++
             ldflags: -lc++abi
             os: ubuntu-24.04
           - name: Clang Tidy
-            cxx: clang++-18
-            cc: clang-18
+            cxx: clang++-21
+            cc: clang-21
             mode: Debug
             cxxflags: -stdlib=libc++
             ldflags: -lc++abi
@@ -93,13 +93,13 @@ jobs:
         run: sudo apt-get update
 
       - name: Install LLVM
-        if: matrix.config.os != 'macos-latest' && matrix.config.cc == 'clang-18'
+        if: matrix.config.os != 'macos-latest' && matrix.config.cc == 'clang-21'
         run: |
           wget https://apt.llvm.org/llvm.sh
           chmod +x llvm.sh
-          sudo ./llvm.sh 18
+          sudo ./llvm.sh 21
           rm llvm.sh
-          sudo apt-get install -y --no-install-recommends libc++-18-dev libc++abi-18-dev clang-tidy-18 libunwind-18-dev llvm-18
+          sudo apt-get install -y --no-install-recommends libc++-21-dev libc++abi-21-dev clang-tidy-21 libunwind-21-dev llvm-21
 
       - name: Install Valgrind
         if: matrix.config.mode == 'Debug' && matrix.config.cc == 'gcc-12'
