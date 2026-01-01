@@ -34,7 +34,7 @@ struct remove_if_range : public clear_t<Range> {
   auto begin() {
     auto it = parent_t::begin();
     find(it);
-    return it;
+    return std::move(it);
   }
 
   RemoveIf remove_if_;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <utility>
 
 #include "utl/clear_t.h"
 #include "utl/pipes/make_range.h"
@@ -16,7 +17,7 @@ struct to_vec_t {
       v.emplace_back(r.read(it));
       r.next(it);
     }
-    return v;
+    return std::move(v);
   }
 };
 
@@ -32,7 +33,7 @@ struct emplace_to_t {
       c.emplace(r.read(it));
       r.next(it);
     }
-    return c;
+    return std::move(c);
   }
 };
 
@@ -51,7 +52,7 @@ struct emplace_back_to_t {
       c.emplace_back(r.read(it));
       r.next(it);
     }
-    return c;
+    return std::move(c);
   }
 };
 

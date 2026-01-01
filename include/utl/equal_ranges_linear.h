@@ -10,7 +10,7 @@ void equal_ranges_linear(Iterator begin, Iterator end, F&& func) {
   auto lower = begin;
   while (lower != end) {
     auto upper = lower;
-    while (upper != end && *lower == *upper) {
+    while (upper != end && (lower == upper || *lower == *upper)) {
       ++upper;
     }
     func(lower, upper);
@@ -28,7 +28,7 @@ void equal_ranges_linear(Iterator begin, Iterator end, Eq&& eq, F&& func) {
   auto lower = begin;
   while (lower != end) {
     auto upper = lower;
-    while (upper != end && eq(*lower, *upper)) {
+    while (upper != end && (lower == upper || eq(*lower, *upper))) {
       ++upper;
     }
     func(lower, upper);
