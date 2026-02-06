@@ -4,10 +4,10 @@
 #include <atomic>
 #include <exception>
 #include <iostream>
+#include <map>
 #include <mutex>
 #include <thread>
 #include <vector>
-#include <map>
 
 #include "utl/logging.h"
 
@@ -27,7 +27,8 @@ inline errors_t parallel_ordered_collect_threadlocal(
     size_t const job_count, Fun&& func, Collect&& collect,
     ProgressUpdateFn&& progress_update = ProgressUpdateFn{},
     parallel_error_strategy const err_strat =
-        parallel_error_strategy::QUIT_EXEC) {
+        parallel_error_strategy::QUIT_EXEC,
+    unsigned n_threads = 0U) {
   using result_t = decltype(func(
       std::declval<std::add_lvalue_reference_t<ThreadLocal>>(), size_t{}));
 
@@ -41,7 +42,11 @@ inline errors_t parallel_ordered_collect_threadlocal(
   size_t next_pending{0};
   std::map<size_t, result_t> pending;
 
-  for (auto i = 0u; i < std::thread::hardware_concurrency(); ++i) {
+  if (n_threads == 0U) {
+    n_threads = std::thread::hardware_concurrency();
+  }
+
+  for (auto i = 0u; i < n_threads; ++i) {
     threads.emplace_back([&]() {
       auto threadlocal = ThreadLocal{};
 
@@ -99,13 +104,17 @@ inline errors_t parallel_for_run_threadlocal(
     size_t const job_count, Fun func,
     ProgressUpdateFn&& progress_update = ProgressUpdateFn{},
     parallel_error_strategy const err_strat =
-        parallel_error_strategy::QUIT_EXEC) {
+        parallel_error_strategy::QUIT_EXEC,
+    unsigned n_threads = 0U) {
   errors_t errors;
   std::mutex errors_mutex;
   std::atomic<size_t> counter(0);
   std::atomic<bool> quit{false};
   std::vector<std::thread> threads;
-  for (auto i = 0u; i < std::thread::hardware_concurrency(); ++i) {
+  if (n_threads == 0U) {
+    n_threads = std::thread::hardware_concurrency();
+  }
+  for (auto i = 0u; i < n_threads; ++i) {
     threads.emplace_back([&]() {
       auto threadlocal = ThreadLocal{};
 
@@ -144,13 +153,17 @@ inline errors_t parallel_for_run(
     size_t const job_count, Fun func,
     ProgressUpdateFn&& progress_update = ProgressUpdateFn{},
     parallel_error_strategy const err_strat =
-        parallel_error_strategy::QUIT_EXEC) {
+        parallel_error_strategy::QUIT_EXEC,
+    unsigned n_threads = 0U) {
   errors_t errors;
   std::mutex errors_mutex;
   std::atomic<size_t> counter(0);
   std::atomic<bool> quit{false};
   std::vector<std::thread> threads;
-  for (auto i = 0u; i < std::thread::hardware_concurrency(); ++i) {
+  if (n_threads == 0U) {
+    n_threads = std::thread::hardware_concurrency();
+  }
+  for (auto i = 0u; i < n_threads; ++i) {
     threads.emplace_back([&]() {
       while (!quit) {
         auto const idx = counter.fetch_add(1);
@@ -188,7 +201,8 @@ inline errors_t parallel_for(
     Container& jobs, Fun&& func,
     ProgressUpdateFn&& progress_update = ProgressUpdateFn{},
     parallel_error_strategy const err_strat =
-        parallel_error_strategy::QUIT_EXEC) {
+        parallel_error_strategy::QUIT_EXEC,
+    unsigned const n_threads = 0U) {
   return parallel_for_run(
       jobs.size(),
       [&](auto const idx) {
@@ -199,7 +213,7 @@ inline errors_t parallel_for(
                               decltype(begin(jobs))>::difference_type>(idx)));
         }
       },
-      std::forward<ProgressUpdateFn>(progress_update), err_strat);
+      std::forward<ProgressUpdateFn>(progress_update), err_strat, n_threads);
 }
 
 template <typename Container, typename Fun,
@@ -208,7 +222,8 @@ inline errors_t parallel_for(
     Container const& jobs, Fun&& func,
     ProgressUpdateFn&& progress_update = ProgressUpdateFn{},
     parallel_error_strategy const err_strat =
-        parallel_error_strategy::QUIT_EXEC) {
+        parallel_error_strategy::QUIT_EXEC,
+    unsigned const n_threads = 0U) {
   return parallel_for_run(
       jobs.size(),
       [&](auto const idx) {
@@ -219,7 +234,7 @@ inline errors_t parallel_for(
                               decltype(begin(jobs))>::difference_type>(idx)));
         }
       },
-      std::forward<ProgressUpdateFn>(progress_update), err_strat);
+      std::forward<ProgressUpdateFn>(progress_update), err_strat, n_threads);
 }
 
 template <typename Container, typename Fun,
@@ -228,7 +243,8 @@ inline errors_t parallel_for(
     std::string const& desc, Container const& jobs, size_t const mod, Fun func,
     ProgressUpdateFn&& progress_update = ProgressUpdateFn{},
     parallel_error_strategy const err_strat =
-        parallel_error_strategy::QUIT_EXEC) {
+        parallel_error_strategy::QUIT_EXEC,
+    unsigned const n_threads = 0U) {
   return parallel_for_run(
       jobs.size(),
       [&](auto const idx) {
@@ -237,7 +253,7 @@ inline errors_t parallel_for(
         }
         func(jobs[idx]);
       },
-      std::forward<ProgressUpdateFn>(progress_update), err_strat);
+      std::forward<ProgressUpdateFn>(progress_update), err_strat, n_threads);
 }
 
 }  // namespace utl
