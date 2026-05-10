@@ -1,5 +1,11 @@
+#pragma once
+
 #include <coroutine>
 #include <exception>
+#include <iterator>
+#include <optional>
+#include <utility>
+#include <vector>
 
 namespace utl {
 
@@ -27,10 +33,31 @@ struct generator {
 
   generator(handle_type h) : h_(h) {}
 
-  ~generator() { h_.destroy(); }
+  generator(generator const&) = delete;
+  generator& operator=(generator const&) = delete;
+
+  generator(generator&& o) noexcept
+      : h_(std::exchange(o.h_, {})), full_(std::exchange(o.full_, false)) {}
+
+  generator& operator=(generator&& o) noexcept {
+    if (this != &o) {
+      if (h_) {
+        h_.destroy();
+      }
+      h_ = std::exchange(o.h_, {});
+      full_ = std::exchange(o.full_, false);
+    }
+    return *this;
+  }
+
+  ~generator() {
+    if (h_) {
+      h_.destroy();
+    }
+  }
 
   explicit operator bool() {
-    if (h_.done()) {
+    if (!h_ || h_.done()) {
       return false;
     }
     fill();
@@ -50,6 +77,46 @@ struct generator {
     }
     return v;
   }
+
+  // Range-for support. The iterator is single-pass (input-iterator style):
+  // dereferencing yields the current value, incrementing pulls the next one
+  // from the coroutine.
+  struct sentinel {};
+
+  struct iterator {
+    using iterator_category = std::input_iterator_tag;
+    using value_type = T;
+    using difference_type = std::ptrdiff_t;
+    using pointer = T*;
+    using reference = T&;
+
+    explicit iterator(generator* g) : gen_{g} {
+      if (gen_ != nullptr && static_cast<bool>(*gen_)) {
+        current_ = (*gen_)();
+      }
+    }
+
+    T& operator*() { return *current_; }
+    T const& operator*() const { return *current_; }
+
+    iterator& operator++() {
+      if (gen_ != nullptr && static_cast<bool>(*gen_)) {
+        current_ = (*gen_)();
+      } else {
+        current_.reset();
+      }
+      return *this;
+    }
+
+    bool operator==(sentinel) const { return !current_.has_value(); }
+    bool operator!=(sentinel) const { return current_.has_value(); }
+
+    generator* gen_{nullptr};
+    std::optional<T> current_{};
+  };
+
+  iterator begin() { return iterator{this}; }
+  sentinel end() { return {}; }
 
 private:
   void fill() {
