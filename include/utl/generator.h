@@ -78,26 +78,26 @@ struct generator {
     return v;
   }
 
-  // Range-for support. The iterator is single-pass (input-iterator style):
-  // dereferencing yields the current value, incrementing pulls the next one
-  // from the coroutine.
   struct sentinel {};
 
   struct iterator {
+    using iterator_concept = std::input_iterator_tag;
     using iterator_category = std::input_iterator_tag;
     using value_type = T;
     using difference_type = std::ptrdiff_t;
     using pointer = T*;
     using reference = T&;
 
+    iterator() = default;
     explicit iterator(generator* g) : gen_{g} {
       if (gen_ != nullptr && static_cast<bool>(*gen_)) {
         current_ = (*gen_)();
       }
     }
 
-    T& operator*() { return *current_; }
-    T const& operator*() const { return *current_; }
+    // `std::indirectly_readable` requires `*it` to be valid on a const
+    // iterator and to yield the same type as `iter_reference_t<it>` (= `T&`).
+    T& operator*() const { return const_cast<T&>(*current_); }
 
     iterator& operator++() {
       if (gen_ != nullptr && static_cast<bool>(*gen_)) {
@@ -108,8 +108,12 @@ struct generator {
       return *this;
     }
 
-    bool operator==(sentinel) const { return !current_.has_value(); }
-    bool operator!=(sentinel) const { return current_.has_value(); }
+    void operator++(int) { ++(*this); }
+
+    friend bool operator==(iterator const& it, sentinel) {
+      return !it.current_.has_value();
+    }
+    friend bool operator==(sentinel s, iterator const& it) { return it == s; }
 
     generator* gen_{nullptr};
     std::optional<T> current_{};
