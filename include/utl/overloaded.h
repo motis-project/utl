@@ -2,22 +2,9 @@
 
 #include <type_traits>
 
+#include "utl/argument_helper.h"
+
 namespace utl {
-
-template <typename Ret, typename Arg, typename... Rest>
-Arg first_argument_helper(Ret (*)(Arg, Rest...));
-
-template <typename Ret, typename F, typename Arg, typename... Rest>
-Arg first_argument_helper(Ret (F::*)(Arg, Rest...));
-
-template <typename Ret, typename F, typename Arg, typename... Rest>
-Arg first_argument_helper(Ret (F::*)(Arg, Rest...) const);
-
-template <typename F>
-decltype(first_argument_helper(&F::operator())) first_argument_helper(F);
-
-template <typename T>
-using first_argument = decltype(first_argument_helper(std::declval<T>()));
 
 template <class... Ts>
 struct overloaded : Ts... {
