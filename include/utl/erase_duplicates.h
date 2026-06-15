@@ -4,13 +4,25 @@
 
 namespace utl {
 
-template <
-    typename Container,
-    typename Less = std::less<decltype(*std::declval<Container>().begin())>,
-    typename Eq = std::equal_to<decltype(*std::declval<Container>().begin())>>
+struct DefaultLess {
+  template <typename T>
+  bool operator()(const T& a, const T& b) const {
+    return a < b;
+  }
+};
+
+struct DefaultEq {
+  template <typename T>
+  bool operator()(const T& a, const T& b) const {
+    return a == b;
+  }
+};
+
+template <typename Container, typename Less = DefaultLess,
+          typename Eq = DefaultEq>
 void erase_duplicates(Container& c, Less&& less = Less{}, Eq&& eq = Eq{}) {
-  std::sort(begin(c), end(c), less);
-  c.erase(std::unique(begin(c), end(c), eq), end(c));
+  std::sort(begin(c), end(c), std::forward<Less>(less));
+  c.erase(std::unique(begin(c), end(c), std::forward<Eq>(eq)), end(c));
 }
 
 template <typename Container, typename Iterator, typename Less, typename Eq>
