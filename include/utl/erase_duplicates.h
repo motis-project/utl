@@ -9,8 +9,8 @@ template <
     typename Less = std::less<decltype(*std::declval<Container>().begin())>,
     typename Eq = std::equal_to<decltype(*std::declval<Container>().begin())>>
 void erase_duplicates(Container& c, Less&& less = Less{}, Eq&& eq = Eq{}) {
-  std::sort(begin(c), end(c), less);
-  c.erase(std::unique(begin(c), end(c), eq), end(c));
+  std::sort(begin(c), end(c), std::forward<Less>(less));
+  c.erase(std::unique(begin(c), end(c), std::forward<Eq>(eq)), end(c));
 }
 
 template <typename Container, typename Iterator, typename Less, typename Eq>
