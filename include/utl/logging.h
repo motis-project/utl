@@ -29,7 +29,7 @@ extern log_level log_verbosity;
 inline std::string now() {
   using clock = std::chrono::system_clock;
   auto const now = clock::to_time_t(clock::now());
-  struct tm tmp {};
+  struct tm tmp{};
 #if _MSC_VER >= 1400
   gmtime_s(&tmp, &now);
 #else
@@ -109,15 +109,15 @@ struct log_error : public log<log_level::error, Args...> {
 // which has a default value:
 
 template <typename... Args>
-log_debug(const char* ctx, fmt::format_string<Args...>,
-          Args&&... args) -> log_debug<Args...>;
+log_debug(const char* ctx, fmt::format_string<Args...>, Args&&... args)
+    -> log_debug<Args...>;
 
 template <typename... Args>
-log_info(const char* ctx, fmt::format_string<Args...>,
-         Args&&... args) -> log_info<Args...>;
+log_info(const char* ctx, fmt::format_string<Args...>, Args&&... args)
+    -> log_info<Args...>;
 
 template <typename... Args>
-log_error(const char* ctx, fmt::format_string<Args...>,
-          Args&&... args) -> log_error<Args...>;
+log_error(const char* ctx, fmt::format_string<Args...>, Args&&... args)
+    -> log_error<Args...>;
 
 }  // namespace utl
