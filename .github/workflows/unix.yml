@@ -41,19 +41,19 @@ jobs:
             mode: Release
             cxxflags: -stdlib=libc++
             os: macos-latest
-          - name: GCC 12 Release
-            cxx: g++-12
-            cc: gcc-12
+          - name: GCC 13 Release
+            cxx: g++-13
+            cc: gcc-13
             mode: Release
             os: ubuntu-24.04
-          - name: GCC 12 Release
-            cxx: g++-12
-            cc: gcc-12
+          - name: GCC 13 Release
+            cxx: g++-13
+            cc: gcc-13
             mode: Release
             os: ubuntu-24.04
-          - name: GCC 12 Debug
-            cxx: g++-12
-            cc: gcc-12
+          - name: GCC 13 Debug
+            cxx: g++-13
+            cc: gcc-13
             mode: Debug
             os: ubuntu-24.04
           - name: Clang 21 Release
@@ -71,9 +71,9 @@ jobs:
             ldflags: -lc++abi
             lint: true
             os: ubuntu-24.04
-          - key: GCC 12 Sanitizer
-            cxx: g++-12
-            cc: gcc-12
+          - key: GCC 13 Sanitizer
+            cxx: g++-13
+            cc: gcc-13
             mode: Release
             cflags: -fsanitize=address,undefined -fno-omit-frame-pointer
             cxxflags: -fsanitize=address,undefined -fno-omit-frame-pointer
@@ -102,7 +102,7 @@ jobs:
           sudo apt-get install -y --no-install-recommends libc++-21-dev libc++abi-21-dev clang-tidy-21 libunwind-21-dev llvm-21
 
       - name: Install Valgrind
-        if: matrix.config.mode == 'Debug' && matrix.config.cc == 'gcc-12'
+        if: matrix.config.mode == 'Debug' && matrix.config.cc == 'gcc-13'
         run: sudo apt-get install -y --no-install-recommends valgrind
 
       - name: Install Ninja
@@ -133,7 +133,7 @@ jobs:
 
       # ==== VALGRIND ====
       - name: Run Tests Valgrind
-        if: matrix.config.mode == 'Debug' && matrix.config.cc == 'gcc-12'
+        if: matrix.config.mode == 'Debug' && matrix.config.cc == 'gcc-13'
         run: valgrind --error-exitcode=1 --show-reachable=yes --leak-check=full ./build/utl-test
 
   doc:
