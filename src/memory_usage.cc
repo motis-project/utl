@@ -40,7 +40,7 @@ memory_usage get_memory_usage() {
 
 #else
 
-  struct rusage r_usage {};
+  struct rusage r_usage{};
   if (getrusage(RUSAGE_SELF, &r_usage) == 0) {
 #ifdef __APPLE__
     mu.peak_rss_ = r_usage.ru_maxrss;

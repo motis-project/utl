@@ -1,7 +1,7 @@
 #pragma once
 
-#include <vector>
 #include <utility>
+#include <vector>
 
 #include "utl/clear_t.h"
 #include "utl/pipes/make_range.h"
