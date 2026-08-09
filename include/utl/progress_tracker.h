@@ -17,7 +17,6 @@ namespace utl {
 struct progress_tracker {
   using clock = std::chrono::steady_clock;
 
-  // terminal status: reporting any other status afterwards is an error
   static constexpr auto const kFinished = "FINISHED";
 
   struct step_timing {
@@ -85,6 +84,8 @@ struct progress_tracker {
 
   summary get_summary() const;
   void restart_timing();
+
+  void reset_timing();
   void record_step(clock::time_point now);
 
   std::function<void(progress_tracker const&)> callback_;

@@ -76,12 +76,12 @@ void compare_and_update(bool& changed, T& old_value, T const& new_value) {
 
 progress_tracker::tracker_update progress_tracker::tracker_update::status(
     std::string const& status) {
-  verify(tracker_->status_ != progress_tracker::kFinished ||
-             status == progress_tracker::kFinished,
-         "progress_tracker: {} is terminal, cannot switch to {}",
-         progress_tracker::kFinished, status);
   if (tracker_->status_ != status) {
-    tracker_->record_step(clock::now());
+    if (tracker_->status_ == progress_tracker::kFinished) {
+      tracker_->reset_timing();  // reuse of a finished tracker -> start over
+    } else {
+      tracker_->record_step(clock::now());
+    }
   }
   compare_and_update(status_changed_, tracker_->status_, status);
   return std::move(*this);
@@ -218,6 +218,12 @@ void progress_tracker::record_step(clock::time_point const now) {
   }
   add_timing(timings_, status_, now - step_start_);
   step_start_ = now;
+}
+
+void progress_tracker::reset_timing() {
+  timings_.clear();
+  started_ = clock::now();
+  step_start_ = started_;
 }
 
 void progress_tracker::restart_timing() {

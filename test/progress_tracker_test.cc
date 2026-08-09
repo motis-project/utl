@@ -181,13 +181,18 @@ TEST(progress_tracker_active_progress_tracker, use_after_clear) {
   EXPECT_TRUE(str.empty());
   EXPECT_TRUE(tracker->status_ == "detached tracker");
 }
-TEST(progress_tracker_active_progress_tracker, finished_is_terminal) {
+TEST(progress_tracker_active_progress_tracker, reuse_after_finished) {
   auto tracker = utl::activate_progress_tracker("fifth");
   tracker->status("working");
   tracker->status(utl::progress_tracker::kFinished);
+  EXPECT_TRUE(tracker->get_summary().finished_);
 
-  EXPECT_ANY_THROW(tracker->status("more work"));
-  EXPECT_NO_THROW(tracker->status(utl::progress_tracker::kFinished));
+  // a finished tracker can be reused, the timing starts over
+  tracker->status("working again");
+  auto const reused = tracker->get_summary();
+  EXPECT_FALSE(reused.finished_);
+  ASSERT_EQ(1U, reused.steps_.size());
+  EXPECT_EQ("working again", reused.steps_.front().status_);
 
   utl::get_global_progress_trackers().clear();
 }
