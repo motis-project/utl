@@ -1,15 +1,38 @@
 #pragma once
 
+#include <chrono>
 #include <atomic>
+#include <filesystem>
 #include <functional>
+#include <iosfwd>
 #include <map>
 #include <memory>
 #include <mutex>
+#include <optional>
 #include <string>
+#include <vector>
 
 namespace utl {
 
 struct progress_tracker {
+  using clock = std::chrono::steady_clock;
+
+  // terminal status: reporting any other status afterwards is an error
+  static constexpr auto const kFinished = "FINISHED";
+
+  struct step_timing {
+    std::string status_;
+    clock::duration duration_;
+    unsigned count_;
+  };
+
+  struct summary {
+    clock::time_point started_;
+    clock::duration total_;
+    std::vector<step_timing> steps_;
+    bool finished_;
+  };
+
   struct tracker_update {
     explicit tracker_update(progress_tracker* tracker)
         : tracker_{tracker}, lock_{tracker_->mutex_} {}
@@ -60,6 +83,10 @@ struct progress_tracker {
 
   void update_out();
 
+  summary get_summary() const;
+  void restart_timing();
+  void record_step(clock::time_point now);
+
   std::function<void(progress_tracker const&)> callback_;
 
   mutable std::mutex mutex_;
@@ -70,6 +97,10 @@ struct progress_tracker {
   float out_high_{100.F};
   float out_mod_{1.F};
   size_t in_high_{100ULL};
+
+  clock::time_point started_{clock::now()};
+  clock::time_point step_start_{clock::now()};
+  std::vector<step_timing> timings_;
 
   std::atomic_size_t in_{0ULL};
   std::atomic<float> out_{0.F};
@@ -86,7 +117,11 @@ struct global_progress_trackers {
 
   progress_tracker_ptr get_tracker(std::string const& name);
 
+  bool has_trackers();
   void print();
+  void print_summary(std::ostream&,
+                     std::chrono::system_clock::time_point started,
+                     std::chrono::steady_clock::duration total_wall);
   void clear();
 
   std::mutex mutex_;
@@ -104,16 +139,25 @@ progress_tracker_ptr get_active_progress_tracker();
 progress_tracker_ptr get_active_progress_tracker_or_activate(
     std::string const&);
 
+// if summary_path is given, a timing summary is appended to that file on
+// destruction, so that repeated runs accumulate in the same file
 struct global_progress_bars {
-  explicit global_progress_bars(bool silent = false);
+  explicit global_progress_bars(
+      bool silent = false,
+      std::optional<std::filesystem::path> summary_path = std::nullopt);
   ~global_progress_bars();
 
-  global_progress_bars(global_progress_bars const&) = default;
-  global_progress_bars(global_progress_bars&&) = default;
-  global_progress_bars& operator=(global_progress_bars const&) = default;
-  global_progress_bars& operator=(global_progress_bars&&) = default;
+  global_progress_bars(global_progress_bars const&) = delete;
+  global_progress_bars(global_progress_bars&&) = delete;
+  global_progress_bars& operator=(global_progress_bars const&) = delete;
+  global_progress_bars& operator=(global_progress_bars&&) = delete;
 
   bool old_silent_;
+  std::optional<std::filesystem::path> summary_path_;
+  std::chrono::system_clock::time_point start_time_{
+      std::chrono::system_clock::now()};
+  std::chrono::steady_clock::time_point start_{
+      std::chrono::steady_clock::now()};
 };
 
 }  // namespace utl

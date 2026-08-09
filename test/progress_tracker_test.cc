@@ -181,3 +181,13 @@ TEST(progress_tracker_active_progress_tracker, use_after_clear) {
   EXPECT_TRUE(str.empty());
   EXPECT_TRUE(tracker->status_ == "detached tracker");
 }
+TEST(progress_tracker_active_progress_tracker, finished_is_terminal) {
+  auto tracker = utl::activate_progress_tracker("fifth");
+  tracker->status("working");
+  tracker->status(utl::progress_tracker::kFinished);
+
+  EXPECT_ANY_THROW(tracker->status("more work"));
+  EXPECT_NO_THROW(tracker->status(utl::progress_tracker::kFinished));
+
+  utl::get_global_progress_trackers().clear();
+}
