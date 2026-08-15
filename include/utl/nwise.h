@@ -13,13 +13,16 @@ template <std::size_t N, typename It>
 struct nwise_iterator {
   using indices_t = std::make_index_sequence<N>;
 
-  using iterator_category = std::forward_iterator_tag;
+  using iterator_concept = std::forward_iterator_tag;
+  using iterator_category = std::input_iterator_tag;
 
   using difference_type = std::ptrdiff_t;
 
   using value_type = decltype(value_type_helper<It>(indices_t{}));
-  using pointer = value_type const*;
-  using reference = value_type const&;
+  using pointer = void;
+  using reference = value_type;
+
+  nwise_iterator() = default;
 
   nwise_iterator(It const begin, It const end) {
     auto curr = begin;
@@ -32,16 +35,10 @@ struct nwise_iterator {
   }
 
   template <std::size_t... I>
-  auto deref(std::index_sequence<I...>) -> value_type {
-    return {*its_[I]...};
-  }
-
-  template <std::size_t... I>
   auto deref(std::index_sequence<I...>) const -> value_type {
     return {*its_[I]...};
   }
 
-  auto operator*() { return deref(indices_t{}); }
   auto operator*() const { return deref(indices_t{}); }
 
   bool operator==(nwise_iterator const& o) const {
@@ -58,7 +55,13 @@ struct nwise_iterator {
     return *this;
   }
 
-  std::array<It, N> its_;
+  nwise_iterator operator++(int) {
+    auto const cpy = *this;
+    ++*this;
+    return cpy;
+  }
+
+  std::array<It, N> its_{};
 };
 
 template <std::size_t N, typename It>
