@@ -17,8 +17,7 @@ constexpr void for_each_set_bit(T const levels, Fn&& f) {
       "for_each_set_bit: integral (non-bool) types only");
   auto block = static_cast<std::make_unsigned_t<T>>(levels);
   while (block != 0U) {
-    auto const bit = static_cast<unsigned>(std::countr_zero(block));
-    f(bit);
+    f(static_cast<unsigned>(std::countr_zero(block)));
     block &= static_cast<decltype(block)>(block - 1U);
   }
 }
