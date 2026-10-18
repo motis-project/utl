@@ -18,7 +18,6 @@ struct progress_tracker {
   using clock = std::chrono::steady_clock;
 
   static constexpr auto const kFinished = "FINISHED";
-  static constexpr auto const kSparseUpdateInterval = size_t{4096U};
 
   struct step_timing {
     std::string status_;
@@ -74,13 +73,6 @@ struct progress_tracker {
   auto update_fn() {
     return [this](size_t new_in) { update_monotonic(new_in); };
   }
-  auto sparse_update_fn(size_t const interval = kSparseUpdateInterval) {
-    return [this, interval](size_t const new_in) {
-      if (new_in % interval == 0U) {
-        update_monotonic(new_in);
-      }
-    };
-  }
   auto increment_fn() {
     return [this]() { increment(); };
   }
@@ -113,6 +105,7 @@ struct progress_tracker {
 
   std::atomic_size_t in_{0ULL};
   std::atomic<float> out_{0.F};
+  std::atomic<double> in_next_step_{0.0};
 };
 
 using progress_tracker_ptr = std::shared_ptr<progress_tracker>;

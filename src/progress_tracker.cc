@@ -4,6 +4,7 @@
 #include "windows.h"
 #endif
 
+#include <cmath>
 #include <algorithm>
 #include <fstream>
 #include <iostream>
@@ -58,6 +59,7 @@ progress_tracker::tracker_update::~tracker_update() {
     if (bounds_changed_) {
       tracker_->in_ = 0ULL;
       tracker_->out_ = tracker_->out_low_;
+      tracker_->in_next_step_ = 0.0;
     }
     lock_.unlock();
     if (status_changed_ || bounds_changed_) {
@@ -166,6 +168,11 @@ void progress_tracker::update(size_t const new_in) {
 }
 
 void progress_tracker::update_monotonic(size_t const new_in) {
+  if (static_cast<double>(new_in) <
+      in_next_step_.load(std::memory_order_relaxed)) {
+    return;
+  }
+
   // see https://stackoverflow.com/a/16190791
   size_t old_in = in_;
   while (old_in < new_in && !in_.compare_exchange_weak(old_in, new_in)) {
@@ -176,7 +183,11 @@ void progress_tracker::update_monotonic(size_t const new_in) {
 }
 
 void progress_tracker::increment(size_t const inc) {
-  in_ += inc;
+  auto const new_in = in_.fetch_add(inc) + inc;
+  if (static_cast<double>(new_in) <
+      in_next_step_.load(std::memory_order_relaxed)) {
+    return;
+  }
   update_out();
 }
 
@@ -184,10 +195,17 @@ void progress_tracker::update_out() {
   auto const out_range = (out_high_ - out_low_);
   auto const in_ratio = static_cast<float>(static_cast<double>(in_) /
                                            static_cast<double>(in_high_));
+  auto const step = std::round(out_range * in_ratio / out_mod_);
+  auto const new_out =
+      std::clamp(out_low_ + step * out_mod_, out_low_, out_high_);
 
-  auto const new_out = std::clamp(
-      out_low_ + std::round(out_range * in_ratio / out_mod_) * out_mod_,
-      out_low_, out_high_);
+  in_next_step_.store(
+      (step + 0.5) * out_mod_ / out_range * static_cast<double>(in_high_),
+      std::memory_order_relaxed);
+
+  if (out_.load(std::memory_order_relaxed) == new_out) {
+    return;
+  }
 
   auto old_out = out_.exchange(new_out);
   if (old_out != new_out) {
