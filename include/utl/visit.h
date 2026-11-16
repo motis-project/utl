@@ -21,7 +21,7 @@ struct visit_overloaded : First, Rest... {
        ...);
 
   template <typename T>
-  std::enable_if_t<no_overload<T>, return_t> operator()(T&&) {
+  constexpr std::enable_if_t<no_overload<T>, return_t> operator()(T&&) {
     if constexpr (std::is_default_constructible_v<return_t>) {
       return {};
     } else {
@@ -35,7 +35,7 @@ template <class... Ts>
 visit_overloaded(Ts...) -> visit_overloaded<Ts...>;
 
 template <typename Variant, typename... Fs>
-auto visit(Variant&& variant, Fs&&... x) {
+constexpr auto visit(Variant&& variant, Fs&&... x) {
   return std::visit(visit_overloaded{std::forward<Fs>(x)...}, variant);
 }
 
